@@ -14,7 +14,264 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_tasks: {
+        Row: {
+          category: string | null
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          task_date: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          task_date?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          task_date?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          ai_response: string | null
+          content: string
+          created_at: string
+          id: string
+          mood: number | null
+          user_id: string
+        }
+        Insert: {
+          ai_response?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          mood?: number | null
+          user_id: string
+        }
+        Update: {
+          ai_response?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          mood?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kiwify_orders: {
+        Row: {
+          created_at: string
+          created_user_id: string | null
+          email: string
+          id: string
+          order_id: string
+          product_id: string | null
+          raw: Json | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_user_id?: string | null
+          email: string
+          id?: string
+          order_id: string
+          product_id?: string | null
+          raw?: Json | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          created_user_id?: string | null
+          email?: string
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          raw?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
+      mood_checkins: {
+        Row: {
+          checkin_date: string
+          created_at: string
+          id: string
+          mood: number
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          mood: number
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          mood?: number
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding: {
+        Row: {
+          ai_plan: string | null
+          biggest_obstacle: string | null
+          created_at: string
+          critical_hours: string[] | null
+          current_feeling: string | null
+          goal: string | null
+          habit: string
+          intensity: number
+          time_lost: string | null
+          triggers: string[] | null
+          updated_at: string
+          user_id: string
+          vision_30_days: string | null
+        }
+        Insert: {
+          ai_plan?: string | null
+          biggest_obstacle?: string | null
+          created_at?: string
+          critical_hours?: string[] | null
+          current_feeling?: string | null
+          goal?: string | null
+          habit: string
+          intensity?: number
+          time_lost?: string | null
+          triggers?: string[] | null
+          updated_at?: string
+          user_id: string
+          vision_30_days?: string | null
+        }
+        Update: {
+          ai_plan?: string | null
+          biggest_obstacle?: string | null
+          created_at?: string
+          critical_hours?: string[] | null
+          current_feeling?: string | null
+          goal?: string | null
+          habit?: string
+          intensity?: number
+          time_lost?: string | null
+          triggers?: string[] | null
+          updated_at?: string
+          user_id?: string
+          vision_30_days?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          full_name: string | null
+          id: string
+          onboarded: boolean | null
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          onboarded?: boolean | null
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          onboarded?: boolean | null
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      progress: {
+        Row: {
+          best_streak: number | null
+          current_streak: number | null
+          last_active_date: string | null
+          level: number | null
+          total_clean_days: number | null
+          updated_at: string
+          user_id: string
+          xp: number | null
+        }
+        Insert: {
+          best_streak?: number | null
+          current_streak?: number | null
+          last_active_date?: string | null
+          level?: number | null
+          total_clean_days?: number | null
+          updated_at?: string
+          user_id: string
+          xp?: number | null
+        }
+        Update: {
+          best_streak?: number | null
+          current_streak?: number | null
+          last_active_date?: string | null
+          level?: number | null
+          total_clean_days?: number | null
+          updated_at?: string
+          user_id?: string
+          xp?: number | null
+        }
+        Relationships: []
+      }
+      relapses: {
+        Row: {
+          context: string | null
+          created_at: string
+          id: string
+          trigger: string | null
+          user_id: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          id?: string
+          trigger?: string | null
+          user_id: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          id?: string
+          trigger?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
