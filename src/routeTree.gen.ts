@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermosRouteImport } from './routes/termos'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SegurancaRouteImport } from './routes/seguranca'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SegurancaRoute = SegurancaRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/reembolso': typeof ReembolsoRoute
   '/seguranca': typeof SegurancaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/reembolso': typeof ReembolsoRoute
   '/seguranca': typeof SegurancaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
 }
 export interface FileRoutesById {
@@ -61,19 +69,33 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/reembolso': typeof ReembolsoRoute
   '/seguranca': typeof SegurancaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/privacidade' | '/reembolso' | '/seguranca' | '/termos'
+  fullPaths:
+    | '/'
+    | '/privacidade'
+    | '/reembolso'
+    | '/seguranca'
+    | '/sitemap.xml'
+    | '/termos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/privacidade' | '/reembolso' | '/seguranca' | '/termos'
+  to:
+    | '/'
+    | '/privacidade'
+    | '/reembolso'
+    | '/seguranca'
+    | '/sitemap.xml'
+    | '/termos'
   id:
     | '__root__'
     | '/'
     | '/privacidade'
     | '/reembolso'
     | '/seguranca'
+    | '/sitemap.xml'
     | '/termos'
   fileRoutesById: FileRoutesById
 }
@@ -82,6 +104,7 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   ReembolsoRoute: typeof ReembolsoRoute
   SegurancaRoute: typeof SegurancaRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
 }
 
@@ -92,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/termos'
       fullPath: '/termos'
       preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seguranca': {
@@ -130,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   ReembolsoRoute: ReembolsoRoute,
   SegurancaRoute: SegurancaRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
 }
 export const routeTree = rootRouteImport
