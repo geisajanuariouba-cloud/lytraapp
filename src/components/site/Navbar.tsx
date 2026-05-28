@@ -17,7 +17,9 @@ export function Navbar() {
           <a href="#depoimentos" className="transition hover:text-foreground">Depoimentos</a>
           <a href="#precos" className="transition hover:text-foreground">Preços</a>
           <a href="#faq" className="transition hover:text-foreground">FAQ</a>
+        </nav>
         <div className="flex items-center gap-2">
+
           <Link
             to="/login"
             className="hidden h-10 items-center justify-center rounded-full px-4 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
