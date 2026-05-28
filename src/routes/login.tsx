@@ -34,7 +34,7 @@ function LoginPage() {
         if (error) throw error;
         nav({ to: "/app" });
       } else if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data: signUp, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -43,7 +43,14 @@ function LoginPage() {
           },
         });
         if (error) throw error;
-        toast.success("Conta criada! Verifique seu email para confirmar.");
+        // Com auto-confirm habilitado, já vem com sessão. Vai direto para o onboarding.
+        if (signUp.session) {
+          toast.success("Conta criada. Vamos começar.");
+          nav({ to: "/onboarding" });
+        } else {
+          toast.success("Conta criada! Verifique seu email para confirmar.");
+        }
+
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/redefinir-senha`,
