@@ -1,21 +1,29 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Leaf, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+const searchSchema = z.object({
+  mode: z.enum(["login", "signup", "reset"]).optional(),
+});
+
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Entrar — Lytra" }] }),
+  validateSearch: (s) => searchSchema.parse(s),
   component: LoginPage,
 });
 
 function LoginPage() {
   const nav = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const { mode: initialMode } = Route.useSearch();
+  const [mode, setMode] = useState<"login" | "signup" | "reset">(initialMode ?? "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
