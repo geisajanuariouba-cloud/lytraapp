@@ -128,13 +128,14 @@ function Landing() {
               recuperar foco e reconstruir sua rotina dia após dia.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href="#precos"
+              <Link
+                to="/login"
+                search={{ mode: "signup" }}
                 className="group inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-7 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
               >
-                Começar meu reset
+                Criar conta grátis
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </a>
+              </Link>
               <a
                 href="#como-funciona"
                 className="inline-flex h-12 items-center rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition hover:bg-accent"
@@ -142,6 +143,7 @@ function Landing() {
                 Ver como funciona
               </a>
             </div>
+
             <div className="mt-8 flex items-center gap-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Shield className="h-3.5 w-3.5 text-primary" />
@@ -413,15 +415,18 @@ function Landing() {
             7 dias de garantia. Acesso imediato. Cancele quando quiser. Você não tem nada a perder
             além do que já está perdendo.
           </p>
-          <a
-            href="#precos"
+          <Link
+            to="/login"
+            search={{ mode: "signup" }}
             className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
           >
-            Começar meu reset
+            Criar conta grátis
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
       </section>
+
+
 
       <Footer />
     </div>

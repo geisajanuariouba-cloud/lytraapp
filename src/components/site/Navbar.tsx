@@ -18,12 +18,23 @@ export function Navbar() {
           <a href="#precos" className="transition hover:text-foreground">Preços</a>
           <a href="#faq" className="transition hover:text-foreground">FAQ</a>
         </nav>
-        <a
-          href="#precos"
-          className="inline-flex h-10 items-center justify-center rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-        >
-          Começar agora
-        </a>
+        <div className="flex items-center gap-2">
+
+          <Link
+            to="/login"
+            className="hidden h-10 items-center justify-center rounded-full px-4 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
+          >
+            Entrar
+          </Link>
+          <Link
+            to="/login"
+            search={{ mode: "signup" }}
+            className="inline-flex h-10 items-center justify-center rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
+          >
+            Criar conta grátis
+          </Link>
+        </div>
+
       </div>
     </header>
   );
