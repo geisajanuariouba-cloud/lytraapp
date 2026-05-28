@@ -13,7 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
-import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
