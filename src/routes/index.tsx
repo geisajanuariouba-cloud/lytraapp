@@ -413,13 +413,15 @@ function Landing() {
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
             7 dias de garantia. Acesso imediato. Cancele quando quiser. Você não tem nada a perder
-            além do que já está perdendo.
-          </p>
-          <a
-            href="#precos"
+          <Link
+            to="/login"
+            search={{ mode: "signup" }}
             className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
           >
-            Começar meu reset
+            Criar conta grátis
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+
             <ArrowRight className="h-4 w-4" />
           </a>
         </div>
