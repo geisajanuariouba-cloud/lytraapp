@@ -426,7 +426,7 @@ function Landing() {
         </div>
       </section>
 
-      </section>
+
 
       <Footer />
     </div>
