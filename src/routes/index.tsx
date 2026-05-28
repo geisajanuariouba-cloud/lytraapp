@@ -413,6 +413,8 @@ function Landing() {
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
             7 dias de garantia. Acesso imediato. Cancele quando quiser. Você não tem nada a perder
+            além do que já está perdendo.
+          </p>
           <Link
             to="/login"
             search={{ mode: "signup" }}
@@ -421,10 +423,9 @@ function Landing() {
             Criar conta grátis
             <ArrowRight className="h-4 w-4" />
           </Link>
-
-            <ArrowRight className="h-4 w-4" />
-          </a>
         </div>
+      </section>
+
       </section>
 
       <Footer />
