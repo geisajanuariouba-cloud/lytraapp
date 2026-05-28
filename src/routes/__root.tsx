@@ -124,7 +124,24 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthSync />
       <Outlet />
+      <Toaster />
     </QueryClientProvider>
   );
+}
+
+function AuthSync() {
+  const router = useRouter();
+  const qc = useQueryClient();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      // Invalida cache do usuário anterior em login/logout/refresh
+      qc.clear();
+      router.invalidate();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, qc]);
+  return null;
+
 }
