@@ -15,12 +15,15 @@ export const Route = createFileRoute("/api/public/kiwify")({
       POST: async ({ request }) => {
         const url = new URL(request.url);
         const expectedToken = process.env.KIWIFY_WEBHOOK_TOKEN;
-        if (expectedToken) {
-          const provided = url.searchParams.get("token");
-          if (provided !== expectedToken) {
-            return new Response("Invalid token", { status: 401 });
-          }
+        if (!expectedToken) {
+          console.error("KIWIFY_WEBHOOK_TOKEN não configurado");
+          return new Response("Webhook desabilitado", { status: 503 });
         }
+        const provided = url.searchParams.get("token") || request.headers.get("x-kiwify-token");
+        if (provided !== expectedToken) {
+          return new Response("Invalid token", { status: 401 });
+        }
+
 
         let body: any;
         try {
