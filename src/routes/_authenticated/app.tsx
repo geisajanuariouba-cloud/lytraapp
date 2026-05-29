@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router";
-import { Leaf, Home, BookHeart, ShieldAlert, TrendingUp, LogOut } from "lucide-react";
+import { Leaf, Home, BookHeart, ShieldAlert, TrendingUp, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -28,17 +28,14 @@ function AppLayout() {
     nav({ to: "/onboarding" });
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    nav({ to: "/login" });
-  }
-
   const navItems = [
     { to: "/app", label: "Hoje", icon: Home, exact: true },
     { to: "/app/diario", label: "Diário", icon: BookHeart },
     { to: "/app/sos", label: "Emergência", icon: ShieldAlert },
     { to: "/app/progresso", label: "Progresso", icon: TrendingUp },
+    { to: "/app/configuracoes", label: "Conta", icon: Settings },
   ];
+
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
@@ -50,13 +47,14 @@ function AppLayout() {
             </span>
             <span className="text-lg font-semibold tracking-tight">Lytra</span>
           </Link>
-          <button
-            onClick={handleLogout}
+          <Link
+            to="/app/configuracoes"
             className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
-            aria-label="Sair"
+            aria-label="Configurações"
           >
-            <LogOut className="h-4 w-4" />
-          </button>
+            <Settings className="h-4 w-4" />
+          </Link>
+
         </div>
       </header>
 

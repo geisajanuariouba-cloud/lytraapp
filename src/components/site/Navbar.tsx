@@ -15,26 +15,23 @@ export function Navbar() {
           <a href="#como-funciona" className="transition hover:text-foreground">Como funciona</a>
           <a href="#beneficios" className="transition hover:text-foreground">Benefícios</a>
           <a href="#depoimentos" className="transition hover:text-foreground">Depoimentos</a>
-          <a href="#precos" className="transition hover:text-foreground">Preços</a>
+          <a href="#precos" className="transition hover:text-foreground">Planos</a>
           <a href="#faq" className="transition hover:text-foreground">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
-
           <Link
             to="/login"
             className="hidden h-10 items-center justify-center rounded-full px-4 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
           >
             Entrar
           </Link>
-          <Link
-            to="/login"
-            search={{ mode: "signup" }}
+          <a
+            href="#precos"
             className="inline-flex h-10 items-center justify-center rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
           >
-            Criar conta grátis
-          </Link>
+            Adquirir agora
+          </a>
         </div>
-
       </div>
     </header>
   );
