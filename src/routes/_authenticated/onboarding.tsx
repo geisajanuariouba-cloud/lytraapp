@@ -262,15 +262,6 @@ function OnboardingPage() {
             </button>
           )}
 
-            <button
-              onClick={handleFinish}
-              disabled={loading}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-60"
-            >
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Gerar meu plano
-            </button>
-          )}
         </div>
       </div>
     </div>
