@@ -2,16 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Brain,
-  CalendarCheck,
-  ChartLine,
   CheckCircle2,
   Clock,
-  Compass,
   Flame,
-  HeartHandshake,
   Leaf,
   ListChecks,
-  MessageCircleHeart,
   Moon,
   Shield,
   Smartphone,
@@ -19,10 +14,8 @@ import {
   Star,
   Target,
   Timer,
-  Wind,
   Zap,
 } from "lucide-react";
-import heroMockup from "@/assets/hero-mockup.png";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 
@@ -33,13 +26,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A Lytra cria um plano inteligente e personalizado para reduzir vícios, recuperar foco e reconstruir sua rotina dia após dia.",
+          "Sistema inteligente de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina com um plano feito sob medida pra você.",
       },
       { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
       {
         property: "og:description",
-        content:
-          "Plataforma de reset mental com IA. Reduza vícios, recupere foco e reconstrua sua rotina.",
+        content: "Plataforma premium de reset mental com IA. Plano personalizado, acompanhamento diário.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -47,61 +39,94 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
+// URLs do checkout Kiwify — configure VITE_KIWIFY_CHECKOUT_MONTHLY_URL e VITE_KIWIFY_CHECKOUT_QUARTERLY_URL
+const KIWIFY_MONTHLY =
+  (import.meta.env.VITE_KIWIFY_CHECKOUT_MONTHLY_URL as string | undefined) ?? "#precos";
+const KIWIFY_QUARTERLY =
+  (import.meta.env.VITE_KIWIFY_CHECKOUT_QUARTERLY_URL as string | undefined) ?? "#precos";
+
 const steps = [
-  { icon: Target, title: "Escolha seu hábito", desc: "Selecione o vício ou hábito que deseja reduzir." },
-  { icon: MessageCircleHeart, title: "Responda 1 minuto", desc: "Algumas perguntas rápidas para entender você de verdade." },
-  { icon: Sparkles, title: "IA cria seu plano", desc: "Um plano diário, personalizado e adaptativo é gerado para você." },
-  { icon: ChartLine, title: "Acompanhe a evolução", desc: "Veja seu progresso, recaídas e clareza mental crescerem." },
+  { icon: Target, title: "Escolha seu hábito", desc: "O que você quer reduzir." },
+  { icon: Sparkles, title: "Responda 1 minuto", desc: "A IA aprende seu contexto." },
+  { icon: ListChecks, title: "Receba seu plano", desc: "Diário, personalizado, adaptativo." },
+  { icon: Flame, title: "Acompanhe a evolução", desc: "Streak, níveis e clareza crescendo." },
 ];
 
 const emotionalCards = [
-  { icon: Smartphone, title: "Excesso de celular", text: "Horas perdidas em scroll infinito que drenam sua energia." },
-  { icon: Zap, title: "Dopamina rápida", text: "Vídeos curtos, notificações, recompensas instantâneas que viciam o cérebro." },
-  { icon: Brain, title: "Mente cansada", text: "Sensação de neblina mental, dificuldade de pensar com clareza." },
-  { icon: Clock, title: "Procrastinação", text: "Tarefas importantes sempre adiadas. Culpa que se acumula." },
-  { icon: Wind, title: "Ansiedade digital", text: "Inquietação constante mesmo sem motivo aparente." },
-  { icon: Compass, title: "Falta de controle", text: "Vontade de mudar, mas sem saber por onde começar." },
+  { icon: Smartphone, title: "Horas perdidas no celular", text: "Scroll que drena sua energia." },
+  { icon: Zap, title: "Dopamina rápida", text: "Vídeos curtos que viciam o cérebro." },
+  { icon: Brain, title: "Mente em neblina", text: "Difícil pensar com clareza." },
+  { icon: Clock, title: "Procrastinação", text: "Tudo adiado. Culpa acumulada." },
 ];
 
 const benefits = [
-  { icon: Sparkles, title: "Rotina personalizada", text: "Um plano feito sob medida para sua realidade e seus gatilhos." },
-  { icon: Brain, title: "Acompanhamento inteligente", text: "Uma IA que entende seu contexto e adapta o caminho com você." },
-  { icon: ListChecks, title: "Tarefas diárias simples", text: "Pequenas ações que cabem no seu dia e geram grandes resultados." },
-  { icon: ChartLine, title: "Progresso visual", text: "Gráficos suaves, streak, níveis. Dopamina positiva todos os dias." },
-  { icon: HeartHandshake, title: "Redução de recaídas", text: "Modo emergência inteligente para os momentos difíceis." },
-  { icon: Leaf, title: "Clareza mental", text: "Menos ruído, mais foco, mais paz dentro da sua cabeça." },
-  { icon: CalendarCheck, title: "Reconstrução de hábitos", text: "Um sistema vivo que adapta intensidade conforme você evolui." },
-  { icon: Flame, title: "Recuperação de foco", text: "Volte a estudar, trabalhar e viver com presença real." },
-  { icon: Target, title: "Sistema adaptativo", text: "Quanto mais você usa, mais a Lytra entende como te ajudar." },
+  { icon: Sparkles, title: "Plano sob medida", text: "Feito pros seus gatilhos." },
+  { icon: Brain, title: "IA que entende você", text: "Adapta o caminho com você." },
+  { icon: ListChecks, title: "Micro tarefas diárias", text: "Cabem no seu dia." },
+  { icon: Flame, title: "Streak e níveis", text: "Dopamina positiva todo dia." },
+  { icon: Shield, title: "Modo emergência", text: "Apoio em tempo real." },
+  { icon: Leaf, title: "Clareza mental", text: "Menos ruído. Mais foco." },
 ];
 
-const testimonials = [
-  { name: "Carolina M.", role: "Estudante de Medicina", text: "Eu passava 8h por dia no celular. Em 3 semanas com a Lytra desci pra 2h e voltei a estudar com foco real. Não acredito que era esse o problema todo esse tempo." },
-  { name: "Rafael S.", role: "Designer", text: "Tentei mil apps de hábito. Nenhum entendia que eu não conseguia manter constância. A Lytra ajusta a dificuldade comigo, sem julgamento. Mudou meu ano." },
-  { name: "Beatriz L.", role: "Empreendedora", text: "A parte do diário emocional me pegou. A IA respondeu de um jeito que parecia que alguém realmente estava ali. Chorei na primeira semana." },
-  { name: "Lucas P.", role: "Engenheiro", text: "Lutei contra pornografia por 6 anos. Em 47 dias na Lytra é o maior tempo limpo da minha vida adulta. O botão de emergência salvou minha sequência umas 20 vezes." },
-  { name: "Mariana R.", role: "Professora", text: "Procrastinação crônica. A Lytra me ensinou que não é preguiça, é dopamina desregulada. As micro tarefas mudaram tudo." },
-  { name: "André T.", role: "Médico residente", text: "Dormia às 3h vendo reels. Hoje durmo 23h sem celular no quarto. Acordo outra pessoa." },
-  { name: "Júlia V.", role: "Advogada", text: "Eu achava que era TDAH. Na verdade era TikTok destruindo minha capacidade de atenção. 2 meses depois leio livros de novo." },
-  { name: "Pedro H.", role: "Universitário", text: "O streak vicia mais do que o que eu estava tentando largar. Mas no bom sentido. Hoje tô em 89 dias." },
-  { name: "Camila O.", role: "Mãe e arquiteta", text: "Voltei a estar presente com meus filhos. Eles notaram antes de mim. Isso vale qualquer preço." },
-  { name: "Thiago A.", role: "Vendedor", text: "Achei que seria mais um app motivacional cringe. É exatamente o oposto. A IA é direta e estratégica, não fica enchendo de frasezinha." },
-  { name: "Fernanda C.", role: "Nutricionista", text: "Recaí no dia 31. A Lytra não me julgou, refez meu plano e me mostrou o padrão. Voltei mais forte." },
-  { name: "Gustavo B.", role: "Programador", text: "O modo foco com a respiração guiada é absurdo. Uso todo dia antes de codar. Minha produtividade dobrou." },
-  { name: "Larissa F.", role: "Psicóloga", text: "Como profissional da área, posso dizer: a Lytra não substitui terapia, mas é o melhor complemento que já vi. Indico pros meus pacientes." },
-  { name: "Bruno N.", role: "Personal trainer", text: "Foco recuperado, sono regulado, treinos melhores. Tudo conectado. A clareza mental veio junto." },
-  { name: "Isabela Q.", role: "Jornalista", text: "Em 60 dias minha ansiedade caiu pela metade. Sem remédio. Só rotina e a IA me cobrando de um jeito acolhedor." },
+const transformations = [
+  {
+    name: "Carolina M.",
+    role: "Estudante",
+    before: "8h por dia no celular",
+    after: "2h, foco real nos estudos",
+    days: 21,
+  },
+  {
+    name: "Rafael S.",
+    role: "Designer",
+    before: "Sem constância em nada",
+    after: "Rotina firme há 60 dias",
+    days: 60,
+  },
+  {
+    name: "Lucas P.",
+    role: "Engenheiro",
+    before: "Recaía toda semana",
+    after: "47 dias limpo — recorde",
+    days: 47,
+  },
+  {
+    name: "Mariana R.",
+    role: "Professora",
+    before: "Procrastinava tudo",
+    after: "Plano executado todo dia",
+    days: 30,
+  },
+  {
+    name: "André T.",
+    role: "Médico residente",
+    before: "Dormia às 3h em reels",
+    after: "Sono regulado às 23h",
+    days: 45,
+  },
+  {
+    name: "Júlia V.",
+    role: "Advogada",
+    before: "Sem atenção pra ler",
+    after: "Lê livros de novo",
+    days: 60,
+  },
+];
+
+const shortQuotes = [
+  { name: "Beatriz L.", text: "A IA respondeu como se alguém realmente estivesse ali." },
+  { name: "Pedro H.", text: "O streak vicia mais que o que eu tentava largar — no bom sentido." },
+  { name: "Camila O.", text: "Voltei a estar presente com meus filhos. Eles notaram antes de mim." },
+  { name: "Thiago A.", text: "Direta e estratégica. Nada de frasezinha cringe." },
 ];
 
 const faqs = [
-  { q: "Como funciona a Lytra?", a: "Você responde um onboarding rápido, a IA cria um plano personalizado, e todos os dias você recebe pequenas tarefas, reflexões e acompanhamento que se adaptam ao seu progresso." },
-  { q: "Isso substitui terapia ou tratamento médico?", a: "Não. A Lytra é uma ferramenta de apoio comportamental e organização de rotina. Para quadros clínicos, sempre busque um profissional de saúde." },
-  { q: "A IA realmente personaliza tudo?", a: "Sim. Cada plano é construído a partir das suas respostas, gatilhos, horários e evolução. Quanto mais você usa, mais inteligente fica." },
-  { q: "Como recebo acesso depois de comprar?", a: "Acesso imediato. Logo após o pagamento você recebe um email para criar sua senha e entrar na plataforma." },
-  { q: "Posso cancelar quando quiser?", a: "Sim, sem burocracia. Cancelamento simples direto pelo seu painel. E ainda temos garantia de 7 dias." },
-  { q: "Funciona no celular?", a: "Sim. A Lytra é mobile-first e funciona perfeitamente no navegador do seu celular como um app." },
-  { q: "Quanto tempo até ver resultado?", a: "A maioria dos usuários relata mudanças nítidas em 7 a 14 dias. Reconstrução profunda acontece entre 30 e 90 dias." },
-  { q: "O plano muda conforme meu progresso?", a: "Sim. A IA ajusta intensidade, tarefas e estratégias com base nas suas recaídas, sequências e check-ins emocionais." },
+  { q: "Como funciono a Lytra?", a: "Você responde um quiz rápido, a IA cria seu plano, e todo dia recebe tarefas e reflexões que se adaptam ao seu progresso." },
+  { q: "Substitui terapia?", a: "Não. É apoio comportamental e de rotina. Para quadros clínicos, procure um profissional." },
+  { q: "Como recebo acesso depois de comprar?", a: "Acesso imediato. Após o pagamento, você recebe um email para criar sua senha e entrar." },
+  { q: "Posso cancelar?", a: "Sim, sem burocracia, direto no seu painel." },
+  { q: "Funciona no celular?", a: "Sim. Mobile-first, funciona como app no navegador." },
+  { q: "Em quanto tempo vejo resultado?", a: "Maioria nota mudança em 7 a 14 dias. Reconstrução profunda entre 30 e 90 dias." },
 ];
 
 function Landing() {
@@ -123,27 +148,24 @@ function Landing() {
               <br />
               <span className="bg-primary-gradient bg-clip-text text-transparent">da sua mente.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground text-balance">
-              A Lytra cria um plano inteligente e personalizado para ajudar você a reduzir vícios,
-              recuperar foco e reconstruir sua rotina dia após dia.
+            <p className="mt-6 max-w-md text-lg text-muted-foreground text-balance">
+              Plano diário, adaptativo, feito pra você reduzir vícios e reconstruir foco.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                to="/login"
-                search={{ mode: "signup" }}
+              <a
+                href="#precos"
                 className="group inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-7 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
               >
-                Criar conta grátis
+                Adquirir agora
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </Link>
+              </a>
               <a
                 href="#como-funciona"
                 className="inline-flex h-12 items-center rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition hover:bg-accent"
               >
-                Ver como funciona
+                Como funciona
               </a>
             </div>
-
             <div className="mt-8 flex items-center gap-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Shield className="h-3.5 w-3.5 text-primary" />
@@ -158,13 +180,30 @@ function Landing() {
 
           <div className="relative">
             <div className="absolute -inset-10 -z-10 bg-primary-soft/40 blur-3xl" aria-hidden />
-            <img
-              src={heroMockup}
-              alt="Plataforma Lytra"
-              width={1280}
-              height={960}
-              className="relative animate-float drop-shadow-2xl"
-            />
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster=""
+                className="aspect-[4/3] w-full bg-primary-soft object-cover"
+              >
+                {/* TODO: substituir pelo vídeo final do hero (mp4) */}
+                <source src="" type="video/mp4" />
+              </video>
+              <div className="pointer-events-none absolute inset-0 grid place-items-center bg-primary-soft/40">
+                <div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-gradient text-primary-foreground shadow-glow">
+                    <Leaf className="h-6 w-6" strokeWidth={2.5} />
+                  </span>
+                  <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                    Vídeo da plataforma
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -174,7 +213,7 @@ function Landing() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-widest text-primary">Como funciona</p>
           <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Quatro passos para uma mente mais clara.
+            Quatro passos. Mente mais clara.
           </h2>
         </div>
         <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -196,27 +235,21 @@ function Landing() {
         </div>
       </section>
 
-      {/* SEÇÃO EMOCIONAL */}
+      {/* DOR */}
       <section className="relative overflow-hidden bg-soft py-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-medium uppercase tracking-widest text-primary">Você não está sozinho</p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Sua mente foi sequestrada.
-              <br />
-              E quase ninguém percebeu.
+              Sua atenção foi sequestrada.
             </h2>
-            <p className="mt-6 text-lg text-muted-foreground text-balance">
-              Vivemos numa economia da atenção. Cada notificação, cada scroll, cada vídeo curto rouba um
-              pedaço da sua clareza. A Lytra existe para te devolver o que é seu.
+            <p className="mt-5 text-base text-muted-foreground text-balance">
+              A Lytra existe pra te devolver o que é seu.
             </p>
           </div>
-          <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {emotionalCards.map((c) => (
-              <div
-                key={c.title}
-                className="rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:shadow-card"
-              >
+              <div key={c.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-soft text-primary">
                   <c.icon className="h-5 w-5" />
                 </span>
@@ -231,12 +264,12 @@ function Landing() {
       {/* BENEFÍCIOS */}
       <section id="beneficios" className="mx-auto max-w-6xl px-6 py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">Benefícios</p>
+          <p className="text-xs font-medium uppercase tracking-widest text-primary">O que você ganha</p>
           <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Tudo que você precisa para reconstruir do zero.
+            Reconstrução. Do seu jeito.
           </h2>
         </div>
-        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map((b) => (
             <div
               key={b.title}
@@ -252,60 +285,87 @@ function Landing() {
         </div>
       </section>
 
-      {/* DEPOIMENTOS */}
+      {/* TRANSFORMAÇÕES — antes/depois */}
       <section id="depoimentos" className="bg-soft py-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Histórias reais</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">Transformações</p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Pessoas reconstruindo a própria mente.
+              Antes e depois da Lytra.
             </h2>
             <div className="mt-4 flex items-center justify-center gap-1 text-primary">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-current" />
               ))}
               <span className="ml-2 text-sm font-medium text-muted-foreground">
-                4.9/5 — milhares de jornadas em andamento
+                4.9/5 — jornadas reais
               </span>
             </div>
           </div>
 
-          <div className="mt-14 columns-1 gap-5 md:columns-2 lg:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid">
-            {testimonials.map((t) => (
+          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {transformations.map((t) => (
               <div
                 key={t.name}
-                className="rounded-3xl border border-border bg-card p-6 shadow-soft"
+                className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-card"
               >
-                <div className="flex items-center gap-1 text-primary">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-current" />
-                  ))}
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-foreground/90">"{t.text}"</p>
-                <div className="mt-5 flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
-                    {t.name.charAt(0)}
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                <div className="grid grid-cols-2">
+                  <div className="bg-muted p-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Antes</p>
+                    <p className="mt-2 text-sm font-medium text-foreground/80 line-through decoration-muted-foreground/40">
+                      {t.before}
+                    </p>
+                  </div>
+                  <div className="bg-primary-soft p-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-primary">Depois</p>
+                    <p className="mt-2 text-sm font-semibold text-foreground">{t.after}</p>
                   </div>
                 </div>
+                <div className="flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
+                      {t.name.charAt(0)}
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold leading-tight">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-medium text-primary">
+                    <Flame className="h-3 w-3" />
+                    {t.days} dias
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Citações curtas */}
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {shortQuotes.map((q) => (
+              <div key={q.name} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+                <div className="flex items-center gap-1 text-primary">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3 w-3 fill-current" />
+                  ))}
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/90">"{q.text}"</p>
+                <p className="mt-3 text-xs font-medium text-muted-foreground">— {q.name}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* PREÇOS */}
+      {/* PLANOS */}
       <section id="precos" className="mx-auto max-w-6xl px-6 py-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-widest text-primary">Comece hoje</p>
           <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Um investimento na sua própria mente.
+            Escolha seu plano.
           </h2>
-          <p className="mt-5 text-lg text-muted-foreground">
-            Menos do que um delivery por mês. Mais valioso do que quase tudo.
+          <p className="mt-4 text-base text-muted-foreground">
+            Menos que um delivery por mês. Acesso imediato após o pagamento.
           </p>
         </div>
 
@@ -316,9 +376,9 @@ function Landing() {
               <span className="text-5xl font-semibold tracking-tight">R$19</span>
               <span className="text-sm text-muted-foreground">/mês</span>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">Flexibilidade total, cancele quando quiser.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Cancele quando quiser.</p>
             <ul className="mt-6 space-y-3 text-sm">
-              {["Acesso completo à plataforma", "Plano diário com IA", "Diário emocional", "Modo emergência", "Suporte por email"].map((f) => (
+              {["Plataforma completa", "Plano diário com IA", "Diário emocional", "Modo emergência", "Suporte"].map((f) => (
                 <li key={f} className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                   {f}
@@ -326,10 +386,10 @@ function Landing() {
               ))}
             </ul>
             <a
-              href="https://lytra.shop"
+              href={KIWIFY_MONTHLY}
               className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full border border-border bg-card font-medium transition hover:bg-accent"
             >
-              Assinar mensal
+              Adquirir mensal
             </a>
           </div>
 
@@ -343,15 +403,15 @@ function Landing() {
               <span className="text-sm text-muted-foreground">/trimestre</span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Equivalente a <span className="font-medium text-foreground">R$13/mês</span> — economia de 32%.
+              Equivale a <span className="font-medium text-foreground">R$13/mês</span> — economia de 32%.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               {[
-                "Tudo do plano mensal",
-                "Planos adaptativos avançados",
-                "Análises semanais com IA",
+                "Tudo do mensal",
+                "Plano adaptativo avançado",
+                "Análise semanal com IA",
                 "Prioridade no modo emergência",
-                "Suporte humano dedicado",
+                "Suporte humano",
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -360,16 +420,16 @@ function Landing() {
               ))}
             </ul>
             <a
-              href="https://lytra.shop"
+              href={KIWIFY_QUARTERLY}
               className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full bg-primary-gradient font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
             >
-              Começar meu reset
+              Começar jornada
             </a>
           </div>
         </div>
 
         <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-primary" /> Garantia incondicional de 7 dias</span>
+          <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-primary" /> Garantia de 7 dias</span>
           <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Cancele em 1 clique</span>
           <span className="flex items-center gap-1.5"><Timer className="h-3.5 w-3.5 text-primary" /> Acesso imediato</span>
           <span className="flex items-center gap-1.5"><Moon className="h-3.5 w-3.5 text-primary" /> Pagamento seguro</span>
@@ -412,21 +472,17 @@ function Landing() {
             Sua próxima versão começa hoje.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
-            7 dias de garantia. Acesso imediato. Cancele quando quiser. Você não tem nada a perder
-            além do que já está perdendo.
+            Garantia de 7 dias. Acesso imediato. Cancele quando quiser.
           </p>
-          <Link
-            to="/login"
-            search={{ mode: "signup" }}
+          <a
+            href="#precos"
             className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
           >
-            Criar conta grátis
+            Começar jornada
             <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </div>
       </section>
-
-
 
       <Footer />
     </div>
