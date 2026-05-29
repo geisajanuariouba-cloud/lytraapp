@@ -245,12 +245,23 @@ function OnboardingPage() {
           </button>
           {!last ? (
             <button
-              onClick={() => setStep((s) => s + 1)}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow"
+              onClick={handleNext}
+              disabled={!canContinue}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow transition disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
             >
               Continuar <ArrowRight className="h-4 w-4" />
             </button>
           ) : (
+            <button
+              onClick={handleFinish}
+              disabled={loading || !canContinue}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow transition disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            >
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Gerar meu plano
+            </button>
+          )}
+
             <button
               onClick={handleFinish}
               disabled={loading}
