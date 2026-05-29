@@ -89,6 +89,31 @@ function OnboardingPage() {
   const current = steps[step];
   const last = step === steps.length - 1;
 
+  function isStepValid(s: number): boolean {
+    switch (s) {
+      case 0: return !!form.habit;
+      case 1: return form.intensity >= 1 && form.intensity <= 5;
+      case 2: return form.triggers.length > 0;
+      case 3: return form.critical_hours.length > 0;
+      case 4: return form.goal.trim().length >= 3;
+      case 5: return form.current_feeling.trim().length >= 3;
+      case 6: return form.biggest_obstacle.trim().length >= 3;
+      case 7: return form.time_lost.trim().length >= 1;
+      case 8: return form.vision_30_days.trim().length >= 3;
+      default: return false;
+    }
+  }
+  const canContinue = isStepValid(step);
+
+  function handleNext() {
+    if (!canContinue) {
+      toast.error("Responda para continuar.");
+      return;
+    }
+    setStep((s) => s + 1);
+  }
+
+
   return (
     <div className="relative min-h-screen bg-background">
       <div className="absolute inset-0 bg-hero-glow" aria-hidden />
