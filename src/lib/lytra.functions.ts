@@ -294,7 +294,7 @@ export const getDashboard = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const today = new Date().toISOString().slice(0, 10);
 
-    const [profile, onb, tasks, progress, todayMood, journal, relapses] = await Promise.all([
+    const [profile, onb, tasks, progress, todayMood, journal, relapses, subscription, roleRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("onboarding").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at"),
@@ -302,6 +302,8 @@ export const getDashboard = createServerFn({ method: "GET" })
       supabase.from("mood_checkins").select("*").eq("user_id", userId).eq("checkin_date", today).maybeSingle(),
       supabase.from("journal_entries").select("id, content, ai_response, created_at, mood").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
       supabase.from("relapses").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
+      supabase.from("subscriptions").select("*").eq("user_id", userId).maybeSingle(),
+      supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
     ]);
 
     return {
@@ -312,6 +314,8 @@ export const getDashboard = createServerFn({ method: "GET" })
       todayMood: todayMood.data,
       journal: journal.data ?? [],
       relapses: relapses.data ?? [],
+      subscription: subscription.data,
+      isAdmin: !!roleRes.data,
     };
   });
 
