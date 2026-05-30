@@ -1,9 +1,11 @@
 import { createFileRoute, Link, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router";
-import { Leaf, Home, BookHeart, ShieldAlert, TrendingUp, Settings } from "lucide-react";
+import { Leaf, Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useEffect } from "react";
 import { getDashboard } from "@/lib/lytra.functions";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/app")({
   beforeLoad: async () => {
@@ -24,18 +26,26 @@ function AppLayout() {
   });
 
   // Onboarding gate
-  if (!isLoading && data && data.onboarding == null && !loc.pathname.includes("/onboarding")) {
-    nav({ to: "/onboarding" });
-  }
+  useEffect(() => {
+    if (!isLoading && data && data.onboarding == null && !loc.pathname.includes("/onboarding")) {
+      nav({ to: "/onboarding" });
+    }
+  }, [isLoading, data, loc.pathname, nav]);
+
+  // Subscription gate — bloqueia exceto conta e suporte
+  const subStatus = data?.subscription?.status;
+  const hasActive = subStatus === "active";
+  const allowedWithoutSub = ["/app/configuracoes", "/app/suporte"];
+  const isAllowedPath = allowedWithoutSub.some((p) => loc.pathname.startsWith(p));
 
   const navItems = [
     { to: "/app", label: "Hoje", icon: Home, exact: true },
     { to: "/app/diario", label: "Diário", icon: BookHeart },
     { to: "/app/sos", label: "Emergência", icon: ShieldAlert },
     { to: "/app/progresso", label: "Progresso", icon: TrendingUp },
+    { to: "/app/suporte", label: "Suporte", icon: LifeBuoy },
     { to: "/app/configuracoes", label: "Conta", icon: Settings },
   ];
-
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
@@ -47,19 +57,52 @@ function AppLayout() {
             </span>
             <span className="text-lg font-semibold tracking-tight">Lytra</span>
           </Link>
-          <Link
-            to="/app/configuracoes"
-            className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
-            aria-label="Configurações"
-          >
-            <Settings className="h-4 w-4" />
-          </Link>
-
+          <div className="flex items-center gap-1">
+            {data?.isAdmin && (
+              <Link
+                to="/admin"
+                className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                aria-label="Admin"
+              >
+                <ShieldCheck className="h-4 w-4" />
+              </Link>
+            )}
+            <Link
+              to="/app/configuracoes"
+              className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              aria-label="Configurações"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-5 py-6">
-        <Outlet />
+        {!isLoading && data && !hasActive && !isAllowedPath ? (
+          <div className="rounded-2xl border border-border bg-card p-8 text-center space-y-4">
+            <h2 className="text-xl font-semibold">Sua jornada está pausada</h2>
+            <p className="text-sm text-muted-foreground">
+              {subStatus === "refunded"
+                ? "Identificamos um reembolso. O acesso foi pausado."
+                : subStatus === "chargeback"
+                ? "Identificamos um chargeback. O acesso foi pausado."
+                : subStatus === "canceled"
+                ? "Sua assinatura foi cancelada."
+                : "Não encontramos uma assinatura ativa vinculada à sua conta."}
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button asChild>
+                <Link to="/">Reativar acesso</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/app/suporte">Falar com suporte</Link>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </main>
 
       {/* Bottom nav (mobile) + top tabs (desktop) */}
@@ -73,7 +116,7 @@ function AppLayout() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-[11px] transition ${
+                className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] transition ${
                   active ? "text-primary" : "text-muted-foreground"
                 }`}
               >
@@ -95,7 +138,7 @@ function AppLayout() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
                   active
                     ? "bg-primary-gradient text-primary-foreground shadow-glow"
                     : "text-muted-foreground hover:text-foreground"
