@@ -20,12 +20,15 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as ApiPublicKiwifyRouteImport } from './routes/api/public/kiwify'
+import { Route as AuthenticatedAppSuporteRouteImport } from './routes/_authenticated/app/suporte'
 import { Route as AuthenticatedAppSosRouteImport } from './routes/_authenticated/app/sos'
 import { Route as AuthenticatedAppProgressoRouteImport } from './routes/_authenticated/app/progresso'
 import { Route as AuthenticatedAppDiarioRouteImport } from './routes/_authenticated/app/diario'
 import { Route as AuthenticatedAppConfiguracoesRouteImport } from './routes/_authenticated/app/configuracoes'
+import { Route as AuthenticatedAppSuporteIdRouteImport } from './routes/_authenticated/app/suporte.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -81,6 +84,11 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -90,6 +98,11 @@ const ApiPublicKiwifyRoute = ApiPublicKiwifyRouteImport.update({
   id: '/api/public/kiwify',
   path: '/api/public/kiwify',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAppSuporteRoute = AuthenticatedAppSuporteRouteImport.update({
+  id: '/suporte',
+  path: '/suporte',
+  getParentRoute: () => AuthenticatedAppRoute,
 } as any)
 const AuthenticatedAppSosRoute = AuthenticatedAppSosRouteImport.update({
   id: '/sos',
@@ -113,6 +126,12 @@ const AuthenticatedAppConfiguracoesRoute =
     path: '/configuracoes',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppSuporteIdRoute =
+  AuthenticatedAppSuporteIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppSuporteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,14 +142,17 @@ export interface FileRoutesByFullPath {
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/diario': typeof AuthenticatedAppDiarioRoute
   '/app/progresso': typeof AuthenticatedAppProgressoRoute
   '/app/sos': typeof AuthenticatedAppSosRoute
+  '/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,13 +163,16 @@ export interface FileRoutesByTo {
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/diario': typeof AuthenticatedAppDiarioRoute
   '/app/progresso': typeof AuthenticatedAppProgressoRoute
   '/app/sos': typeof AuthenticatedAppSosRoute
+  '/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -160,14 +185,17 @@ export interface FileRoutesById {
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/_authenticated/app/diario': typeof AuthenticatedAppDiarioRoute
   '/_authenticated/app/progresso': typeof AuthenticatedAppProgressoRoute
   '/_authenticated/app/sos': typeof AuthenticatedAppSosRoute
+  '/_authenticated/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,14 +208,17 @@ export interface FileRouteTypes {
     | '/seguranca'
     | '/sitemap.xml'
     | '/termos'
+    | '/admin'
     | '/app'
     | '/onboarding'
     | '/app/configuracoes'
     | '/app/diario'
     | '/app/progresso'
     | '/app/sos'
+    | '/app/suporte'
     | '/api/public/kiwify'
     | '/app/'
+    | '/app/suporte/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -198,13 +229,16 @@ export interface FileRouteTypes {
     | '/seguranca'
     | '/sitemap.xml'
     | '/termos'
+    | '/admin'
     | '/onboarding'
     | '/app/configuracoes'
     | '/app/diario'
     | '/app/progresso'
     | '/app/sos'
+    | '/app/suporte'
     | '/api/public/kiwify'
     | '/app'
+    | '/app/suporte/$id'
   id:
     | '__root__'
     | '/'
@@ -216,14 +250,17 @@ export interface FileRouteTypes {
     | '/seguranca'
     | '/sitemap.xml'
     | '/termos'
+    | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
     | '/_authenticated/app/configuracoes'
     | '/_authenticated/app/diario'
     | '/_authenticated/app/progresso'
     | '/_authenticated/app/sos'
+    | '/_authenticated/app/suporte'
     | '/api/public/kiwify'
     | '/_authenticated/app/'
+    | '/_authenticated/app/suporte/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -318,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/app/': {
       id: '/_authenticated/app/'
       path: '/'
@@ -331,6 +375,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/kiwify'
       preLoaderRoute: typeof ApiPublicKiwifyRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/app/suporte': {
+      id: '/_authenticated/app/suporte'
+      path: '/suporte'
+      fullPath: '/app/suporte'
+      preLoaderRoute: typeof AuthenticatedAppSuporteRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/sos': {
       id: '/_authenticated/app/sos'
@@ -360,14 +411,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppConfiguracoesRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/suporte/$id': {
+      id: '/_authenticated/app/suporte/$id'
+      path: '/$id'
+      fullPath: '/app/suporte/$id'
+      preLoaderRoute: typeof AuthenticatedAppSuporteIdRouteImport
+      parentRoute: typeof AuthenticatedAppSuporteRoute
+    }
   }
 }
+
+interface AuthenticatedAppSuporteRouteChildren {
+  AuthenticatedAppSuporteIdRoute: typeof AuthenticatedAppSuporteIdRoute
+}
+
+const AuthenticatedAppSuporteRouteChildren: AuthenticatedAppSuporteRouteChildren =
+  {
+    AuthenticatedAppSuporteIdRoute: AuthenticatedAppSuporteIdRoute,
+  }
+
+const AuthenticatedAppSuporteRouteWithChildren =
+  AuthenticatedAppSuporteRoute._addFileChildren(
+    AuthenticatedAppSuporteRouteChildren,
+  )
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppConfiguracoesRoute: typeof AuthenticatedAppConfiguracoesRoute
   AuthenticatedAppDiarioRoute: typeof AuthenticatedAppDiarioRoute
   AuthenticatedAppProgressoRoute: typeof AuthenticatedAppProgressoRoute
   AuthenticatedAppSosRoute: typeof AuthenticatedAppSosRoute
+  AuthenticatedAppSuporteRoute: typeof AuthenticatedAppSuporteRouteWithChildren
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
 }
 
@@ -376,6 +449,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppDiarioRoute: AuthenticatedAppDiarioRoute,
   AuthenticatedAppProgressoRoute: AuthenticatedAppProgressoRoute,
   AuthenticatedAppSosRoute: AuthenticatedAppSosRoute,
+  AuthenticatedAppSuporteRoute: AuthenticatedAppSuporteRouteWithChildren,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
 }
 
@@ -383,11 +457,13 @@ const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
 }
@@ -411,3 +487,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
