@@ -2,11 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Leaf, Loader2 } from "lucide-react";
+import { Leaf, Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 const searchSchema = z.object({
-  mode: z.enum(["login", "signup", "reset"]).optional(),
+  mode: z.enum(["login", "reset"]).optional(),
 });
 
 export const Route = createFileRoute("/login")({
@@ -15,15 +15,30 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+// Traduz mensagens comuns do Supabase Auth para PT-BR
+function translateAuthError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
+    return "Email ou senha incorretos. Verifique e tente novamente.";
+  if (m.includes("email not confirmed"))
+    return "Confirme seu email antes de entrar. Verifique sua caixa de entrada.";
+  if (m.includes("user not found"))
+    return "Não encontramos uma conta com esse email.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
+  if (m.includes("network")) return "Sem conexão. Verifique sua internet.";
+  if (m.includes("password")) return "Senha inválida. Tente novamente.";
+  return "Não foi possível entrar agora. Tente novamente em instantes.";
+}
+
 function LoginPage() {
   const nav = useNavigate();
   const { mode: initialMode } = Route.useSearch();
-  const [mode, setMode] = useState<"login" | "signup" | "reset">(initialMode ?? "login");
+  const [mode, setMode] = useState<"login" | "reset">(initialMode ?? "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,25 +47,10 @@ function LoginPage() {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        nav({ to: "/app" });
-      } else if (mode === "signup") {
-        const { data: signUp, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/app`,
-            data: { full_name: name },
-          },
-        });
-        if (error) throw error;
-        // Com auto-confirm habilitado, já vem com sessão. Vai direto para o onboarding.
-        if (signUp.session) {
-          toast.success("Conta criada. Vamos começar.");
-          nav({ to: "/onboarding" });
-        } else {
-          toast.success("Conta criada! Verifique seu email para confirmar.");
-        }
-
+        // Navegação dura para garantir que o estado de auth seja reidratado
+        // antes do gate do _authenticated rodar (evita race com router.invalidate()).
+        window.location.assign("/app");
+        return;
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/redefinir-senha`,
@@ -60,7 +60,7 @@ function LoginPage() {
         setMode("login");
       }
     } catch (err: any) {
-      toast.error(err?.message ?? "Erro ao entrar");
+      toast.error(translateAuthError(err?.message ?? ""));
     } finally {
       setLoading(false);
     }
@@ -80,27 +80,14 @@ function LoginPage() {
         <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
           <h1 className="text-2xl font-semibold tracking-tight">
             {mode === "login" && "Bem-vindo de volta."}
-            {mode === "signup" && "Comece sua jornada."}
             {mode === "reset" && "Recuperar acesso."}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "login" && "Continue de onde parou."}
-            {mode === "signup" && "Crie sua conta em segundos."}
             {mode === "reset" && "Enviaremos um link para você redefinir sua senha."}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            {mode === "signup" && (
-              <Field label="Nome">
-                <input
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="input"
-                  placeholder="Como podemos te chamar?"
-                />
-              </Field>
-            )}
             <Field label="Email">
               <input
                 required
@@ -111,17 +98,27 @@ function LoginPage() {
                 placeholder="voce@email.com"
               />
             </Field>
-            {mode !== "reset" && (
+            {mode === "login" && (
               <Field label="Senha">
-                <input
-                  required
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input"
-                  placeholder="••••••••"
-                  minLength={6}
-                />
+                <div className="relative">
+                  <input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="input pr-11"
+                    placeholder="••••••••"
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </Field>
             )}
 
@@ -131,23 +128,29 @@ function LoginPage() {
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {mode === "login" && "Entrar"}
-              {mode === "signup" && "Criar conta"}
               {mode === "reset" && "Enviar link"}
             </button>
           </form>
 
-          <div className="mt-6 flex flex-col items-center gap-2 text-sm text-muted-foreground">
+          <div className="mt-6 flex flex-col items-center gap-3 text-sm text-muted-foreground">
             {mode === "login" && (
               <>
-                <button onClick={() => setMode("signup")} className="hover:text-foreground">
-                  Não tem conta? <span className="text-primary">Cadastre-se</span>
-                </button>
                 <button onClick={() => setMode("reset")} className="hover:text-foreground">
                   Esqueci minha senha
                 </button>
+                <div className="my-2 h-px w-full bg-border" />
+                <p className="text-xs">Ainda não tem acesso à Lytra?</p>
+                <Link
+                  to="/"
+                  hash="precos"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-5 text-sm font-medium text-primary transition hover:bg-primary-soft"
+                >
+                  Adquirir agora
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </>
             )}
-            {mode !== "login" && (
+            {mode === "reset" && (
               <button onClick={() => setMode("login")} className="hover:text-foreground">
                 Voltar para login
               </button>
