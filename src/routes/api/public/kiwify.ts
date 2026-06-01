@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { detectPlanKey } from "@/lib/plans";
 
 /**
- * Webhook do Kiwify
+ * Webhook Kiwify
  * URL: /api/public/kiwify?token=KIWIFY_WEBHOOK_TOKEN
  *
- * Trata aprovação, reembolso, chargeback e cancelamento.
- * - Aprovação: cria conta + assinatura ativa + envia link de senha
- * - Refund/chargeback/cancel: desativa assinatura (bloqueia acesso)
+ * Eventos tratados:
+ *  - Aprovação / renovação    → ativa assinatura + cria usuário se necessário
+ *  - Reembolso / chargeback / cancelamento → suspende acesso
+ *  - Atraso (late / past_due) → marca status `past_due`
  */
 export const Route = createFileRoute("/api/public/kiwify")({
   server: {
@@ -34,7 +36,12 @@ export const Route = createFileRoute("/api/public/kiwify")({
         const orderId =
           body?.order_id || body?.Order?.order_id || body?.id || crypto.randomUUID();
         const rawStatus = String(
-          body?.order_status || body?.status || body?.Order?.order_status || "unknown",
+          body?.order_status ||
+            body?.status ||
+            body?.Order?.order_status ||
+            body?.webhook_event_type ||
+            body?.event ||
+            "unknown",
         ).toLowerCase();
         const email = (
           body?.Customer?.email ||
@@ -49,8 +56,8 @@ export const Route = createFileRoute("/api/public/kiwify")({
           null;
         const productId =
           body?.Product?.product_id || body?.product?.id || body?.product_id || null;
-        const plan =
-          body?.Product?.product_name || body?.plan || body?.subscription_plan || null;
+
+        const planKey = detectPlanKey(body);
 
         await supabaseAdmin.from("kiwify_orders").upsert(
           {
@@ -63,22 +70,36 @@ export const Route = createFileRoute("/api/public/kiwify")({
           { onConflict: "order_id" },
         );
 
-        const isApproval = ["paid", "approved", "completed", "order_approved"].includes(rawStatus);
+        const isApproval = [
+          "paid",
+          "approved",
+          "completed",
+          "order_approved",
+          "subscription_renewed",
+          "subscription_paid",
+          "renewed",
+        ].some((s) => rawStatus.includes(s));
+
+        const isLate = [
+          "late",
+          "past_due",
+          "subscription_late",
+          "subscription_overdue",
+          "subscription_renewal_failed",
+        ].some((s) => rawStatus.includes(s));
+
         const isCancel = [
-          "refunded",
           "refund",
           "chargeback",
           "canceled",
           "cancelled",
           "subscription_canceled",
-          "subscription_renewal_failed",
-        ].includes(rawStatus);
+        ].some((s) => rawStatus.includes(s));
 
         if (!email) {
           return Response.json({ ok: true, handled: false, reason: "no email" });
         }
 
-        // Localiza/cria usuário
         const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
         const found = existing?.users.find(
           (u) => (u.email || "").toLowerCase() === email,
@@ -103,22 +124,29 @@ export const Route = createFileRoute("/api/public/kiwify")({
           }
 
           if (userId) {
+            // expires_at: para lifetime, deixa null. Para mensal/trimestral, soma o período.
+            let expiresAt: string | null = null;
+            if (planKey === "monthly") {
+              expiresAt = new Date(Date.now() + 31 * 86400000).toISOString();
+            } else if (planKey === "quarterly") {
+              expiresAt = new Date(Date.now() + 93 * 86400000).toISOString();
+            }
+
             await supabaseAdmin.from("subscriptions").upsert(
               {
                 user_id: userId,
                 email,
                 status: "active",
-                plan,
+                plan: planKey,
                 order_id: String(orderId),
                 product_id: productId ? String(productId) : null,
+                started_at: new Date().toISOString(),
+                expires_at: expiresAt,
                 updated_at: new Date().toISOString(),
               },
               { onConflict: "user_id" },
             );
-            await supabaseAdmin
-              .from("profiles")
-              .update({ active: true })
-              .eq("id", userId);
+            await supabaseAdmin.from("profiles").update({ active: true }).eq("id", userId);
             await supabaseAdmin
               .from("kiwify_orders")
               .update({ created_user_id: userId })
@@ -132,24 +160,28 @@ export const Route = createFileRoute("/api/public/kiwify")({
             options: { redirectTo: `${siteUrl}/redefinir-senha` },
           });
 
-          return Response.json({ ok: true, action: "activated", userId });
+          return Response.json({ ok: true, action: "activated", userId, plan: planKey });
+        }
+
+        if (isLate && userId) {
+          await supabaseAdmin
+            .from("subscriptions")
+            .update({ status: "past_due", updated_at: new Date().toISOString() })
+            .eq("user_id", userId);
+          return Response.json({ ok: true, action: "past_due", userId });
         }
 
         if (isCancel && userId) {
-          const newStatus =
-            rawStatus.includes("refund")
-              ? "refunded"
-              : rawStatus.includes("chargeback")
-              ? "chargeback"
-              : "canceled";
+          const newStatus = rawStatus.includes("refund")
+            ? "refunded"
+            : rawStatus.includes("chargeback")
+            ? "chargeback"
+            : "canceled";
           await supabaseAdmin
             .from("subscriptions")
             .update({ status: newStatus, updated_at: new Date().toISOString() })
             .eq("user_id", userId);
-          await supabaseAdmin
-            .from("profiles")
-            .update({ active: false })
-            .eq("id", userId);
+          await supabaseAdmin.from("profiles").update({ active: false }).eq("id", userId);
           return Response.json({ ok: true, action: newStatus, userId });
         }
 

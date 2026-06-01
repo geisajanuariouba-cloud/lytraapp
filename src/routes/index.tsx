@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Brain,
@@ -9,6 +10,7 @@ import {
   ListChecks,
   Moon,
   Shield,
+  ShieldCheck,
   Smartphone,
   Sparkles,
   Star,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
+import { PLANS, formatBRL } from "@/lib/plans";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,12 +41,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Landing,
 });
-
-// URLs do checkout Kiwify — configure VITE_KIWIFY_CHECKOUT_MONTHLY_URL e VITE_KIWIFY_CHECKOUT_QUARTERLY_URL
-const KIWIFY_MONTHLY =
-  (import.meta.env.VITE_KIWIFY_CHECKOUT_MONTHLY_URL as string | undefined) ?? "#precos";
-const KIWIFY_QUARTERLY =
-  (import.meta.env.VITE_KIWIFY_CHECKOUT_QUARTERLY_URL as string | undefined) ?? "#precos";
 
 const steps = [
   { icon: Target, title: "Escolha seu hábito", desc: "O que você quer reduzir." },
@@ -69,48 +66,12 @@ const benefits = [
 ];
 
 const transformations = [
-  {
-    name: "Carolina M.",
-    role: "Estudante",
-    before: "8h por dia no celular",
-    after: "2h, foco real nos estudos",
-    days: 21,
-  },
-  {
-    name: "Rafael S.",
-    role: "Designer",
-    before: "Sem constância em nada",
-    after: "Rotina firme há 60 dias",
-    days: 60,
-  },
-  {
-    name: "Lucas P.",
-    role: "Engenheiro",
-    before: "Recaía toda semana",
-    after: "47 dias limpo — recorde",
-    days: 47,
-  },
-  {
-    name: "Mariana R.",
-    role: "Professora",
-    before: "Procrastinava tudo",
-    after: "Plano executado todo dia",
-    days: 30,
-  },
-  {
-    name: "André T.",
-    role: "Médico residente",
-    before: "Dormia às 3h em reels",
-    after: "Sono regulado às 23h",
-    days: 45,
-  },
-  {
-    name: "Júlia V.",
-    role: "Advogada",
-    before: "Sem atenção pra ler",
-    after: "Lê livros de novo",
-    days: 60,
-  },
+  { name: "Carolina M.", role: "Estudante", before: "8h por dia no celular", after: "2h, foco real nos estudos", days: 21 },
+  { name: "Rafael S.", role: "Designer", before: "Sem constância em nada", after: "Rotina firme há 60 dias", days: 60 },
+  { name: "Lucas P.", role: "Engenheiro", before: "Recaía toda semana", after: "47 dias limpo — recorde", days: 47 },
+  { name: "Mariana R.", role: "Professora", before: "Procrastinava tudo", after: "Plano executado todo dia", days: 30 },
+  { name: "André T.", role: "Médico residente", before: "Dormia às 3h em reels", after: "Sono regulado às 23h", days: 45 },
+  { name: "Júlia V.", role: "Advogada", before: "Sem atenção pra ler", after: "Lê livros de novo", days: 60 },
 ];
 
 const shortQuotes = [
@@ -121,15 +82,26 @@ const shortQuotes = [
 ];
 
 const faqs = [
-  { q: "Como funciono a Lytra?", a: "Você responde um quiz rápido, a IA cria seu plano, e todo dia recebe tarefas e reflexões que se adaptam ao seu progresso." },
+  { q: "Como funciona a Lytra?", a: "Você responde um quiz rápido, a IA cria seu plano, e todo dia recebe tarefas e reflexões que se adaptam ao seu progresso." },
   { q: "Substitui terapia?", a: "Não. É apoio comportamental e de rotina. Para quadros clínicos, procure um profissional." },
   { q: "Como recebo acesso depois de comprar?", a: "Acesso imediato. Após o pagamento, você recebe um email para criar sua senha e entrar." },
-  { q: "Posso cancelar?", a: "Sim, sem burocracia, direto no seu painel." },
+  { q: "E se eu não gostar?", a: "Garantia de 7 dias. Devolvemos 100% do valor, sem perguntas." },
   { q: "Funciona no celular?", a: "Sim. Mobile-first, funciona como app no navegador." },
   { q: "Em quanto tempo vejo resultado?", a: "Maioria nota mudança em 7 a 14 dias. Reconstrução profunda entre 30 e 90 dias." },
 ];
 
+function useTodayLabel() {
+  const [label, setLabel] = useState("");
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long" });
+    setLabel(fmt.format(new Date()));
+  }, []);
+  return label;
+}
+
 function Landing() {
+  const todayLabel = useTodayLabel();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -173,7 +145,7 @@ function Landing() {
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                Cancele quando quiser
+                Acesso imediato
               </div>
             </div>
           </div>
@@ -187,10 +159,8 @@ function Landing() {
                 loop
                 playsInline
                 preload="metadata"
-                poster=""
                 className="aspect-[4/3] w-full bg-primary-soft object-cover"
               >
-                {/* TODO: substituir pelo vídeo final do hero (mp4) */}
                 <source src="" type="video/mp4" />
               </video>
               <div className="pointer-events-none absolute inset-0 grid place-items-center bg-primary-soft/40">
@@ -218,10 +188,7 @@ function Landing() {
         </div>
         <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
-            <div
-              key={s.title}
-              className="group relative rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-card"
-            >
+            <div key={s.title} className="group relative rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-card">
               <div className="flex items-center justify-between">
                 <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary-soft text-primary">
                   <s.icon className="h-5 w-5" />
@@ -271,10 +238,7 @@ function Landing() {
         </div>
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map((b) => (
-            <div
-              key={b.title}
-              className="group rounded-3xl border border-border bg-card p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-card"
-            >
+            <div key={b.title} className="group rounded-3xl border border-border bg-card p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-card">
               <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-gradient text-primary-foreground shadow-glow">
                 <b.icon className="h-5 w-5" />
               </span>
@@ -285,7 +249,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* TRANSFORMAÇÕES — antes/depois */}
+      {/* TRANSFORMAÇÕES */}
       <section id="depoimentos" className="bg-soft py-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mx-auto max-w-2xl text-center">
@@ -305,10 +269,7 @@ function Landing() {
 
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {transformations.map((t) => (
-              <div
-                key={t.name}
-                className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-card"
-              >
+              <div key={t.name} className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-card">
                 <div className="grid grid-cols-2">
                   <div className="bg-muted p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Antes</p>
@@ -340,7 +301,6 @@ function Landing() {
             ))}
           </div>
 
-          {/* Citações curtas */}
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {shortQuotes.map((q) => (
               <div key={q.name} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
@@ -364,75 +324,108 @@ function Landing() {
           <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
             Escolha seu plano.
           </h2>
-          <p className="mt-4 text-base text-muted-foreground">
-            Menos que um delivery por mês. Acesso imediato após o pagamento.
-          </p>
-        </div>
-
-        <div className="mx-auto mt-14 grid max-w-3xl gap-6 md:grid-cols-2">
-          <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-            <p className="text-sm font-medium text-muted-foreground">Mensal</p>
-            <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-5xl font-semibold tracking-tight">R$19</span>
-              <span className="text-sm text-muted-foreground">/mês</span>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">Cancele quando quiser.</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {["Plataforma completa", "Plano diário com IA", "Diário emocional", "Modo emergência", "Suporte"].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <a
-              href={KIWIFY_MONTHLY}
-              className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full border border-border bg-card font-medium transition hover:bg-accent"
-            >
-              Adquirir mensal
-            </a>
-          </div>
-
-          <div className="relative rounded-3xl border-2 border-primary bg-card p-8 shadow-glow">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-gradient px-3 py-1 text-xs font-medium text-primary-foreground shadow-glow">
-              Mais escolhido
-            </span>
-            <p className="text-sm font-medium text-primary">Trimestral</p>
-            <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-5xl font-semibold tracking-tight">R$39</span>
-              <span className="text-sm text-muted-foreground">/trimestre</span>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Equivale a <span className="font-medium text-foreground">R$13/mês</span> — economia de 32%.
+          {todayLabel && (
+            <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft/40 px-4 py-1.5 text-xs font-medium text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              Condição promocional disponível hoje, {todayLabel}.
             </p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {[
-                "Tudo do mensal",
-                "Plano adaptativo avançado",
-                "Análise semanal com IA",
-                "Prioridade no modo emergência",
-                "Suporte humano",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <a
-              href={KIWIFY_QUARTERLY}
-              className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full bg-primary-gradient font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-            >
-              Começar jornada
-            </a>
-          </div>
+          )}
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+        <div className="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3">
+          {(["monthly", "quarterly", "lifetime"] as const).map((key) => {
+            const plan = PLANS[key];
+            const featured = key === "quarterly";
+            const economy = Math.round(((plan.oldPrice - plan.price) / plan.oldPrice) * 100);
+            return (
+              <div
+                key={key}
+                className={`relative flex flex-col rounded-3xl border bg-card p-8 ${
+                  featured
+                    ? "border-2 border-primary shadow-glow md:-translate-y-2"
+                    : "border-border shadow-soft"
+                }`}
+              >
+                {plan.badge && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-gradient px-3 py-1 text-xs font-medium text-primary-foreground shadow-glow">
+                    {plan.badge}
+                  </span>
+                )}
+                <p className="text-sm font-medium text-muted-foreground">{plan.label}</p>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatBRL(plan.oldPrice)}
+                  </span>
+                  <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-primary">
+                    -{economy}%
+                  </span>
+                </div>
+                <div className="mt-1 flex items-baseline gap-1">
+                  <span className="text-5xl font-semibold tracking-tight">
+                    {formatBRL(plan.price)}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{plan.period}</span>
+                </div>
+                {plan.perMonthHint && (
+                  <p className="mt-1 text-xs text-muted-foreground">{plan.perMonthHint}</p>
+                )}
+
+                <ul className="mt-6 space-y-2.5 text-sm">
+                  {plan.highlights.map((f) => (
+                    <li key={f} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {f}
+                    </li>
+                  ))}
+                  {plan.extra?.map((f) => (
+                    <li key={f} className="flex items-center gap-2 font-medium text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href={plan.checkoutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`mt-8 inline-flex h-11 w-full items-center justify-center rounded-full font-medium transition ${
+                    featured
+                      ? "bg-primary-gradient text-primary-foreground shadow-glow hover:opacity-95"
+                      : "border border-border bg-card hover:bg-accent"
+                  }`}
+                >
+                  Adquirir agora
+                </a>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-primary" /> Garantia de 7 dias</span>
-          <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Cancele em 1 clique</span>
           <span className="flex items-center gap-1.5"><Timer className="h-3.5 w-3.5 text-primary" /> Acesso imediato</span>
           <span className="flex items-center gap-1.5"><Moon className="h-3.5 w-3.5 text-primary" /> Pagamento seguro</span>
+        </div>
+      </section>
+
+      {/* GARANTIA */}
+      <section className="mx-auto max-w-4xl px-6 pb-24">
+        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-10 text-center shadow-card md:p-14">
+          <div className="absolute inset-0 -z-10 bg-hero-glow opacity-60" aria-hidden />
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary-gradient text-primary-foreground shadow-glow">
+            <ShieldCheck className="h-7 w-7" strokeWidth={2.2} />
+          </span>
+          <p className="mt-5 text-xs font-medium uppercase tracking-widest text-primary">
+            Garantia incondicional
+          </p>
+          <h3 className="mt-3 text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+            7 dias para sentir a Lytra por dentro.
+          </h3>
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground text-balance">
+            Experimente a Lytra por 7 dias. Se não fizer sentido para você, devolvemos
+            100% do valor. Sem burocracia.
+          </p>
         </div>
       </section>
 
@@ -447,10 +440,7 @@ function Landing() {
           </div>
           <div className="mt-12 space-y-3">
             {faqs.map((f) => (
-              <details
-                key={f.q}
-                className="group rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:shadow-card"
-              >
+              <details key={f.q} className="group rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:shadow-card">
                 <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
                   {f.q}
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-primary-soft text-primary transition group-open:rotate-45">
@@ -472,13 +462,13 @@ function Landing() {
             Sua próxima versão começa hoje.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
-            Garantia de 7 dias. Acesso imediato. Cancele quando quiser.
+            Garantia de 7 dias. Acesso imediato. Suporte humano.
           </p>
           <a
             href="#precos"
             className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
           >
-            Começar jornada
+            Adquirir agora
             <ArrowRight className="h-4 w-4" />
           </a>
         </div>
