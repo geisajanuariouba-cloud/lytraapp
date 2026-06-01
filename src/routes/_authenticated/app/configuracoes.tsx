@@ -4,12 +4,51 @@ import { useServerFn } from "@tanstack/react-start";
 import { getDashboard } from "@/lib/lytra.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { LogOut, Loader2, ExternalLink, User, Mail, Sparkles, ShieldCheck } from "lucide-react";
+import {
+  LogOut,
+  Loader2,
+  User,
+  Mail,
+  Sparkles,
+  ShieldCheck,
+  ArrowUpRight,
+} from "lucide-react";
 import { toast } from "sonner";
+import { PLANS, planLabel } from "@/lib/plans";
 
 export const Route = createFileRoute("/_authenticated/app/configuracoes")({
   component: ConfigPage,
 });
+
+function statusBadge(status?: string | null) {
+  switch (status) {
+    case "active":
+      return { label: "Ativa", className: "bg-primary-soft text-primary" };
+    case "past_due":
+      return { label: "Atrasada", className: "bg-amber-100 text-amber-700" };
+    case "canceled":
+      return { label: "Cancelada", className: "bg-muted text-muted-foreground" };
+    case "refunded":
+      return { label: "Reembolsada", className: "bg-muted text-muted-foreground" };
+    case "chargeback":
+      return { label: "Chargeback", className: "bg-destructive/10 text-destructive" };
+    default:
+      return { label: "Sem assinatura", className: "bg-muted text-muted-foreground" };
+  }
+}
+
+function formatDate(iso?: string | null) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
 
 function ConfigPage() {
   const nav = useNavigate();
@@ -50,6 +89,20 @@ function ConfigPage() {
     if (error) toast.error(error.message);
     else toast.success("Email de redefinição enviado.");
   }
+
+  const sub = data?.subscription;
+  const badge = statusBadge(sub?.status);
+  const currentPlanKey = sub?.plan as keyof typeof PLANS | undefined;
+
+  // Caminhos de upgrade disponíveis
+  const upgradeOptions: ("quarterly" | "lifetime")[] =
+    currentPlanKey === "monthly"
+      ? ["quarterly", "lifetime"]
+      : currentPlanKey === "quarterly"
+      ? ["lifetime"]
+      : currentPlanKey === "lifetime"
+      ? []
+      : ["monthly", "quarterly", "lifetime"] as any;
 
   return (
     <div className="md:pt-16">
@@ -104,24 +157,64 @@ function ConfigPage() {
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary">
           <Sparkles className="h-4 w-4" /> Assinatura
         </h2>
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-primary-soft/40 p-5">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Plano atual</p>
-            <p className="mt-1 text-lg font-semibold">Acesso ativo</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Para gerenciar, cancelar ou trocar de plano, acesse seu painel Kiwify.
-            </p>
+
+        <div className="mt-5 rounded-2xl bg-primary-soft/40 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                Plano atual
+              </p>
+              <p className="mt-1 text-lg font-semibold">{planLabel(sub?.plan)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Iniciada em {formatDate(sub?.started_at)}
+                {sub?.plan !== "lifetime" && sub?.expires_at && (
+                  <> · próxima cobrança em {formatDate(sub?.expires_at)}</>
+                )}
+                {sub?.plan === "lifetime" && <> · acesso permanente</>}
+              </p>
+            </div>
+            <span className={`rounded-full px-3 py-1 text-xs font-medium ${badge.className}`}>
+              {badge.label}
+            </span>
           </div>
-          <a
-            href="/#precos"
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow"
-          >
-            Melhorar plano <ExternalLink className="h-3.5 w-3.5" />
-          </a>
         </div>
+
+        {upgradeOptions.length > 0 && (
+          <div className="mt-5">
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+              Melhorar plano
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {upgradeOptions.map((k) => {
+                const p = PLANS[k];
+                return (
+                  <a
+                    key={k}
+                    href={p.checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between rounded-2xl border border-border bg-background p-4 transition hover:border-primary hover:bg-primary-soft/30"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold">{p.label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {p.price.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}{" "}
+                        {p.period}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground transition group-hover:text-primary" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* Segurança / sessão */}
+      {/* Sessão */}
       <section className="mt-6 rounded-3xl border border-border bg-card p-6 shadow-soft">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary">
           <ShieldCheck className="h-4 w-4" /> Sessão
