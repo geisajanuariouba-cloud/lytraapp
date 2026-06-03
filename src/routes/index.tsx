@@ -105,112 +105,38 @@ const ratingBreakdown = [
   { stars: 1, pct: 1 },
 ];
 
+import marianaImg from "@/assets/testimonials/mariana.jpg";
+import carlaImg from "@/assets/testimonials/carla.jpg";
+import igorImg from "@/assets/testimonials/igor.jpg";
+import rafaelImg from "@/assets/testimonials/rafael.jpg";
+import diegoImg from "@/assets/testimonials/diego.jpg";
+import julianaImg from "@/assets/testimonials/juliana.jpg";
+import lucasImg from "@/assets/testimonials/lucas.jpg";
+import fernandaImg from "@/assets/testimonials/fernanda.jpg";
+import marcosImg from "@/assets/testimonials/marcos.jpg";
+import anaImg from "@/assets/testimonials/ana.jpg";
+import gabrielImg from "@/assets/testimonials/gabriel.jpg";
+import nataliaImg from "@/assets/testimonials/natalia.jpg";
+import brunoImg from "@/assets/testimonials/bruno.jpg";
+import helenaImg from "@/assets/testimonials/helena.jpg";
+import pauloImg from "@/assets/testimonials/paulo.jpg";
+
 const testimonials = [
-  {
-    name: "Mariana S.",
-    age: 28,
-    role: "Designer",
-    text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com o Lytra, em 3 semanas reduzi pela metade. Pela primeira vez me senti no controle de novo.",
-    hue: 152,
-  },
-  {
-    name: "Carla M.",
-    age: 39,
-    role: "Empreendedora",
-    text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada.",
-    hue: 25,
-  },
-  {
-    name: "Igor F.",
-    age: 30,
-    role: "Arquiteto",
-    text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. A IA realmente aprende sobre você.",
-    hue: 200,
-  },
-  {
-    name: "Rafael T.",
-    age: 34,
-    role: "Engenheiro",
-    text: "Quando usei o modo emergência pela primeira vez, quase chorei. Parecia que alguém estava do meu lado de verdade. Isso não tem preço.",
-    hue: 280,
-  },
-  {
-    name: "Diego R.",
-    age: 29,
-    role: "Analista",
-    text: "Minha rotina estava completamente destruída. Em 30 dias de Lytra recuperei o sono, voltei a me exercitar e parei de rolar o feed até meia-noite.",
-    hue: 40,
-  },
-  {
-    name: "Juliana K.",
-    age: 24,
-    role: "Psicóloga em formação",
-    text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. O Lytra me deu estrutura sem julgamento. Recomendo para todos os meus colegas.",
-    hue: 320,
-  },
-  {
-    name: "Lucas M.",
-    age: 22,
-    role: "Estudante",
-    text: "Voltei a estudar de verdade. Antes ficava 20 minutos lendo e já queria checar o celular. Agora consigo 2 horas de foco seguido.",
-    hue: 350,
-  },
-  {
-    name: "Fernanda L.",
-    age: 25,
-    role: "Enfermeira",
-    text: "Trabalho em turnos e meu celular era minha válvula de escape. O Lytra me mostrou outras formas de descansar a mente que eu nunca tinha tentado.",
-    hue: 180,
-  },
-  {
-    name: "Marcos B.",
-    age: 42,
-    role: "Médico",
-    text: "Achei que era velho demais para mudar hábitos digitais. A Lytra me provou o contrário. Simples, sem pressão, com resultados reais em menos de um mês.",
-    hue: 240,
-  },
-  {
-    name: "Ana P.",
-    age: 31,
-    role: "Professora",
-    text: "O diário emocional me ajudou a entender por que eu procrastinava. Era ansiedade disfarçada de preguiça. Nunca tinha parado para ver isso.",
-    hue: 60,
-  },
-  {
-    name: "Gabriel O.",
-    age: 33,
-    role: "Advogado",
-    text: "Reduzi 4 horas diárias de tela em duas semanas. Minha produtividade no trabalho aumentou mais do que em qualquer curso ou método que já tentei.",
-    hue: 130,
-  },
-  {
-    name: "Natália S.",
-    age: 21,
-    role: "Universitária",
-    text: "Parei de ficar até as 3 da manhã no TikTok. Minha nota na faculdade subiu, minha ansiedade baixou. Melhor R$19 que já gastei na vida.",
-    hue: 300,
-  },
-  {
-    name: "Bruno C.",
-    age: 26,
-    role: "Freelancer",
-    text: "Recuperei minha capacidade de ler um livro inteiro sem interrupções. Parece simples, mas pra mim foi uma conquista enorme.",
-    hue: 10,
-  },
-  {
-    name: "Helena V.",
-    age: 27,
-    role: "Nutricionista",
-    text: "Comecei a dormir melhor depois da primeira semana. O check-in noturno me ajuda a fechar o dia de forma saudável em vez de scrollar até apagar.",
-    hue: 95,
-  },
-  {
-    name: "Paulo E.",
-    age: 37,
-    role: "Professor universitário",
-    text: "A parte do plano personalizado me surpreendeu. Não é genérico. A IA percebe quando estou com dificuldade e ajusta. Sinto que a plataforma realmente se importa.",
-    hue: 260,
-  },
+  { name: "Mariana S.", age: 28, role: "Designer", img: marianaImg, text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com o Lytra, em 3 semanas reduzi pela metade. Senti que recuperei tempo para o que importa." },
+  { name: "Carla M.", age: 39, role: "Empreendedora", img: carlaImg, text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar." },
+  { name: "Igor F.", age: 30, role: "Arquiteto", img: igorImg, text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. A IA realmente aprende sobre você." },
+  { name: "Rafael T.", age: 34, role: "Engenheiro", img: rafaelImg, text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real." },
+  { name: "Diego R.", age: 29, role: "Analista", img: diegoImg, text: "Minha rotina estava completamente desorganizada. Em 30 dias de Lytra recuperei o sono, voltei a me exercitar e parei de rolar o feed até meia-noite." },
+  { name: "Juliana K.", age: 24, role: "Psicóloga em formação", img: julianaImg, text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. O Lytra me deu estrutura sem julgamento. Indico para meus colegas." },
+  { name: "Lucas M.", age: 22, role: "Estudante", img: lucasImg, text: "Voltei a estudar de verdade. Antes ficava 20 minutos lendo e já queria checar o celular. Agora consigo 2 horas de foco seguido." },
+  { name: "Fernanda L.", age: 25, role: "Enfermeira", img: fernandaImg, text: "Trabalho em turnos e meu celular era minha válvula de escape. O Lytra me mostrou outras formas de descansar a mente que eu nunca tinha tentado." },
+  { name: "Marcos B.", age: 42, role: "Médico", img: marcosImg, text: "Achei que era tarde demais para mudar hábitos digitais. A Lytra me provou o contrário. Simples, sem pressão, com resultados perceptíveis em menos de um mês." },
+  { name: "Ana P.", age: 31, role: "Professora", img: anaImg, text: "O diário emocional me ajudou a entender padrões da minha rotina que eu não enxergava. Comecei a me organizar melhor sem cobrar perfeição." },
+  { name: "Gabriel O.", age: 33, role: "Advogado", img: gabrielImg, text: "Reduzi cerca de 4 horas diárias de tela em duas semanas. Minha capacidade de concentração no trabalho melhorou bastante desde então." },
+  { name: "Natália S.", age: 21, role: "Universitária", img: nataliaImg, text: "Parei de ficar até as 3 da manhã rolando vídeo curto. Minha rotina de estudo voltou ao eixo e minha cabeça parece mais leve." },
+  { name: "Bruno C.", age: 26, role: "Freelancer", img: brunoImg, text: "Recuperei a capacidade de ler um livro inteiro sem interrupções. Parece simples, mas pra mim foi uma conquista enorme." },
+  { name: "Helena V.", age: 27, role: "Nutricionista", img: helenaImg, text: "Comecei a dormir melhor depois da primeira semana. O check-in noturno me ajuda a fechar o dia em vez de scrollar até apagar." },
+  { name: "Paulo E.", age: 37, role: "Professor universitário", img: pauloImg, text: "O plano personalizado me surpreendeu. Não é genérico. A IA percebe quando estou com dificuldade e ajusta. Senti um cuidado real." },
 ];
 
 const faqs = [
@@ -789,22 +715,15 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Avatar({ name, hue }: { name: string; hue: number }) {
-  const initials = name
-    .split(" ")
-    .map((s) => s[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-  const bg = `oklch(0.88 0.06 ${hue})`;
-  const fg = `oklch(0.32 0.10 ${hue})`;
+function Avatar({ name, img }: { name: string; img: string }) {
   return (
-    <span
-      className="grid h-10 w-10 place-items-center rounded-full text-xs font-semibold"
-      style={{ background: bg, color: fg }}
-      aria-hidden
-    >
-      {initials}
-    </span>
+    <img
+      src={img}
+      alt={`Foto de ${name}`}
+      loading="lazy"
+      width={40}
+      height={40}
+      className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-border"
+    />
   );
 }
