@@ -42,14 +42,34 @@ function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Navegação dura para garantir que o estado de auth seja reidratado
-        // antes do gate do _authenticated rodar (evita race com router.invalidate()).
-        window.location.assign("/app");
+        if (!data.session) throw new Error("session_missing");
+
+        // Decide destino com base em profile + subscription
+        const userId = data.user.id;
+        const [{ data: profile }, { data: sub }] = await Promise.all([
+          supabase.from("profiles").select("onboarded, active").eq("id", userId).maybeSingle(),
+          supabase.from("subscriptions").select("status").eq("user_id", userId).maybeSingle(),
+        ]);
+
+        const subStatus = sub?.status ?? "inactive";
+        const hasActive = subStatus === "active";
+
+        toast.success("Bem-vindo de volta!");
+
+        if (!profile?.onboarded && hasActive) {
+          await nav({ to: "/onboarding" });
+        } else if (!hasActive) {
+          // Acesso permitido só para conta/suporte — o gate em /app cuida da UI
+          await nav({ to: "/app/configuracoes" });
+        } else {
+          await nav({ to: "/app" });
+        }
         return;
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -60,10 +80,12 @@ function LoginPage() {
         setMode("login");
       }
     } catch (err: any) {
+      console.error("[login] erro:", err);
       toast.error(translateAuthError(err?.message ?? ""));
-    } finally {
       setLoading(false);
+      return;
     }
+    setLoading(false);
   }
 
   return (
