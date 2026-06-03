@@ -102,6 +102,12 @@ function DiarioPage() {
               {new Date(entry.created_at).toLocaleString("pt-BR")}
             </p>
             <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed">{entry.content}</p>
+            {entry._pending && !entry.ai_response && (
+              <div className="mt-4 flex items-center gap-2 rounded-2xl bg-primary-soft/40 p-4 text-xs text-primary">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Lytra está pensando...
+              </div>
+            )}
             {entry.ai_response && (
               <div className="mt-4 rounded-2xl bg-primary-soft/50 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">Lytra</p>
