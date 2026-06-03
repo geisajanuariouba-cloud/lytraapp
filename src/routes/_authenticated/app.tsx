@@ -8,10 +8,6 @@ import { getDashboard } from "@/lib/lytra.functions";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/app")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/login" });
-  },
   component: AppLayout,
 });
 
