@@ -513,7 +513,7 @@ function Landing() {
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-foreground/90">"{t.text}"</p>
                 <div className="mt-5 flex items-center gap-3">
-                  <Avatar name={t.name} hue={t.hue} />
+                  <Avatar name={t.name} img={t.img} />
                   <div>
                     <p className="text-sm font-semibold leading-tight">
                       {t.name}, {t.age}
