@@ -18,6 +18,8 @@ export const Route = createFileRoute("/login")({
 // Traduz mensagens comuns do Supabase Auth para PT-BR
 function translateAuthError(message: string): string {
   const m = message.toLowerCase();
+  if (m.includes("session_missing"))
+    return "Não foi possível iniciar sua sessão. Tente novamente.";
   if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
     return "Email ou senha incorretos. Verifique e tente novamente.";
   if (m.includes("email not confirmed"))
@@ -26,7 +28,8 @@ function translateAuthError(message: string): string {
     return "Não encontramos uma conta com esse email.";
   if (m.includes("rate limit") || m.includes("too many"))
     return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
-  if (m.includes("network")) return "Sem conexão. Verifique sua internet.";
+  if (m.includes("network") || m.includes("fetch"))
+    return "Sem conexão. Verifique sua internet e tente novamente.";
   if (m.includes("password")) return "Senha inválida. Tente novamente.";
   return "Não foi possível entrar agora. Tente novamente em instantes.";
 }
@@ -42,14 +45,34 @@ function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Navegação dura para garantir que o estado de auth seja reidratado
-        // antes do gate do _authenticated rodar (evita race com router.invalidate()).
-        window.location.assign("/app");
+        if (!data.session) throw new Error("session_missing");
+
+        // Decide destino com base em profile + subscription
+        const userId = data.user.id;
+        const [{ data: profile }, { data: sub }] = await Promise.all([
+          supabase.from("profiles").select("onboarded, active").eq("id", userId).maybeSingle(),
+          supabase.from("subscriptions").select("status").eq("user_id", userId).maybeSingle(),
+        ]);
+
+        const subStatus = sub?.status ?? "inactive";
+        const hasActive = subStatus === "active";
+
+        toast.success("Bem-vindo de volta!");
+
+        if (!profile?.onboarded && hasActive) {
+          await nav({ to: "/onboarding" });
+        } else if (!hasActive) {
+          // Acesso permitido só para conta/suporte — o gate em /app cuida da UI
+          await nav({ to: "/app/configuracoes" });
+        } else {
+          await nav({ to: "/app" });
+        }
         return;
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -60,10 +83,12 @@ function LoginPage() {
         setMode("login");
       }
     } catch (err: any) {
+      console.error("[login] erro:", err);
       toast.error(translateAuthError(err?.message ?? ""));
-    } finally {
       setLoading(false);
+      return;
     }
+    setLoading(false);
   }
 
   return (
@@ -127,8 +152,8 @@ function LoginPage() {
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary-gradient font-medium text-primary-foreground shadow-glow transition hover:opacity-95 disabled:opacity-60"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {mode === "login" && "Entrar"}
-              {mode === "reset" && "Enviar link"}
+              {mode === "login" && (loading ? "Entrando..." : "Entrar")}
+              {mode === "reset" && (loading ? "Enviando..." : "Enviar link")}
             </button>
           </form>
 
