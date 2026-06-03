@@ -18,6 +18,8 @@ export const Route = createFileRoute("/login")({
 // Traduz mensagens comuns do Supabase Auth para PT-BR
 function translateAuthError(message: string): string {
   const m = message.toLowerCase();
+  if (m.includes("session_missing"))
+    return "Não foi possível iniciar sua sessão. Tente novamente.";
   if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
     return "Email ou senha incorretos. Verifique e tente novamente.";
   if (m.includes("email not confirmed"))
@@ -26,7 +28,8 @@ function translateAuthError(message: string): string {
     return "Não encontramos uma conta com esse email.";
   if (m.includes("rate limit") || m.includes("too many"))
     return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
-  if (m.includes("network")) return "Sem conexão. Verifique sua internet.";
+  if (m.includes("network") || m.includes("fetch"))
+    return "Sem conexão. Verifique sua internet e tente novamente.";
   if (m.includes("password")) return "Senha inválida. Tente novamente.";
   return "Não foi possível entrar agora. Tente novamente em instantes.";
 }
