@@ -149,8 +149,8 @@ function LoginPage() {
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary-gradient font-medium text-primary-foreground shadow-glow transition hover:opacity-95 disabled:opacity-60"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {mode === "login" && "Entrar"}
-              {mode === "reset" && "Enviar link"}
+              {mode === "login" && (loading ? "Entrando..." : "Entrar")}
+              {mode === "reset" && (loading ? "Enviando..." : "Enviar link")}
             </button>
           </form>
 
