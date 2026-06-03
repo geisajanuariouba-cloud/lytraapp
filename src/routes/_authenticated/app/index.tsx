@@ -37,14 +37,52 @@ function HomePage() {
 
   const [regenerating, setRegenerating] = useState(false);
 
+  // OPTIMISTIC: atualiza a UI imediatamente, sincroniza com o servidor em background.
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["dashboard"] }),
+    onMutate: async (vars) => {
+      await qc.cancelQueries({ queryKey: ["dashboard"] });
+      const prev = qc.getQueryData<any>(["dashboard"]);
+      if (prev) {
+        const tasks = prev.tasks.map((t: any) =>
+          t.id === vars.id
+            ? { ...t, completed: vars.completed, completed_at: vars.completed ? new Date().toISOString() : null }
+            : t,
+        );
+        // Atualiza XP / streak otimisticamente também (visual apenas)
+        let progress = prev.progress;
+        if (vars.completed && progress) {
+          const xp = (progress.xp ?? 0) + 10;
+          progress = { ...progress, xp, level: Math.max(1, Math.floor(xp / 100) + 1) };
+        }
+        qc.setQueryData(["dashboard"], { ...prev, tasks, progress });
+      }
+      return { prev };
+    },
+    onError: (e: any, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["dashboard"], ctx.prev);
+      toast.error(e?.message ?? "Não foi possível atualizar a tarefa.");
+    },
+    // Sem invalidate forçado — o staleTime cuida do refresh; evita refetch pesado.
   });
 
   const moodM = useMutation({
     mutationFn: (mood: number) => moodFn({ data: { mood } }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["dashboard"] }),
+    onMutate: async (mood) => {
+      await qc.cancelQueries({ queryKey: ["dashboard"] });
+      const prev = qc.getQueryData<any>(["dashboard"]);
+      if (prev) {
+        qc.setQueryData(["dashboard"], {
+          ...prev,
+          todayMood: { ...(prev.todayMood ?? {}), mood },
+        });
+      }
+      return { prev };
+    },
+    onError: (e: any, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["dashboard"], ctx.prev);
+      toast.error(e?.message ?? "Não foi possível salvar o humor.");
+    },
   });
 
   if (isLoading) {
