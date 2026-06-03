@@ -21,13 +21,43 @@ function DiarioPage() {
     queryFn: () => fetchDash(),
   });
 
+  // OPTIMISTIC: insere a entrada imediatamente com placeholder enquanto a IA responde.
   const mut = useMutation({
     mutationFn: (content: string) => submit({ data: { content } }),
-    onSuccess: () => {
+    onMutate: async (content) => {
+      await qc.cancelQueries({ queryKey: ["dashboard"] });
+      const prev = qc.getQueryData<any>(["dashboard"]);
+      const tempId = `temp-${Date.now()}`;
+      if (prev) {
+        const optimistic = {
+          id: tempId,
+          content,
+          ai_response: null,
+          created_at: new Date().toISOString(),
+          mood: null,
+          _pending: true,
+        };
+        qc.setQueryData(["dashboard"], {
+          ...prev,
+          journal: [optimistic, ...prev.journal],
+        });
+      }
       setText("");
-      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      return { prev, tempId };
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erro"),
+    onSuccess: (row, _v, ctx) => {
+      const cur = qc.getQueryData<any>(["dashboard"]);
+      if (cur && ctx?.tempId) {
+        qc.setQueryData(["dashboard"], {
+          ...cur,
+          journal: cur.journal.map((j: any) => (j.id === ctx.tempId ? row : j)),
+        });
+      }
+    },
+    onError: (e: any, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["dashboard"], ctx.prev);
+      toast.error(e?.message ?? "Não foi possível salvar.");
+    },
   });
 
   return (
