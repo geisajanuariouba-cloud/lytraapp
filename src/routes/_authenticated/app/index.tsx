@@ -6,10 +6,11 @@ import {
   toggleTask,
   submitMood,
   regenerateTodayTasks,
+  appendMoreTasks,
 } from "@/lib/lytra.functions";
-import { CheckCircle2, Circle, Flame, RefreshCw, Sparkles, Trophy } from "lucide-react";
+import { CheckCircle2, Circle, Flame, RefreshCw, Sparkles, Trophy, Volume2, Square } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: HomePage,
@@ -29,6 +30,7 @@ function HomePage() {
   const toggleFn = useServerFn(toggleTask);
   const moodFn = useServerFn(submitMood);
   const regenFn = useServerFn(regenerateTodayTasks);
+  const appendFn = useServerFn(appendMoreTasks);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
