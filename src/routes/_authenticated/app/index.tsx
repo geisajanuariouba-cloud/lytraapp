@@ -6,10 +6,11 @@ import {
   toggleTask,
   submitMood,
   regenerateTodayTasks,
+  appendMoreTasks,
 } from "@/lib/lytra.functions";
-import { CheckCircle2, Circle, Flame, RefreshCw, Sparkles, Trophy } from "lucide-react";
+import { CheckCircle2, Circle, Flame, RefreshCw, Sparkles, Trophy, Volume2, Square } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: HomePage,
@@ -29,6 +30,7 @@ function HomePage() {
   const toggleFn = useServerFn(toggleTask);
   const moodFn = useServerFn(submitMood);
   const regenFn = useServerFn(regenerateTodayTasks);
+  const appendFn = useServerFn(appendMoreTasks);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
@@ -103,6 +105,27 @@ function HomePage() {
   const progress = data.progress;
   const xpPct = ((progress?.xp ?? 0) % 100);
   const completedToday = data.tasks.filter((t: any) => t.completed).length;
+  const allDone = data.tasks.length > 0 && completedToday === data.tasks.length;
+
+  // Auto-gera mais 4 tarefas quando todas forem concluídas (uma vez por bloco).
+  const appendedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!allDone) return;
+    const sig = data.tasks.map((t: any) => t.id).join(",");
+    if (appendedRef.current === sig) return;
+    appendedRef.current = sig;
+    (async () => {
+      try {
+        const res = await appendFn();
+        if (res?.added) {
+          qc.invalidateQueries({ queryKey: ["dashboard"] });
+          toast.success("4 novas tarefas adicionadas. Continue.");
+        }
+      } catch {
+        /* silent */
+      }
+    })();
+  }, [allDone, data.tasks, appendFn, qc]);
 
   async function handleRegenerate() {
     setRegenerating(true);
@@ -168,7 +191,10 @@ function HomePage() {
       {/* Plano pessoal */}
       {data.onboarding?.ai_plan && (
         <section className="mt-6 rounded-3xl border border-border bg-soft p-6 shadow-soft">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Seu plano</h2>
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Seu plano</h2>
+            <PlanAudioButton text={data.onboarding.ai_plan} />
+          </div>
           <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">
             {data.onboarding.ai_plan}
           </p>
@@ -224,6 +250,82 @@ function HomePage() {
           ))}
         </ul>
       </section>
+    </div>
+  );
+}
+
+/**
+ * Botão "Ouvir meu plano" — usa SpeechSynthesis nativa do navegador.
+ * Voz pt-BR, com alternância masculina/feminina quando disponível.
+ */
+function PlanAudioButton({ text }: { text: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [voiceGender, setVoiceGender] = useState<"f" | "m">("f");
+  const [supported, setSupported] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setSupported(false);
+    }
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  function pickVoice(gender: "f" | "m"): SpeechSynthesisVoice | null {
+    const voices = window.speechSynthesis.getVoices();
+    const ptBR = voices.filter((v) => /pt[-_]br/i.test(v.lang) || /pt[-_]pt/i.test(v.lang));
+    if (ptBR.length === 0) return null;
+    // Heurística por nome
+    const femaleHint = /(feminin|female|luciana|raquel|maria|joana|monica|helena|camila|fernanda)/i;
+    const maleHint = /(masculin|male|felipe|daniel|joão|joao|ricardo|paulo|lucas|carlos)/i;
+    const match = ptBR.find((v) =>
+      gender === "f" ? femaleHint.test(v.name) : maleHint.test(v.name),
+    );
+    return match ?? ptBR[0];
+  }
+
+  function handlePlay() {
+    if (!supported) return;
+    window.speechSynthesis.cancel();
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "pt-BR";
+    u.rate = 0.95;
+    u.pitch = voiceGender === "f" ? 1.05 : 0.95;
+    const v = pickVoice(voiceGender);
+    if (v) u.voice = v;
+    u.onend = () => setPlaying(false);
+    u.onerror = () => setPlaying(false);
+    window.speechSynthesis.speak(u);
+    setPlaying(true);
+  }
+
+  if (!supported) return null;
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={() => setVoiceGender((g) => (g === "f" ? "m" : "f"))}
+        className="rounded-full border border-border bg-card px-2.5 py-1 text-[10px] font-medium text-muted-foreground transition hover:text-foreground"
+        aria-label="Alternar voz"
+      >
+        Voz: {voiceGender === "f" ? "feminina" : "masculina"}
+      </button>
+      <button
+        type="button"
+        onClick={handlePlay}
+        className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary-gradient px-3 text-[11px] font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
+      >
+        {playing ? <Square className="h-3 w-3 fill-current" /> : <Volume2 className="h-3.5 w-3.5" />}
+        {playing ? "Parar" : "Ouvir meu plano"}
+      </button>
     </div>
   );
 }

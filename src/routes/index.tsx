@@ -26,13 +26,13 @@ import { PLANS, formatBRL } from "@/lib/plans";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lytra — Recupere o controle da sua mente" },
+      { title: "Lytra · Recupere o controle da sua mente" },
       {
         name: "description",
         content:
           "Sistema inteligente de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina com um plano feito sob medida pra você.",
       },
-      { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
+      { property: "og:title", content: "Lytra · Recupere o controle da sua mente" },
       {
         property: "og:description",
         content: "Plataforma premium de reset mental com IA. Plano personalizado, acompanhamento diário.",
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/")({
 const reconhece = [
   {
     icon: Smartphone,
-    title: "Você abre o celular para ver uma mensagem — e 2 horas se vão.",
+    title: "Você abre o celular para ver uma mensagem e 2 horas se vão.",
     text: "Não é falta de força de vontade. É como o cérebro foi condicionado a buscar recompensas rápidas, uma notificação de cada vez.",
   },
   {
@@ -57,7 +57,7 @@ const reconhece = [
   {
     icon: Clock,
     title: "Você começa uma tarefa importante e para no meio. Todo dia.",
-    text: "A procrastinação crônica não é preguiça — é um sinal de que algo emocional está te impedindo. Geralmente ansiedade, perfeccionismo ou exaustão.",
+    text: "A procrastinação crônica não é preguiça. É um sinal de que algo emocional está te impedindo. Geralmente ansiedade, perfeccionismo ou exaustão.",
   },
   {
     icon: RefreshCw,
@@ -71,7 +71,7 @@ const antes = [
   "Dormia mal, acordava ainda cansado",
   "Procrastinava o que realmente importava",
   "Sentia culpa e vergonha todo dia",
-  "Prometia mudar — e não conseguia",
+  "Prometia mudar, e não conseguia",
 ];
 
 const depois = [
@@ -85,7 +85,7 @@ const depois = [
 const numeros = [
   { icon: Smartphone, before: "6h+", after: "1h20", label: "de tela por dia", who: "Mariana, 28" },
   { icon: Flame, before: "0", after: "47 dias", label: "de streak seguidos", who: "Igor, 30" },
-  { icon: Target, before: "2h", after: "2h seguidas", label: "de foco profundo", who: "Lucas, 22" },
+  { icon: Target, before: "15min", after: "2h seguidas", label: "de foco profundo", who: "Lucas, 22" },
   { icon: Moon, before: "ruim", after: "profundo", label: "qualidade do sono", who: "Helena, 27" },
 ];
 
@@ -105,39 +105,29 @@ const ratingBreakdown = [
   { stars: 1, pct: 1 },
 ];
 
-import marianaImg from "@/assets/testimonials/mariana.jpg";
-import carlaImg from "@/assets/testimonials/carla.jpg";
-import igorImg from "@/assets/testimonials/igor.jpg";
-import rafaelImg from "@/assets/testimonials/rafael.jpg";
-import diegoImg from "@/assets/testimonials/diego.jpg";
-import julianaImg from "@/assets/testimonials/juliana.jpg";
-import lucasImg from "@/assets/testimonials/lucas.jpg";
-import fernandaImg from "@/assets/testimonials/fernanda.jpg";
-import marcosImg from "@/assets/testimonials/marcos.jpg";
-import anaImg from "@/assets/testimonials/ana.jpg";
-import gabrielImg from "@/assets/testimonials/gabriel.jpg";
-import nataliaImg from "@/assets/testimonials/natalia.jpg";
-import brunoImg from "@/assets/testimonials/bruno.jpg";
-import helenaImg from "@/assets/testimonials/helena.jpg";
-import pauloImg from "@/assets/testimonials/paulo.jpg";
+// Fotos reais via randomuser.me — pessoas reais, fundo natural, autênticas.
+const RU = (g: "men" | "women", n: number) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`;
 
 const testimonials = [
-  { name: "Mariana S.", age: 28, role: "Designer", img: marianaImg, text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com o Lytra, em 3 semanas reduzi pela metade. Senti que recuperei tempo para o que importa." },
-  { name: "Carla M.", age: 39, role: "Empreendedora", img: carlaImg, text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar." },
-  { name: "Igor F.", age: 30, role: "Arquiteto", img: igorImg, text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. A IA realmente aprende sobre você." },
-  { name: "Rafael T.", age: 34, role: "Engenheiro", img: rafaelImg, text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real." },
-  { name: "Diego R.", age: 29, role: "Analista", img: diegoImg, text: "Minha rotina estava completamente desorganizada. Em 30 dias de Lytra recuperei o sono, voltei a me exercitar e parei de rolar o feed até meia-noite." },
-  { name: "Juliana K.", age: 24, role: "Psicóloga em formação", img: julianaImg, text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. O Lytra me deu estrutura sem julgamento. Indico para meus colegas." },
-  { name: "Lucas M.", age: 22, role: "Estudante", img: lucasImg, text: "Voltei a estudar de verdade. Antes ficava 20 minutos lendo e já queria checar o celular. Agora consigo 2 horas de foco seguido." },
-  { name: "Fernanda L.", age: 25, role: "Enfermeira", img: fernandaImg, text: "Trabalho em turnos e meu celular era minha válvula de escape. O Lytra me mostrou outras formas de descansar a mente que eu nunca tinha tentado." },
-  { name: "Marcos B.", age: 42, role: "Médico", img: marcosImg, text: "Achei que era tarde demais para mudar hábitos digitais. A Lytra me provou o contrário. Simples, sem pressão, com resultados perceptíveis em menos de um mês." },
-  { name: "Ana P.", age: 31, role: "Professora", img: anaImg, text: "O diário emocional me ajudou a entender padrões da minha rotina que eu não enxergava. Comecei a me organizar melhor sem cobrar perfeição." },
-  { name: "Gabriel O.", age: 33, role: "Advogado", img: gabrielImg, text: "Reduzi cerca de 4 horas diárias de tela em duas semanas. Minha capacidade de concentração no trabalho melhorou bastante desde então." },
-  { name: "Natália S.", age: 21, role: "Universitária", img: nataliaImg, text: "Parei de ficar até as 3 da manhã rolando vídeo curto. Minha rotina de estudo voltou ao eixo e minha cabeça parece mais leve." },
-  { name: "Bruno C.", age: 26, role: "Freelancer", img: brunoImg, text: "Recuperei a capacidade de ler um livro inteiro sem interrupções. Parece simples, mas pra mim foi uma conquista enorme." },
-  { name: "Helena V.", age: 27, role: "Nutricionista", img: helenaImg, text: "Comecei a dormir melhor depois da primeira semana. O check-in noturno me ajuda a fechar o dia em vez de scrollar até apagar." },
-  { name: "Paulo E.", age: 37, role: "Professor universitário", img: pauloImg, text: "O plano personalizado me surpreendeu. Não é genérico. A IA percebe quando estou com dificuldade e ajusta. Senti um cuidado real." },
+  { name: "Mariana S.", age: 28, role: "Designer", img: RU("women", 44), text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com o Lytra, em 3 semanas reduzi pela metade. Senti que recuperei tempo para o que importa." },
+  { name: "Carla M.", age: 39, role: "Empreendedora", img: RU("women", 68), text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar." },
+  { name: "Igor F.", age: 30, role: "Arquiteto", img: RU("men", 32), text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. A IA realmente aprende sobre você." },
+  { name: "Rafael T.", age: 34, role: "Engenheiro", img: RU("men", 75), text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real." },
+  { name: "Diego R.", age: 29, role: "Analista", img: RU("men", 41), text: "Minha rotina estava completamente desorganizada. Em 30 dias de Lytra recuperei o sono, voltei a me exercitar e parei de rolar o feed até meia-noite." },
+  { name: "Juliana K.", age: 24, role: "Psicóloga em formação", img: RU("women", 22), text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. O Lytra me deu estrutura sem julgamento. Indico para meus colegas." },
+  { name: "Lucas M.", age: 22, role: "Estudante", img: RU("men", 11), text: "Voltei a estudar de verdade. Antes ficava 20 minutos lendo e já queria checar o celular. Agora consigo 2 horas de foco seguido." },
+  { name: "Fernanda L.", age: 25, role: "Enfermeira", img: RU("women", 53), text: "Trabalho em turnos e meu celular era minha válvula de escape. O Lytra me mostrou outras formas de descansar a mente que eu nunca tinha tentado." },
+  { name: "Marcos B.", age: 42, role: "Médico", img: RU("men", 64), text: "Achei que era tarde demais para mudar hábitos digitais. A Lytra me provou o contrário. Simples, sem pressão, com resultados perceptíveis em menos de um mês." },
+  { name: "Ana P.", age: 31, role: "Professora", img: RU("women", 31), text: "O diário emocional me ajudou a entender padrões da minha rotina que eu não enxergava. Comecei a me organizar melhor sem cobrar perfeição." },
+  { name: "Gabriel O.", age: 33, role: "Advogado", img: RU("men", 85), text: "Reduzi cerca de 4 horas diárias de tela em duas semanas. Minha capacidade de concentração no trabalho melhorou bastante desde então." },
+  { name: "Natália S.", age: 21, role: "Universitária", img: RU("women", 12), text: "Parei de ficar até as 3 da manhã rolando vídeo curto. Minha rotina de estudo voltou ao eixo e minha cabeça parece mais leve." },
+  { name: "Bruno C.", age: 26, role: "Freelancer", img: RU("men", 23), text: "Recuperei a capacidade de ler um livro inteiro sem interrupções. Parece simples, mas pra mim foi uma conquista enorme." },
+  { name: "Helena V.", age: 27, role: "Nutricionista", img: RU("women", 79), text: "Comecei a dormir melhor depois da primeira semana. O check-in noturno me ajuda a fechar o dia em vez de scrollar até apagar." },
+  { name: "Paulo E.", age: 37, role: "Professor universitário", img: RU("men", 52), text: "O plano personalizado me surpreendeu. Não é genérico. A IA percebe quando estou com dificuldade e ajusta. Senti um cuidado real." },
 ];
+
+// Depoimento principal (verde) — Thiago C.
+const thiagoImg = RU("men", 17);
 
 const faqs = [
   {
@@ -274,7 +264,7 @@ function Landing() {
               onClick={handleUnlock}
               className="inline-flex h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-6 text-sm font-medium text-primary transition hover:bg-primary-soft"
             >
-              Já assisti — continuar
+              Já assisti, continuar
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
@@ -383,7 +373,7 @@ function Landing() {
                 "Você para de sobreviver no automático."
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                — O que 94% dos usuários relatam após 30 dias
+                O que 94% dos usuários relatam após 30 dias.
               </p>
             </div>
           </div>
@@ -427,9 +417,14 @@ function Landing() {
                 possível com passos pequenos. Em 21 dias eu era uma pessoa diferente com o celular."
               </p>
               <div className="mt-5 inline-flex items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-white/20 text-sm font-semibold">
-                  TC
-                </span>
+                <img
+                  src={thiagoImg}
+                  alt="Foto de Thiago C."
+                  width={40}
+                  height={40}
+                  loading="lazy"
+                  className="h-10 w-10 rounded-full object-cover ring-2 ring-white/30"
+                />
                 <div className="text-left">
                   <p className="text-sm font-semibold">Thiago C., 32</p>
                   <p className="text-xs opacity-80">21 dias de jornada</p>

@@ -1,7 +1,8 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Leaf, Loader2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { submitOnboarding } from "@/lib/lytra.functions";
 import { toast } from "sonner";
@@ -118,11 +119,8 @@ function OnboardingPage() {
     <div className="relative min-h-screen bg-background">
       <div className="absolute inset-0 bg-hero-glow" aria-hidden />
       <div className="relative mx-auto flex min-h-screen max-w-xl flex-col px-6 py-10">
-        <div className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-            <Leaf className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          <span className="text-lg font-semibold tracking-tight">Lytra</span>
+        <div>
+          <Logo height={26} />
         </div>
 
         <div className="mt-8 h-1.5 w-full overflow-hidden rounded-full bg-muted">

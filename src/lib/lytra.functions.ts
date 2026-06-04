@@ -144,6 +144,55 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Quando todas as tarefas do dia forem concluídas, gera 4 tarefas
+ * complementares — mantendo as concluídas visíveis no histórico do dia.
+ */
+export const appendMoreTasks = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Só adiciona se TODAS as atuais estiverem concluídas (segurança server-side)
+    const { data: current } = await supabase
+      .from("daily_tasks")
+      .select("id, completed")
+      .eq("user_id", userId)
+      .eq("task_date", today);
+
+    if (!current || current.length === 0) return { added: 0 };
+    const allDone = current.every((t: any) => t.completed);
+    if (!allDone) return { added: 0 };
+
+    const { data: onb } = await supabase
+      .from("onboarding")
+      .select("habit, triggers")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    await generateTasksFor(supabase, userId, onb?.habit ?? "um hábito", onb?.triggers ?? []);
+    return { added: 4 };
+  });
+
+/**
+ * Histórico de tarefas concluídas dos últimos 30 dias.
+ */
+export const getTaskHistory = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+    const { data } = await supabase
+      .from("daily_tasks")
+      .select("id, title, description, category, task_date, completed_at")
+      .eq("user_id", userId)
+      .eq("completed", true)
+      .gte("task_date", since)
+      .order("completed_at", { ascending: false });
+    return { tasks: data ?? [] };
+  });
+
 export const toggleTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>

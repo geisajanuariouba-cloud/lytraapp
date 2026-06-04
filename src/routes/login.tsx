@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Leaf, Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 
 const searchSchema = z.object({
@@ -95,11 +96,8 @@ function LoginPage() {
     <div className="relative grid min-h-screen place-items-center bg-background px-4">
       <div className="absolute inset-0 bg-hero-glow" aria-hidden />
       <div className="relative w-full max-w-md">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-            <Leaf className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          <span className="text-xl font-semibold tracking-tight">Lytra</span>
+        <Link to="/" className="mb-8 flex items-center justify-center">
+          <Logo height={32} />
         </Link>
 
         <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
