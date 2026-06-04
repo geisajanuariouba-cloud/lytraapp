@@ -373,7 +373,7 @@ function Landing() {
                 "Você para de sobreviver no automático."
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                — O que 94% dos usuários relatam após 30 dias
+                O que 94% dos usuários relatam após 30 dias.
               </p>
             </div>
           </div>
@@ -417,9 +417,14 @@ function Landing() {
                 possível com passos pequenos. Em 21 dias eu era uma pessoa diferente com o celular."
               </p>
               <div className="mt-5 inline-flex items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-white/20 text-sm font-semibold">
-                  TC
-                </span>
+                <img
+                  src={thiagoImg}
+                  alt="Foto de Thiago C."
+                  width={40}
+                  height={40}
+                  loading="lazy"
+                  className="h-10 w-10 rounded-full object-cover ring-2 ring-white/30"
+                />
                 <div className="text-left">
                   <p className="text-sm font-semibold">Thiago C., 32</p>
                   <p className="text-xs opacity-80">21 dias de jornada</p>
