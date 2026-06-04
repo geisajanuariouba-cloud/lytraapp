@@ -1,11 +1,11 @@
-import { createFileRoute, Link, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router";
-import { Leaf, Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck, History } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import { getDashboard } from "@/lib/lytra.functions";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/_authenticated/app")({
   component: AppLayout,
@@ -37,6 +37,7 @@ function AppLayout() {
   const navItems = [
     { to: "/app", label: "Hoje", icon: Home, exact: true },
     { to: "/app/diario", label: "Diário", icon: BookHeart },
+    { to: "/app/historico", label: "Histórico", icon: History },
     { to: "/app/sos", label: "Emergência", icon: ShieldAlert },
     { to: "/app/progresso", label: "Progresso", icon: TrendingUp },
     { to: "/app/suporte", label: "Suporte", icon: LifeBuoy },
@@ -47,11 +48,8 @@ function AppLayout() {
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5">
-          <Link to="/app" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-              <Leaf className="h-4 w-4" strokeWidth={2.5} />
-            </span>
-            <span className="text-lg font-semibold tracking-tight">Lytra</span>
+          <Link to="/app" aria-label="Início">
+            <Logo height={26} />
           </Link>
           <div className="flex items-center gap-1">
             {data?.isAdmin && (

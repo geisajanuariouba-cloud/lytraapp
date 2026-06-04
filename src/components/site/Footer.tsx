@@ -1,19 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/60 bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-              <Leaf className="h-4 w-4" strokeWidth={2.5} />
-            </span>
-            <span className="text-lg font-semibold tracking-tight">Lytra</span>
-          </div>
+          <Logo height={28} />
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            Reconstrua sua mente, sua rotina e seu foco — um dia de cada vez.
+            Reconstrua sua mente, sua rotina e seu foco, um dia de cada vez.
           </p>
         </div>
 

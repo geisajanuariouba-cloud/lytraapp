@@ -1,15 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-            <Leaf className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          <span className="text-lg font-semibold tracking-tight">Lytra</span>
+        <Link to="/" aria-label="Lytra — início">
+          <Logo height={28} />
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#como-funciona" className="transition hover:text-foreground">Como funciona</a>
