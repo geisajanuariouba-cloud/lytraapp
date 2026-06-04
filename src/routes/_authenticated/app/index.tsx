@@ -105,6 +105,27 @@ function HomePage() {
   const progress = data.progress;
   const xpPct = ((progress?.xp ?? 0) % 100);
   const completedToday = data.tasks.filter((t: any) => t.completed).length;
+  const allDone = data.tasks.length > 0 && completedToday === data.tasks.length;
+
+  // Auto-gera mais 4 tarefas quando todas forem concluídas (uma vez por bloco).
+  const appendedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!allDone) return;
+    const sig = data.tasks.map((t: any) => t.id).join(",");
+    if (appendedRef.current === sig) return;
+    appendedRef.current = sig;
+    (async () => {
+      try {
+        const res = await appendFn();
+        if (res?.added) {
+          qc.invalidateQueries({ queryKey: ["dashboard"] });
+          toast.success("4 novas tarefas adicionadas. Continue.");
+        }
+      } catch {
+        /* silent */
+      }
+    })();
+  }, [allDone, data.tasks, appendFn, qc]);
 
   async function handleRegenerate() {
     setRegenerating(true);
@@ -170,7 +191,10 @@ function HomePage() {
       {/* Plano pessoal */}
       {data.onboarding?.ai_plan && (
         <section className="mt-6 rounded-3xl border border-border bg-soft p-6 shadow-soft">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Seu plano</h2>
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Seu plano</h2>
+            <PlanAudioButton text={data.onboarding.ai_plan} />
+          </div>
           <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">
             {data.onboarding.ai_plan}
           </p>
