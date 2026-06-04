@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Leaf, Loader2, Eye, EyeOff, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/redefinir-senha")({
@@ -126,11 +127,8 @@ function ResetPage() {
     <div className="relative grid min-h-screen place-items-center bg-background px-4">
       <div className="absolute inset-0 bg-hero-glow" aria-hidden />
       <div className="relative w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-card">
-        <div className="mb-6 flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-glow">
-            <Leaf className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          <span className="text-lg font-semibold tracking-tight">Lytra</span>
+        <div className="mb-6">
+          <Logo height={28} />
         </div>
 
         {status === "validating" && (
