@@ -26,13 +26,13 @@ import { PLANS, formatBRL } from "@/lib/plans";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lytra — Recupere o controle da sua mente" },
+      { title: "Lytra · Recupere o controle da sua mente" },
       {
         name: "description",
         content:
           "Sistema inteligente de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina com um plano feito sob medida pra você.",
       },
-      { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
+      { property: "og:title", content: "Lytra · Recupere o controle da sua mente" },
       {
         property: "og:description",
         content: "Plataforma premium de reset mental com IA. Plano personalizado, acompanhamento diário.",
@@ -264,7 +264,7 @@ function Landing() {
               onClick={handleUnlock}
               className="inline-flex h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-6 text-sm font-medium text-primary transition hover:bg-primary-soft"
             >
-              Já assisti — continuar
+              Já assisti, continuar
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
