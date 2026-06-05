@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
       {
         property: "og:description",
-        content: "Plataforma de reset mental com IA. Reduza vícios, recupere foco e reconstrua sua rotina.",
+        content: "Plataforma premium de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

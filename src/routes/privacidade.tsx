@@ -26,7 +26,7 @@ export const Route = createFileRoute("/privacidade")({
         controles de acesso restritos.
       </p>
       <h3>3. Compartilhamento</h3>
-      <p>Não vendemos seus dados. Compartilhamos apenas com prestadores essenciais (pagamentos, email, IA) sob acordos de confidencialidade.</p>
+      <p>Não vendemos seus dados. Compartilhamos apenas com prestadores essenciais (pagamentos, email, infraestrutura) sob acordos de confidencialidade.</p>
       <h3>4. Seus direitos (LGPD)</h3>
       <p>
         Você pode solicitar acesso, correção, exclusão ou portabilidade dos seus dados a qualquer

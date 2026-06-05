@@ -23,9 +23,8 @@ function TermosPage() {
       </p>
       <h3>1. Sobre o serviço</h3>
       <p>
-        A Lytra oferece planos personalizados, conteúdo, tarefas e acompanhamento por IA com
-        objetivo de apoiar a redução de hábitos indesejados e o desenvolvimento de novos hábitos
-        saudáveis.
+        A Lytra oferece planos personalizados, conteúdo, tarefas e acompanhamento com objetivo de
+        apoiar a redução de hábitos indesejados e o desenvolvimento de novos hábitos saudáveis.
       </p>
       <h3>2. Conta e segurança</h3>
       <p>
