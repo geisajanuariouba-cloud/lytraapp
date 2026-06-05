@@ -6,7 +6,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link to="/" aria-label="Lytra — início">
-          <Logo height={28} />
+          <Logo height={40} />
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#como-funciona" className="transition hover:text-foreground">Como funciona</a>
