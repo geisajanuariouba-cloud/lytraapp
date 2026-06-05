@@ -10,7 +10,7 @@ interface LogoProps {
  * Logo oficial da Lytra. Usa o asset CDN.
  * O wordmark já contém o ícone da folha — não combinar com Leaf.
  */
-export function Logo({ className = "", height = 32 }: LogoProps) {
+export function Logo({ className = "", height = 40 }: LogoProps) {
   return (
     <img
       src={logoAsset.url}
