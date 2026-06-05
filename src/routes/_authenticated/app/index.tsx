@@ -132,7 +132,7 @@ function HomePage() {
     try {
       await regenFn();
       qc.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Novas tarefas geradas pela IA.");
+      toast.success("Novas tarefas personalizadas adicionadas.");
     } catch (e: any) {
       toast.error(e?.message ?? "Erro");
     } finally {

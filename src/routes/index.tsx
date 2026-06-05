@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Lytra · Recupere o controle da sua mente" },
       {
         property: "og:description",
-        content: "Plataforma premium de reset mental com IA. Plano personalizado, acompanhamento diário.",
+        content: "Plataforma premium de reset mental. Plano personalizado, acompanhamento diário.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -111,7 +111,7 @@ const RU = (g: "men" | "women", n: number) => `https://randomuser.me/api/portrai
 const testimonials = [
   { name: "Mariana S.", age: 28, role: "Designer", img: RU("women", 44), text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com o Lytra, em 3 semanas reduzi pela metade. Senti que recuperei tempo para o que importa." },
   { name: "Carla M.", age: 39, role: "Empreendedora", img: RU("women", 68), text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar." },
-  { name: "Igor F.", age: 30, role: "Arquiteto", img: RU("men", 32), text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. A IA realmente aprende sobre você." },
+  { name: "Igor F.", age: 30, role: "Arquiteto", img: RU("men", 32), text: "Tentei outros apps de foco e nunca passava da primeira semana. Com o Lytra, mantive constância por mais de 40 dias. O plano realmente se adapta ao seu ritmo." },
   { name: "Rafael T.", age: 34, role: "Engenheiro", img: RU("men", 75), text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real." },
   { name: "Diego R.", age: 29, role: "Analista", img: RU("men", 41), text: "Minha rotina estava completamente desorganizada. Em 30 dias de Lytra recuperei o sono, voltei a me exercitar e parei de rolar o feed até meia-noite." },
   { name: "Juliana K.", age: 24, role: "Psicóloga em formação", img: RU("women", 22), text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. O Lytra me deu estrutura sem julgamento. Indico para meus colegas." },
@@ -123,7 +123,7 @@ const testimonials = [
   { name: "Natália S.", age: 21, role: "Universitária", img: RU("women", 12), text: "Parei de ficar até as 3 da manhã rolando vídeo curto. Minha rotina de estudo voltou ao eixo e minha cabeça parece mais leve." },
   { name: "Bruno C.", age: 26, role: "Freelancer", img: RU("men", 23), text: "Recuperei a capacidade de ler um livro inteiro sem interrupções. Parece simples, mas pra mim foi uma conquista enorme." },
   { name: "Helena V.", age: 27, role: "Nutricionista", img: RU("women", 79), text: "Comecei a dormir melhor depois da primeira semana. O check-in noturno me ajuda a fechar o dia em vez de scrollar até apagar." },
-  { name: "Paulo E.", age: 37, role: "Professor universitário", img: RU("men", 52), text: "O plano personalizado me surpreendeu. Não é genérico. A IA percebe quando estou com dificuldade e ajusta. Senti um cuidado real." },
+  { name: "Paulo E.", age: 37, role: "Professor universitário", img: RU("men", 52), text: "O plano personalizado me surpreendeu. Não é genérico. Percebe quando estou com dificuldade e ajusta. Senti um cuidado real." },
 ];
 
 // Depoimento principal (verde) — Thiago C.
@@ -132,7 +132,7 @@ const thiagoImg = RU("men", 17);
 const faqs = [
   {
     q: "Como funciona a Lytra?",
-    a: "Você responde um quiz rápido, a IA cria seu plano, e todo dia recebe tarefas e reflexões que se adaptam ao seu progresso.",
+    a: "Você responde um quiz rápido, recebe seu plano personalizado, e todo dia tem tarefas e reflexões que se adaptam ao seu progresso.",
   },
   {
     q: "Substitui terapia?",
@@ -231,13 +231,13 @@ function Landing() {
           </h2>
         </div>
 
-        <div className="mt-8 overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
-          {/* Placeholder de vídeo — substituir <iframe src=""> pelo Vimeo/YouTube/Mux quando disponível. */}
+        {/* Vídeo fixo em 9:16 — formato vertical estilo Meta Ads / TikTok, centralizado em todos os breakpoints. */}
+        <div className="mx-auto mt-8 w-full max-w-[360px] overflow-hidden rounded-[2rem] border border-border bg-card shadow-card sm:max-w-[400px]">
           <div
-            className="relative grid aspect-video w-full place-items-center bg-[linear-gradient(135deg,oklch(0.18_0.05_158),oklch(0.12_0.04_160))]"
+            className="relative grid aspect-[9/16] w-full place-items-center bg-[linear-gradient(135deg,oklch(0.18_0.05_158),oklch(0.12_0.04_160))]"
             aria-label="Vídeo de apresentação"
           >
-            <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex flex-col items-center gap-3 text-center px-6">
               <button
                 type="button"
                 onClick={handleUnlock}

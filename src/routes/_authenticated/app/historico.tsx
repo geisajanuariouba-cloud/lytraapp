@@ -29,10 +29,15 @@ function HistoricoPage() {
     queryFn: () => fetchDash(),
   });
 
-  // Agrupa por data
+  // Agrupa pelo dia LOCAL em que a tarefa foi concluída (fuso do usuário),
+  // evitando bug onde tarefas concluídas tarde da noite apareciam no dia seguinte
+  // por causa do task_date armazenado em UTC.
   const grouped: Record<string, any[]> = {};
   (data?.tasks ?? []).forEach((t: any) => {
-    const key = t.task_date;
+    const ref = t.completed_at ?? t.task_date;
+    const d = new Date(ref);
+    // chave YYYY-MM-DD no fuso local
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     (grouped[key] = grouped[key] ?? []).push(t);
   });
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
@@ -72,7 +77,8 @@ function HistoricoPage() {
         )}
 
         {dates.map((d) => {
-          const date = new Date(d + "T00:00:00");
+          const [y, m, day] = d.split("-").map(Number);
+          const date = new Date(y, m - 1, day);
           const label = new Intl.DateTimeFormat("pt-BR", {
             day: "2-digit",
             month: "long",

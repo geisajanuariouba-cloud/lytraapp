@@ -35,8 +35,11 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold">Contato</h4>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li>suporte@lytra.shop</li>
-            <li>lytra.shop</li>
+            <li>
+              <a href="mailto:suporte.lytra@gmail.com" className="hover:text-foreground">
+                suporte.lytra@gmail.com
+              </a>
+            </li>
           </ul>
         </div>
       </div>

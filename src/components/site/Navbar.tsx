@@ -15,16 +15,16 @@ export function Navbar() {
           <a href="#precos" className="transition hover:text-foreground">Planos</a>
           <a href="#faq" className="transition hover:text-foreground">FAQ</a>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Link
             to="/login"
-            className="hidden h-10 items-center justify-center rounded-full px-4 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
+            className="inline-flex h-9 items-center justify-center rounded-full px-3 text-xs font-medium text-muted-foreground transition hover:text-foreground sm:h-10 sm:px-4 sm:text-sm"
           >
             Entrar
           </Link>
           <a
             href="#precos"
-            className="inline-flex h-10 items-center justify-center rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
+            className="inline-flex h-9 items-center justify-center rounded-full bg-primary-gradient px-3.5 text-xs font-medium text-primary-foreground shadow-glow transition hover:opacity-95 sm:h-10 sm:px-5 sm:text-sm"
           >
             Adquirir agora
           </a>
