@@ -30,7 +30,7 @@ export const Route = createFileRoute("/privacidade")({
       <h3>4. Seus direitos (LGPD)</h3>
       <p>
         Você pode solicitar acesso, correção, exclusão ou portabilidade dos seus dados a qualquer
-        momento via suporte@lytra.shop.
+        momento via suporte.lytra@gmail.com.
       </p>
       <h3>5. Cookies</h3>
       <p>Usamos cookies essenciais para o funcionamento da plataforma e métricas anônimas de uso.</p>

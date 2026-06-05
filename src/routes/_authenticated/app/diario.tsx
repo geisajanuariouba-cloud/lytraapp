@@ -21,7 +21,7 @@ function DiarioPage() {
     queryFn: () => fetchDash(),
   });
 
-  // OPTIMISTIC: insere a entrada imediatamente com placeholder enquanto a IA responde.
+  // OPTIMISTIC: insere a entrada imediatamente com placeholder enquanto a resposta é preparada.
   const mut = useMutation({
     mutationFn: (content: string) => submit({ data: { content } }),
     onMutate: async (content) => {
@@ -105,7 +105,7 @@ function DiarioPage() {
             {entry._pending && !entry.ai_response && (
               <div className="mt-4 flex items-center gap-2 rounded-2xl bg-primary-soft/40 p-4 text-xs text-primary">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Lytra está pensando...
+                Preparando sua reflexão...
               </div>
             )}
             {entry.ai_response && (

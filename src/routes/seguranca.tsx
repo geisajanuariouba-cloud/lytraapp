@@ -23,7 +23,7 @@ export const Route = createFileRoute("/seguranca")({
       <h3>Resposta a incidentes</h3>
       <p>Plano formal de resposta a incidentes e notificação aos usuários conforme exigências legais.</p>
       <h3>Reporte de vulnerabilidades</h3>
-      <p>Encontrou algo? Escreva para suporte@lytra.shop. Levamos a sério qualquer relatório de segurança.</p>
+      <p>Encontrou algo? Escreva para suporte.lytra@gmail.com. Levamos a sério qualquer relatório de segurança.</p>
     </LegalLayout>
   ),
 });
