@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
-          <Logo height={28} />
+          <Logo height={44} />
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
             Reconstrua sua mente, sua rotina e seu foco, um dia de cada vez.
           </p>
@@ -16,7 +16,8 @@ export function Footer() {
           <h4 className="text-sm font-semibold">Plataforma</h4>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li><a href="#como-funciona" className="hover:text-foreground">Como funciona</a></li>
-            <li><a href="#beneficios" className="hover:text-foreground">Benefícios</a></li>
+            <li><a href="#recursos" className="hover:text-foreground">Recursos</a></li>
+            <li><a href="#depoimentos" className="hover:text-foreground">Depoimentos</a></li>
             <li><a href="#precos" className="hover:text-foreground">Preços</a></li>
             <li><a href="#faq" className="hover:text-foreground">Perguntas frequentes</a></li>
           </ul>
