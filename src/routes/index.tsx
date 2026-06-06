@@ -96,7 +96,13 @@ const depois = [
 const numeros = [
   { icon: Smartphone, before: "6h+", after: "1h20", label: "de tela por dia", who: "Mariana, 28" },
   { icon: Flame, before: "0", after: "47 dias", label: "de streak seguidos", who: "Igor, 30" },
-  { icon: Target, before: "15min", after: "2h seguidas", label: "de foco profundo", who: "Lucas, 22" },
+  {
+    icon: Target,
+    before: "15min",
+    after: "2h seguidas",
+    label: "de foco profundo",
+    who: "Lucas, 22",
+  },
   { icon: Moon, before: "ruim", after: "profundo", label: "qualidade do sono", who: "Helena, 27" },
 ];
 
@@ -118,12 +124,48 @@ const ratingBreakdown = [
 const RU = (g: "men" | "women", n: number) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`;
 
 const testimonialReviews = [
-  { name: "Mariana S.", age: 28, role: "Designer", img: RU("women", 44), text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com a Lytra, em poucas semanas reduzi muito o uso e recuperei tempo para o que importa." },
-  { name: "Carla M.", age: 39, role: "Empreendedora", img: RU("women", 68), text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar." },
-  { name: "Igor F.", age: 30, role: "Arquiteto", img: RU("men", 32), text: "Tentei outros apps de foco e nunca passava da primeira semana. Com a Lytra, mantive constância por mais de 40 dias e voltei a confiar na minha rotina." },
-  { name: "Rafael T.", age: 34, role: "Engenheiro", img: RU("men", 75), text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real." },
-  { name: "Juliana K.", age: 24, role: "Psicóloga em formação", img: RU("women", 22), text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. A Lytra me deu estrutura sem me pressionar." },
-  { name: "Lucas M.", age: 22, role: "Estudante", img: RU("men", 11), text: "Voltei a estudar de verdade. Antes eu mal conseguia terminar uma sessão de leitura. Agora consigo sustentar foco por muito mais tempo." },
+  {
+    name: "Mariana S.",
+    age: 28,
+    role: "Designer",
+    img: RU("women", 44),
+    text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com a Lytra, em poucas semanas reduzi muito o uso e recuperei tempo para o que importa.",
+  },
+  {
+    name: "Carla M.",
+    age: 39,
+    role: "Empreendedora",
+    img: RU("women", 68),
+    text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar.",
+  },
+  {
+    name: "Igor F.",
+    age: 30,
+    role: "Arquiteto",
+    img: RU("men", 32),
+    text: "Tentei outros apps de foco e nunca passava da primeira semana. Com a Lytra, mantive constância por mais de 40 dias e voltei a confiar na minha rotina.",
+  },
+  {
+    name: "Rafael T.",
+    age: 34,
+    role: "Engenheiro",
+    img: RU("men", 75),
+    text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real.",
+  },
+  {
+    name: "Juliana K.",
+    age: 24,
+    role: "Psicóloga em formação",
+    img: RU("women", 22),
+    text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. A Lytra me deu estrutura sem me pressionar.",
+  },
+  {
+    name: "Lucas M.",
+    age: 22,
+    role: "Estudante",
+    img: RU("men", 11),
+    text: "Voltei a estudar de verdade. Antes eu mal conseguia terminar uma sessão de leitura. Agora consigo sustentar foco por muito mais tempo.",
+  },
 ];
 
 const thiagoImg = RU("men", 17);
@@ -235,7 +277,8 @@ function Landing() {
             Sistema inteligente de reset mental
           </span>
           <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-balance md:text-6xl">
-            Recupere o controle <span className="bg-primary-gradient bg-clip-text text-transparent">da sua mente.</span>
+            Recupere o controle{" "}
+            <span className="bg-primary-gradient bg-clip-text text-transparent">da sua mente.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground text-balance">
             Plano diário, adaptativo, feito pra você reduzir vícios e reconstruir foco.
@@ -251,7 +294,10 @@ function Landing() {
           </div>
           <div className="mx-auto mt-8 grid max-w-3xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-3">
             {trustItems.map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-foreground shadow-soft sm:text-sm">
+              <div
+                key={item}
+                className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-foreground shadow-soft sm:text-sm"
+              >
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                 <span>{item}</span>
               </div>
@@ -262,7 +308,9 @@ function Landing() {
 
       <section id="vsl" className="mx-auto max-w-4xl px-6 pb-6">
         <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">Assista antes de continuar</p>
+          <p className="text-xs font-medium uppercase tracking-widest text-primary">
+            Assista antes de continuar
+          </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance md:text-4xl">
             Veja como a Lytra funciona na prática
           </h2>
@@ -283,7 +331,9 @@ function Landing() {
                 <PlayCircle className="h-10 w-10" strokeWidth={1.5} />
               </button>
               <p className="text-sm font-semibold text-white">Vídeo em breve</p>
-              <p className="max-w-xs text-xs text-white/70">O vídeo de apresentação da Lytra será adicionado em breve.</p>
+              <p className="max-w-xs text-xs text-white/70">
+                O vídeo de apresentação da Lytra será adicionado em breve.
+              </p>
             </div>
           </div>
         </div>
@@ -319,17 +369,24 @@ function Landing() {
       >
         <section id="como-funciona" className="mx-auto max-w-3xl px-6 py-24">
           <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Você se reconhece aqui?</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+              Você se reconhece aqui?
+            </p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
               Não é falta de força
               <br /> de vontade.
             </h2>
-            <p className="mt-3 font-display text-lg italic text-primary">É como o cérebro foi condicionado.</p>
+            <p className="mt-3 font-display text-lg italic text-primary">
+              É como o cérebro foi condicionado.
+            </p>
           </div>
 
           <div className="mt-12 space-y-3">
             {reconhece.map((c) => (
-              <div key={c.title} className="flex items-start gap-4 rounded-2xl border border-border bg-surface p-5 shadow-soft">
+              <div
+                key={c.title}
+                className="flex items-start gap-4 rounded-2xl border border-border bg-surface p-5 shadow-soft"
+              >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
                   <c.icon className="h-5 w-5" />
                 </span>
@@ -345,14 +402,22 @@ function Landing() {
         <section id="recursos" className="bg-soft py-24">
           <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
-              <p className="text-xs font-medium uppercase tracking-widest text-primary">A virada real</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">O que muda na sua vida</h2>
-              <p className="mt-3 font-display text-lg italic text-primary">quando sua mente descansa</p>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                A virada real
+              </p>
+              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+                O que muda na sua vida
+              </h2>
+              <p className="mt-3 font-display text-lg italic text-primary">
+                quando sua mente descansa
+              </p>
             </div>
 
             <div className="mx-auto mt-12 grid max-w-4xl gap-5 md:grid-cols-2">
               <div className="rounded-3xl border border-border bg-card p-7 shadow-soft">
-                <span className="inline-flex rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-destructive">Antes</span>
+                <span className="inline-flex rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-destructive">
+                  Antes
+                </span>
                 <ul className="mt-5 space-y-3 text-sm">
                   {antes.map((t) => (
                     <li key={t} className="flex items-start gap-2.5 text-muted-foreground">
@@ -364,7 +429,9 @@ function Landing() {
               </div>
 
               <div className="rounded-3xl bg-primary p-7 text-primary-foreground shadow-glow">
-                <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider">Com a Lytra</span>
+                <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider">
+                  Com a Lytra
+                </span>
                 <ul className="mt-5 space-y-3 text-sm">
                   {depois.map((t) => (
                     <li key={t} className="flex items-start gap-2.5">
@@ -377,8 +444,12 @@ function Landing() {
             </div>
 
             <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
-              <p className="font-display text-xl italic text-foreground">"Você para de sobreviver no automático."</p>
-              <p className="mt-2 text-xs text-muted-foreground">O que 94% dos usuários relatam após 30 dias.</p>
+              <p className="font-display text-xl italic text-foreground">
+                "Você para de sobreviver no automático."
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                O que 94% dos usuários relatam após 30 dias.
+              </p>
             </div>
           </div>
         </section>
@@ -386,7 +457,9 @@ function Landing() {
         <section className="bg-soft pb-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="text-center">
-              <p className="text-xs font-medium uppercase tracking-widest text-primary">Resultados verificados pelos próprios usuários</p>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                Resultados verificados pelos próprios usuários
+              </p>
               <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
                 Números que <span className="font-display italic text-primary">falam</span> por si
               </h2>
@@ -394,7 +467,10 @@ function Landing() {
 
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {numeros.map((n) => (
-                <div key={n.who} className="rounded-2xl border border-border bg-card p-6 text-center shadow-soft">
+                <div
+                  key={n.who}
+                  className="rounded-2xl border border-border bg-card p-6 text-center shadow-soft"
+                >
                   <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-primary">
                     <n.icon className="h-5 w-5" />
                   </span>
@@ -411,7 +487,8 @@ function Landing() {
 
             <div className="mx-auto mt-8 max-w-3xl rounded-3xl bg-primary p-7 text-center text-primary-foreground shadow-glow">
               <p className="text-base leading-relaxed">
-                "Achei que era vício mesmo, que eu não ia conseguir mudar. Lytra me mostrou que era possível com passos pequenos. Em 21 dias eu era outra pessoa com o celular."
+                "Achei que era vício mesmo, que eu não ia conseguir mudar. Lytra me mostrou que era
+                possível com passos pequenos. Em 21 dias eu era outra pessoa com o celular."
               </p>
               <div className="mt-5 inline-flex items-center gap-2.5">
                 <img
@@ -441,7 +518,9 @@ function Landing() {
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">Baseado em mais de 1.800 avaliações verificadas</p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Baseado em mais de 1.800 avaliações verificadas
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -460,7 +539,10 @@ function Landing() {
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {seals.map((s) => (
-                <div key={s.title} className="rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
+                <div
+                  key={s.title}
+                  className="rounded-2xl border border-border bg-card p-5 text-center shadow-soft"
+                >
                   <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-primary-soft text-primary">
                     <s.icon className="h-4 w-4" />
                   </span>
@@ -474,9 +556,15 @@ function Landing() {
 
         <section id="depoimentos" className="mx-auto max-w-6xl px-6 py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Prova social</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">Resultados Reais de Pessoas Reais</h2>
-            <p className="mt-4 text-base text-muted-foreground">Veja o que está acontecendo depois que as pessoas começaram a usar a Lytra.</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+              Prova social
+            </p>
+            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              Resultados Reais de Pessoas Reais
+            </h2>
+            <p className="mt-4 text-base text-muted-foreground">
+              Veja o que está acontecendo depois que as pessoas começaram a usar a Lytra.
+            </p>
           </div>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -503,10 +591,17 @@ function Landing() {
 
             <div className="flex aspect-[9/16] flex-col justify-between rounded-[28px] border border-dashed border-border bg-soft p-6 shadow-soft">
               <div>
-                <p className="text-sm font-semibold text-foreground">Pronto para receber mais prints</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Envie novos prints de WhatsApp, Instagram ou mensagens e a estrutura já está preparada para encaixar automaticamente na seção.</p>
+                <p className="text-sm font-semibold text-foreground">
+                  Pronto para receber mais prints
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Envie novos prints de WhatsApp, Instagram ou mensagens e a estrutura já está
+                  preparada para encaixar automaticamente na seção.
+                </p>
               </div>
-              <div className="rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-soft">Clique em qualquer print para ampliar.</div>
+              <div className="rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-soft">
+                Clique em qualquer print para ampliar.
+              </div>
             </div>
           </div>
         </section>
@@ -514,14 +609,23 @@ function Landing() {
         <section className="bg-soft py-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-medium uppercase tracking-widest text-primary">Reviews premium</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">Avaliações que transmitem confiança</h2>
-              <p className="mt-4 text-base text-muted-foreground">Uma segunda camada de prova social com estética de produto premium e leitura rápida.</p>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                Reviews premium
+              </p>
+              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+                Avaliações que transmitem confiança
+              </h2>
+              <p className="mt-4 text-base text-muted-foreground">
+                Uma segunda camada de prova social com estética de produto premium e leitura rápida.
+              </p>
             </div>
 
             <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {testimonialReviews.map((t) => (
-                <article key={t.name} className="rounded-[28px] border border-border bg-card p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-card">
+                <article
+                  key={t.name}
+                  className="rounded-[28px] border border-border bg-card p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-card"
+                >
                   <img
                     src={t.img}
                     alt={`Foto de ${t.name}`}
@@ -536,7 +640,9 @@ function Landing() {
                     ))}
                   </div>
                   <div className="mt-4">
-                    <p className="text-lg font-semibold leading-tight">{t.name}, {t.age}</p>
+                    <p className="text-lg font-semibold leading-tight">
+                      {t.name}, {t.age}
+                    </p>
                     <p className="mt-1 text-sm text-muted-foreground">{t.role}</p>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-foreground/90">“{t.text}”</p>
@@ -548,8 +654,12 @@ function Landing() {
 
         <section id="precos" className="mx-auto max-w-6xl px-6 py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Comece hoje</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">Escolha seu plano.</h2>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+              Comece hoje
+            </p>
+            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              Escolha seu plano.
+            </h2>
             {todayLabel && (
               <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft/40 px-4 py-1.5 text-xs font-medium text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -575,14 +685,22 @@ function Landing() {
                   )}
                   <p className="text-sm font-medium text-muted-foreground">{plan.label}</p>
                   <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-sm text-muted-foreground line-through">{formatBRL(plan.oldPrice)}</span>
-                    <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-primary">-{economy}%</span>
+                    <span className="text-sm text-muted-foreground line-through">
+                      {formatBRL(plan.oldPrice)}
+                    </span>
+                    <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-primary">
+                      -{economy}%
+                    </span>
                   </div>
                   <div className="mt-1 flex items-baseline gap-1">
-                    <span className="text-5xl font-semibold tracking-tight">{formatBRL(plan.price)}</span>
+                    <span className="text-5xl font-semibold tracking-tight">
+                      {formatBRL(plan.price)}
+                    </span>
                     <span className="text-sm text-muted-foreground">{plan.period}</span>
                   </div>
-                  {plan.perMonthHint && <p className="mt-1 text-xs text-muted-foreground">{plan.perMonthHint}</p>}
+                  {plan.perMonthHint && (
+                    <p className="mt-1 text-xs text-muted-foreground">{plan.perMonthHint}</p>
+                  )}
 
                   <ul className="mt-6 space-y-2.5 text-sm">
                     {plan.highlights.map((f) => (
@@ -614,7 +732,10 @@ function Landing() {
 
           <div className="mx-auto mt-10 grid max-w-5xl gap-3 text-sm text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
             {trustItems.map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 shadow-soft">
+              <div
+                key={item}
+                className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 shadow-soft"
+              >
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                 <span>{item}</span>
               </div>
@@ -628,10 +749,15 @@ function Landing() {
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary-gradient text-primary-foreground shadow-glow">
               <ShieldCheck className="h-7 w-7" strokeWidth={2.2} />
             </span>
-            <p className="mt-5 text-xs font-medium uppercase tracking-widest text-primary">Garantia incondicional</p>
-            <h3 className="mt-3 text-3xl font-semibold tracking-tight text-balance md:text-4xl">7 dias para sentir a Lytra por dentro.</h3>
+            <p className="mt-5 text-xs font-medium uppercase tracking-widest text-primary">
+              Garantia incondicional
+            </p>
+            <h3 className="mt-3 text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+              7 dias para sentir a Lytra por dentro.
+            </h3>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground text-balance">
-              Experimente a Lytra por 7 dias. Se não fizer sentido para você, devolvemos 100% do valor. Sem burocracia.
+              Experimente a Lytra por 7 dias. Se não fizer sentido para você, devolvemos 100% do
+              valor. Sem burocracia.
             </p>
           </div>
         </section>
@@ -640,14 +766,21 @@ function Landing() {
           <div className="mx-auto max-w-3xl px-6">
             <div className="text-center">
               <p className="text-xs font-medium uppercase tracking-widest text-primary">Dúvidas</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">Perguntas frequentes.</h2>
+              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+                Perguntas frequentes.
+              </h2>
             </div>
             <div className="mt-12 space-y-3">
               {faqs.map((f) => (
-                <details key={f.q} className="group rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:shadow-card">
+                <details
+                  key={f.q}
+                  className="group rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:shadow-card"
+                >
                   <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
                     {f.q}
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-primary-soft text-primary transition group-open:rotate-45">+</span>
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-primary-soft text-primary transition group-open:rotate-45">
+                      +
+                    </span>
                   </summary>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
                 </details>
@@ -659,8 +792,12 @@ function Landing() {
         <section className="mx-auto max-w-6xl px-6 py-24">
           <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-12 text-center shadow-card md:p-20">
             <div className="absolute inset-0 -z-10 bg-hero-glow" aria-hidden />
-            <h2 className="text-4xl font-semibold tracking-tight text-balance md:text-5xl">Sua próxima versão começa hoje.</h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">Garantia de 7 dias. Acesso imediato. Suporte humano.</p>
+            <h2 className="text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              Sua próxima versão começa hoje.
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
+              Garantia de 7 dias. Acesso imediato. Suporte humano.
+            </p>
             <a
               href="#precos"
               className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
@@ -675,7 +812,12 @@ function Landing() {
       </div>
 
       {currentLightbox && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Visualização ampliada do print">
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/70 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Visualização ampliada do print"
+        >
           <button
             type="button"
             onClick={() => setLightboxIndex(null)}
@@ -686,7 +828,13 @@ function Landing() {
           </button>
           <button
             type="button"
-            onClick={() => setLightboxIndex((prev) => (prev == null ? 0 : (prev - 1 + socialProofGallery.length) % socialProofGallery.length))}
+            onClick={() =>
+              setLightboxIndex((prev) =>
+                prev == null
+                  ? 0
+                  : (prev - 1 + socialProofGallery.length) % socialProofGallery.length,
+              )
+            }
             className="absolute left-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-card text-foreground shadow-card transition hover:bg-accent sm:grid"
             aria-label="Imagem anterior"
           >
@@ -703,7 +851,11 @@ function Landing() {
           </div>
           <button
             type="button"
-            onClick={() => setLightboxIndex((prev) => (prev == null ? 0 : (prev + 1) % socialProofGallery.length))}
+            onClick={() =>
+              setLightboxIndex((prev) =>
+                prev == null ? 0 : (prev + 1) % socialProofGallery.length,
+              )
+            }
             className="absolute right-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-card text-foreground shadow-card transition hover:bg-accent sm:grid"
             aria-label="Próxima imagem"
           >
