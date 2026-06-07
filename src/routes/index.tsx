@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -249,16 +249,7 @@ function useTodayLabel() {
 
 function Landing() {
   const todayLabel = useTodayLabel();
-  const [unlocked, setUnlocked] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const restRef = useRef<HTMLDivElement>(null);
-
-  function handleUnlock() {
-    setUnlocked(true);
-    requestAnimationFrame(() => {
-      restRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
 
   const currentLightbox = lightboxIndex == null ? null : socialProofGallery[lightboxIndex];
 
@@ -306,7 +297,7 @@ function Landing() {
       <section id="vsl" className="mx-auto max-w-4xl px-6 pb-6">
         <div className="text-center">
           <p className="text-xs font-medium uppercase tracking-widest text-primary">
-            Assista antes de continuar
+            Apresentação
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance md:text-4xl">
             Veja como a Lytra funciona na prática
@@ -314,41 +305,35 @@ function Landing() {
         </div>
 
         <div className="mx-auto mt-8 w-full max-w-[360px] overflow-hidden rounded-[2rem] border border-border bg-card shadow-card sm:max-w-[400px]">
+          {/*
+            Container de vídeo (proporção 9:16) pronto para receber o VSL.
+            Para publicar, troque o bloco <div role="img"> abaixo por um <video> ou <iframe>
+            mantendo a classe "aspect-[9/16] w-full", por exemplo:
+
+            <video className="h-full w-full object-cover" controls playsInline poster="/vsl-poster.jpg">
+              <source src="/vsl.mp4" type="video/mp4" />
+            </video>
+
+            ou um embed (YouTube / Vimeo / Mux) com a mesma proporção.
+          */}
           <div
             className="relative grid aspect-[9/16] w-full place-items-center bg-[linear-gradient(135deg,oklch(0.18_0.05_158),oklch(0.12_0.04_160))]"
-            aria-label="Vídeo de apresentação"
+            role="img"
+            aria-label="Prévia do vídeo de apresentação da Lytra"
           >
-            <div className="flex flex-col items-center gap-3 px-6 text-center">
-              <button
-                type="button"
-                onClick={handleUnlock}
-                className="grid h-16 w-16 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition hover:scale-105 hover:bg-white/25"
-                aria-label="Reproduzir vídeo"
-              >
-                <PlayCircle className="h-10 w-10" strokeWidth={1.5} />
-              </button>
-              <p className="text-sm font-semibold text-white">Vídeo em breve</p>
-              <p className="max-w-xs text-xs text-white/70">
-                O vídeo de apresentação da Lytra será adicionado em breve.
-              </p>
-            </div>
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_45%_at_50%_45%,rgba(255,255,255,0.14),transparent)]"
+              aria-hidden
+            />
+            <span className="relative grid h-16 w-16 place-items-center rounded-full bg-white/15 text-white backdrop-blur">
+              <PlayCircle className="h-9 w-9" strokeWidth={1.5} />
+            </span>
           </div>
         </div>
 
-        {!unlocked && (
-          <div className="mx-auto mt-6 flex max-w-xl flex-col items-center gap-3 text-center">
-            <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" /> Continue após assistir
-            </p>
-            <button
-              onClick={handleUnlock}
-              className="inline-flex h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-6 text-sm font-medium text-primary transition hover:bg-primary-soft"
-            >
-              Já assisti, continuar
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+        <p className="mx-auto mt-4 max-w-sm text-center text-xs text-muted-foreground">
+          Conheça a Lytra e escolha o plano ideal para a sua jornada.
+        </p>
       </section>
 
       <section className="bg-primary text-primary-foreground">
@@ -359,11 +344,7 @@ function Landing() {
         </div>
       </section>
 
-      <div
-        ref={restRef}
-        aria-hidden={!unlocked}
-        className={`transition-all duration-700 ${unlocked ? "max-h-none opacity-100" : "pointer-events-none max-h-0 overflow-hidden opacity-0"}`}
-      >
+      <div>
         <section id="como-funciona" className="mx-auto max-w-3xl px-6 py-24">
           <div className="text-center">
             <p className="text-xs font-medium uppercase tracking-widest text-primary">
@@ -585,21 +566,6 @@ function Landing() {
                 </div>
               </button>
             ))}
-
-            <div className="flex aspect-[9/16] flex-col justify-between rounded-[28px] border border-dashed border-border bg-soft p-6 shadow-soft">
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  Pronto para receber mais prints
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Envie novos prints de WhatsApp, Instagram ou mensagens e a estrutura já está
-                  preparada para encaixar automaticamente na seção.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-soft">
-                Clique em qualquer print para ampliar.
-              </div>
-            </div>
           </div>
         </section>
 

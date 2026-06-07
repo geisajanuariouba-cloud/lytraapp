@@ -23,9 +23,9 @@ export function Navbar() {
       </div>
 
       <header className="border-b border-border/60 bg-background/88 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-6">
           <Link to="/" aria-label="Lytra — início" className="shrink-0">
-            <Logo height={68} className="max-w-[190px] sm:max-w-none" />
+            <Logo height={56} className="max-w-[150px] sm:max-w-none" />
           </Link>
 
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
