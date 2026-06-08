@@ -3,13 +3,44 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { detectPlanKey } from "@/lib/plans";
 
 /**
+ * Resolve o user_id de um e-mail usando SOMENTE tabelas da aplicação
+ * (sem listUsers / auth.users / RPC).
+ *
+ * Premissa: o cadastro público está desabilitado no Supabase Auth, então todo
+ * usuário nasce deste webhook e ganha uma linha em `subscriptions` na primeira
+ * aprovação. Logo, `subscriptions.email` (indexada) é a fonte de verdade.
+ * `kiwify_orders.created_user_id` serve de fallback de auditoria.
+ */
+async function resolveUserIdByEmail(email: string): Promise<string | undefined> {
+  // 1) Assinatura existente (indexada por email) — cobre renovações/recompras.
+  const { data: subs } = await supabaseAdmin
+    .from("subscriptions")
+    .select("user_id")
+    .eq("email", email)
+    .limit(1);
+  if (subs && subs[0]?.user_id) return subs[0].user_id;
+
+  // 2) Fallback: pedido anterior que já criou um usuário para este e-mail.
+  const { data: orders } = await supabaseAdmin
+    .from("kiwify_orders")
+    .select("created_user_id")
+    .eq("email", email)
+    .not("created_user_id", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  return orders && orders[0]?.created_user_id ? orders[0].created_user_id : undefined;
+}
+
+/**
  * Webhook Kiwify
  * URL: /api/public/kiwify?token=KIWIFY_WEBHOOK_TOKEN
  *
  * Eventos tratados:
- *  - Aprovação / renovação    → ativa assinatura + cria usuário se necessário
+ *  - Aprovação / renovação    → ativa assinatura + cria usuário (1ª compra) + e-mail de acesso
  *  - Reembolso / chargeback / cancelamento → suspende acesso
  *  - Atraso (late / past_due) → marca status `past_due`
+ *
+ * Identificação de usuário: apenas `subscriptions` + `kiwify_orders` (sem auth.users).
  */
 export const Route = createFileRoute("/api/public/kiwify")({
   server: {
@@ -100,14 +131,14 @@ export const Route = createFileRoute("/api/public/kiwify")({
           return Response.json({ ok: true, handled: false, reason: "no email" });
         }
 
-        const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
-        const found = existing?.users.find(
-          (u) => (u.email || "").toLowerCase() === email,
-        );
-        let userId: string | undefined = found?.id;
+        // Identificação SOMENTE por tabelas da app (sem auth.users/listUsers).
+        let userId = await resolveUserIdByEmail(email);
 
         if (isApproval) {
+          let isNewUser = false;
+
           if (!userId) {
+            // Primeira compra → cria o usuário (única origem de contas, signup público off).
             const tempPassword = crypto.randomUUID() + "Aa1!";
             const { data: created, error: createErr } =
               await supabaseAdmin.auth.admin.createUser({
@@ -116,51 +147,82 @@ export const Route = createFileRoute("/api/public/kiwify")({
                 email_confirm: true,
                 user_metadata: { full_name: fullName, source: "kiwify" },
               });
-            if (createErr) {
-              console.error("Erro criando usuário Kiwify:", createErr);
-              return new Response("User create failed", { status: 500 });
-            }
-            userId = created.user?.id;
-          }
 
-          if (userId) {
-            // expires_at: para lifetime, deixa null. Para mensal/trimestral, soma o período.
-            let expiresAt: string | null = null;
-            if (planKey === "monthly") {
-              expiresAt = new Date(Date.now() + 31 * 86400000).toISOString();
-            } else if (planKey === "quarterly") {
-              expiresAt = new Date(Date.now() + 93 * 86400000).toISOString();
-            }
-
-            await supabaseAdmin.from("subscriptions").upsert(
-              {
-                user_id: userId,
+            if (createErr || !created?.user?.id) {
+              // Defensivo: com signup off isso não deve ocorrer. Se o e-mail já existir
+              // em auth mas sem mapeamento na app, não derrubamos o webhook — sinalizamos
+              // para reconciliação manual e devolvemos 200 (evita retries infinitos).
+              console.error("[kiwify] createUser falhou:", createErr?.message);
+              return Response.json({
+                ok: true,
+                handled: false,
+                reason: "user_create_failed_or_exists_unmapped",
                 email,
-                status: "active",
-                plan: planKey,
                 order_id: String(orderId),
-                product_id: productId ? String(productId) : null,
-                started_at: new Date().toISOString(),
-                expires_at: expiresAt,
-                updated_at: new Date().toISOString(),
-              },
-              { onConflict: "user_id" },
-            );
-            await supabaseAdmin.from("profiles").update({ active: true }).eq("id", userId);
-            await supabaseAdmin
-              .from("kiwify_orders")
-              .update({ created_user_id: userId })
-              .eq("order_id", String(orderId));
+              });
+            }
+
+            userId = created.user.id;
+            isNewUser = true;
           }
 
-          const siteUrl = process.env.SITE_URL || `https://${url.host}`;
-          await supabaseAdmin.auth.admin.generateLink({
-            type: "recovery",
-            email,
-            options: { redirectTo: `${siteUrl}/redefinir-senha` },
-          });
+          // expires_at: lifetime fica null; mensal/trimestral somam o período.
+          let expiresAt: string | null = null;
+          if (planKey === "monthly") {
+            expiresAt = new Date(Date.now() + 31 * 86400000).toISOString();
+          } else if (planKey === "quarterly") {
+            expiresAt = new Date(Date.now() + 93 * 86400000).toISOString();
+          }
 
-          return Response.json({ ok: true, action: "activated", userId, plan: planKey });
+          // Upsert idempotente da assinatura (chave: user_id).
+          await supabaseAdmin.from("subscriptions").upsert(
+            {
+              user_id: userId,
+              email,
+              status: "active",
+              plan: planKey,
+              order_id: String(orderId),
+              product_id: productId ? String(productId) : null,
+              started_at: new Date().toISOString(),
+              expires_at: expiresAt,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
+          await supabaseAdmin.from("profiles").update({ active: true }).eq("id", userId);
+          await supabaseAdmin
+            .from("kiwify_orders")
+            .update({ created_user_id: userId })
+            .eq("order_id", String(orderId));
+
+          // E-mail de acesso: SOMENTE na primeira compra (usuário recém-criado).
+          // Em renovações/recompras/reenvios da Kiwify, não reenvia.
+          if (isNewUser) {
+            const siteUrl = process.env.SITE_URL || `https://${url.host}`;
+            try {
+              // resetPasswordForEmail dispara o e-mail de fato (depende do SMTP do Supabase).
+              const { error: mailErr } = await supabaseAdmin.auth.resetPasswordForEmail(
+                email,
+                { redirectTo: `${siteUrl}/redefinir-senha` },
+              );
+              if (mailErr) {
+                console.error("[kiwify] envio do e-mail de acesso falhou:", mailErr.message);
+              }
+            } catch (e: any) {
+              // Não falha o webhook: a assinatura já está ativa; o usuário pode usar
+              // "esqueci minha senha" no login. Apenas registramos.
+              console.error("[kiwify] exceção ao enviar e-mail de acesso:", e?.message);
+            }
+          }
+
+          return Response.json({
+            ok: true,
+            action: "activated",
+            userId,
+            plan: planKey,
+            new_user: isNewUser,
+            email_sent: isNewUser,
+          });
         }
 
         if (isLate && userId) {
