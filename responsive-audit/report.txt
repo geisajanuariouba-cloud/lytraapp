@@ -1,0 +1,42 @@
+
+=== landing @ 320px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 375px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 390px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 414px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 768px ===  overflowX=1px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 1024px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== landing @ 1440px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 320px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 375px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 390px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 414px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 768px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 1024px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal
+
+=== app-dashboard @ 1440px ===  overflowX=0px  (elementos fora: 0)
+   OK — sem overflow horizontal

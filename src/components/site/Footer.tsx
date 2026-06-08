@@ -26,11 +26,6 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href="#depoimentos" className="hover:text-foreground">
-                Depoimentos
-              </a>
-            </li>
-            <li>
               <a href="#precos" className="hover:text-foreground">
                 Preços
               </a>

@@ -49,7 +49,7 @@ function AppLayout() {
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5">
           <Link to="/app" aria-label="Início">
-            <Logo height={26} />
+            <Logo height={36} />
           </Link>
           <div className="flex items-center gap-1">
             {data?.isAdmin && (

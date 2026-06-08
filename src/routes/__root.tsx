@@ -81,13 +81,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "A Lytra cria um plano inteligente e personalizado para reduzir vícios, recuperar foco e reconstruir sua rotina dia após dia.",
+          "A Lytra te acompanha com um plano diário e personalizado para reduzir vícios, recuperar foco e reconstruir sua rotina, com passos simples e suporte humano.",
       },
       { name: "author", content: "Lytra" },
       { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
       {
         property: "og:description",
-        content: "Plataforma premium de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina.",
+        content: "Acompanhamento guiado para reduzir vícios, recuperar foco e reconstruir sua rotina, com passos simples e suporte humano.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -132,16 +132,29 @@ function RootComponent() {
 }
 
 function AuthSync() {
-  const router = useRouter();
   const qc = useQueryClient();
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      // Invalida cache do usuário anterior em login/logout/refresh
-      qc.clear();
-      router.invalidate();
+    let initialized = false;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      // Ignora a primeira emissão (hidratação da sessão no carregamento).
+      // Invalidar router/limpar cache nesse instante competia com o
+      // carregamento inicial das rotas e causava o erro na primeira entrada
+      // do app (que só "abria" depois de clicar em Try again).
+      if (!initialized) {
+        initialized = true;
+        return;
+      }
+      // Em troca real de usuário, limpa o cache do React Query para não exibir
+      // dados do usuário anterior. Não invalidamos o router aqui: nenhuma rota
+      // carrega dados de usuário em loader, e invalidar durante uma navegação
+      // em andamento era justamente o que quebrava a primeira entrada.
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+        qc.clear();
+      }
     });
     return () => subscription.unsubscribe();
-  }, [router, qc]);
+  }, [qc]);
   return null;
-
 }

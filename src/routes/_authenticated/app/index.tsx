@@ -8,7 +8,7 @@ import {
   regenerateTodayTasks,
   appendMoreTasks,
 } from "@/lib/lytra.functions";
-import { CheckCircle2, Circle, Flame, RefreshCw, Sparkles, Trophy, Volume2, Square } from "lucide-react";
+import { CheckCircle2, Circle, Flag, Flame, Heart, RefreshCw, Sparkles, Target, Trophy, Volume2, Square } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 
@@ -167,21 +167,23 @@ function HomePage() {
       {/* Humor do dia */}
       <section className="mt-8 rounded-3xl border border-border bg-card p-6 shadow-soft">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Como você está agora?</h2>
-        <div className="mt-4 flex justify-between gap-2">
+        <div className="mt-4 grid grid-cols-5 gap-2">
           {MOODS.map((m) => {
             const active = data.todayMood?.mood === m.v;
             return (
               <button
                 key={m.v}
                 onClick={() => moodM.mutate(m.v)}
-                className={`flex flex-1 flex-col items-center gap-1 rounded-2xl border p-3 text-xs transition ${
+                className={`flex min-w-0 flex-col items-center gap-1 rounded-2xl border px-1 py-3 text-xs transition ${
                   active
                     ? "border-primary bg-primary-soft shadow-glow"
                     : "border-border bg-background hover:border-primary/50"
                 }`}
               >
                 <span className="text-2xl">{m.emoji}</span>
-                <span className="text-[11px] text-muted-foreground">{m.label}</span>
+                <span className="text-center text-[11px] leading-tight text-muted-foreground">
+                  {m.label}
+                </span>
               </button>
             );
           })}
@@ -190,14 +192,12 @@ function HomePage() {
 
       {/* Plano pessoal */}
       {data.onboarding?.ai_plan && (
-        <section className="mt-6 rounded-3xl border border-border bg-soft p-6 shadow-soft">
-          <div className="flex items-start justify-between gap-3">
+        <section className="mt-6">
+          <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Seu plano</h2>
             <PlanAudioButton text={data.onboarding.ai_plan} />
           </div>
-          <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">
-            {data.onboarding.ai_plan}
-          </p>
+          <PlanBlocks text={data.onboarding.ai_plan} />
         </section>
       )}
 
@@ -250,6 +250,64 @@ function HomePage() {
           ))}
         </ul>
       </section>
+    </div>
+  );
+}
+
+const PLAN_STEPS = [
+  { tag: "Onde você está", icon: Heart },
+  { tag: "A estratégia", icon: Target },
+  { tag: "Seu primeiro passo", icon: Flag },
+];
+
+/**
+ * Quebra o plano (texto corrido) em blocos curtos e escaneáveis,
+ * com um pequeno título por parte e um mini guia de uso do dia.
+ */
+function PlanBlocks({ text }: { text: string }) {
+  const blocks = text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const parts = blocks.length > 0 ? blocks : [text.trim()];
+
+  return (
+    <div className="mt-3 space-y-3">
+      {parts.map((p, i) => {
+        const meta = PLAN_STEPS[i];
+        const Icon = meta?.icon ?? Sparkles;
+        return (
+          <div key={i} className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+            <div className="flex items-center gap-2">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
+                <Icon className="h-3.5 w-3.5" />
+              </span>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+                {meta?.tag ?? `Parte ${i + 1}`}
+              </p>
+            </div>
+            <p className="mt-2 text-[15px] leading-relaxed text-foreground/90">{p}</p>
+          </div>
+        );
+      })}
+
+      <div className="rounded-2xl border border-dashed border-border bg-soft p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+          Como usar seu dia
+        </p>
+        <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+          {[
+            "Comece marcando como você está se sentindo.",
+            "Faça as tarefas de hoje, uma de cada vez.",
+            "À noite, escreva no diário como foi o dia.",
+          ].map((step) => (
+            <li key={step} className="flex items-start gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              {step}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

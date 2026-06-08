@@ -1,0 +1,5 @@
+[shot] / -> landing-desktop.png (final http://localhost:8081/)
+[shot] / -> landing-mobile.png (final http://localhost:8081/)
+[seed] user ok
+[shot] /app -> app-dashboard-desktop.png (final http://localhost:8081/app)
+[shot] /app -> app-dashboard-mobile.png (final http://localhost:8081/app)

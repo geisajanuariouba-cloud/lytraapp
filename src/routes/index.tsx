@@ -3,33 +3,19 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   Lock,
-  Moon,
   PlayCircle,
   RefreshCw,
   ShieldCheck,
   Smartphone,
-  Star,
   Target,
-  X,
   XCircle,
   Zap,
-  Flame,
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { PLANS, formatBRL } from "@/lib/plans";
-import socialProof01 from "@/assets/social-proof/social-proof-01.png.asset.json";
-import socialProof02 from "@/assets/social-proof/social-proof-02.png.asset.json";
-import socialProof03 from "@/assets/social-proof/social-proof-03.png.asset.json";
-import socialProof04 from "@/assets/social-proof/social-proof-04.png.asset.json";
-import socialProof05 from "@/assets/social-proof/social-proof-05.png.asset.json";
-import socialProof06 from "@/assets/social-proof/social-proof-06.png.asset.json";
-import socialProof07 from "@/assets/social-proof/social-proof-07.png.asset.json";
-import socialProof08 from "@/assets/social-proof/social-proof-08.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,12 +24,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Sistema inteligente de reset mental. Reduza vícios, recupere foco e reconstrua sua rotina com um plano feito sob medida pra você.",
+          "Acompanhamento guiado para reduzir vícios, recuperar foco e reconstruir sua rotina, com um plano diário feito sob medida pra você.",
       },
       { property: "og:title", content: "Lytra · Recupere o controle da sua mente" },
       {
         property: "og:description",
-        content: "Plataforma premium de reset mental. Plano personalizado, acompanhamento diário.",
+        content: "Plano diário e personalizado, com passos simples e suporte humano para reconstruir sua rotina.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -75,7 +61,7 @@ const reconhece = [
 ];
 
 const antes = [
-  "Scrollava o feed no automático",
+  "Passava horas no feed sem perceber",
   "Dormia mal, acordava ainda cansado",
   "Procrastinava o que realmente importava",
   "Sentia culpa e vergonha todo dia",
@@ -90,116 +76,11 @@ const depois = [
   "Hoje. Um passo de cada vez.",
 ];
 
-const numeros = [
-  { icon: Smartphone, before: "6h+", after: "1h20", label: "de tela por dia", who: "Mariana, 28" },
-  { icon: Flame, before: "0", after: "47 dias", label: "de streak seguidos", who: "Igor, 30" },
-  {
-    icon: Target,
-    before: "15min",
-    after: "2h seguidas",
-    label: "de foco profundo",
-    who: "Lucas, 22",
-  },
-  { icon: Moon, before: "ruim", after: "profundo", label: "qualidade do sono", who: "Helena, 27" },
-];
-
 const seals = [
   { icon: Lock, title: "Dados criptografados", text: "Segurança de nível bancário" },
   { icon: Zap, title: "Acesso imediato", text: "Pronto em menos de 5 min" },
   { icon: RefreshCw, title: "Garantia 7 dias", text: "Reembolso sem perguntas" },
   { icon: XCircle, title: "Cancele quando quiser", text: "Sem fidelidade" },
-];
-
-const ratingBreakdown = [
-  { stars: 5, pct: 78 },
-  { stars: 4, pct: 16 },
-  { stars: 3, pct: 4 },
-  { stars: 2, pct: 1 },
-  { stars: 1, pct: 1 },
-];
-
-const RU = (g: "men" | "women", n: number) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`;
-
-const testimonialReviews = [
-  {
-    name: "Mariana S.",
-    age: 28,
-    role: "Designer",
-    img: RU("women", 44),
-    text: "Eu passava mais de 6 horas por dia no celular sem perceber. Com a Lytra, em poucas semanas reduzi muito o uso e recuperei tempo para o que importa.",
-  },
-  {
-    name: "Carla M.",
-    age: 39,
-    role: "Empreendedora",
-    img: RU("women", 68),
-    text: "As missões diárias parecem abraços em forma de tarefa. Pequenas, possíveis e gentis. Finalmente um método que não me faz sentir culpada por errar.",
-  },
-  {
-    name: "Igor F.",
-    age: 30,
-    role: "Arquiteto",
-    img: RU("men", 32),
-    text: "Tentei outros apps de foco e nunca passava da primeira semana. Com a Lytra, mantive constância por mais de 40 dias e voltei a confiar na minha rotina.",
-  },
-  {
-    name: "Rafael T.",
-    age: 34,
-    role: "Engenheiro",
-    img: RU("men", 75),
-    text: "Quando usei o modo emergência pela primeira vez, parecia que alguém estava do meu lado. Não senti julgamento. Senti acolhimento real.",
-  },
-  {
-    name: "Juliana K.",
-    age: 24,
-    role: "Psicóloga em formação",
-    img: RU("women", 22),
-    text: "Mesmo estudando comportamento humano, eu mesma caía no ciclo de dopamina rápida. A Lytra me deu estrutura sem me pressionar.",
-  },
-  {
-    name: "Lucas M.",
-    age: 22,
-    role: "Estudante",
-    img: RU("men", 11),
-    text: "Voltei a estudar de verdade. Antes eu mal conseguia terminar uma sessão de leitura. Agora consigo sustentar foco por muito mais tempo.",
-  },
-];
-
-const thiagoImg = RU("men", 17);
-
-const socialProofGallery = [
-  {
-    src: socialProof01.url,
-    alt: "Print de mensagem relatando surpresa ao perceber quanto tempo perdia no celular todos os dias.",
-  },
-  {
-    src: socialProof02.url,
-    alt: "Print de mensagem dizendo que a cabeça parece mais leve depois de começar a usar a Lytra.",
-  },
-  {
-    src: socialProof03.url,
-    alt: "Print de mensagem contando que descobriu que não era falta de disciplina e sentiu alívio.",
-  },
-  {
-    src: socialProof04.url,
-    alt: "Print de mensagem afirmando que voltou a terminar as coisas que começa.",
-  },
-  {
-    src: socialProof05.url,
-    alt: "Print de mensagem dizendo que a mudança está ficando natural, sem esforço excessivo.",
-  },
-  {
-    src: socialProof06.url,
-    alt: "Print de conversa agradecendo pelo cuidado e dizendo que tudo fez mais sentido.",
-  },
-  {
-    src: socialProof07.url,
-    alt: "Print de conversa relatando melhora no sono e mais energia para o dia a dia.",
-  },
-  {
-    src: socialProof08.url,
-    alt: "Print de conversa descrevendo alívio por entender que não era preguiça.",
-  },
 ];
 
 const faqs = [
@@ -249,9 +130,6 @@ function useTodayLabel() {
 
 function Landing() {
   const todayLabel = useTodayLabel();
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  const currentLightbox = lightboxIndex == null ? null : socialProofGallery[lightboxIndex];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -262,7 +140,7 @@ function Landing() {
         <div className="relative mx-auto max-w-3xl px-6 pt-18 pb-10 text-center md:pt-24">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-soft">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Sistema inteligente de reset mental
+            Acompanhamento guiado, dia após dia
           </span>
           <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-balance md:text-6xl">
             Recupere o controle{" "}
@@ -334,14 +212,6 @@ function Landing() {
         <p className="mx-auto mt-4 max-w-sm text-center text-xs text-muted-foreground">
           Conheça a Lytra e escolha o plano ideal para a sua jornada.
         </p>
-      </section>
-
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto grid max-w-5xl gap-6 px-6 py-10 text-center sm:grid-cols-3">
-          <Stat value="24k+" label="pessoas em jornada" />
-          <Stat value="94%" label="relatam mais foco" />
-          <Stat value="4.9" label="avaliação média" />
-        </div>
       </section>
 
       <div>
@@ -423,10 +293,10 @@ function Landing() {
 
             <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
               <p className="font-display text-xl italic text-foreground">
-                "Você para de sobreviver no automático."
+                "Você volta a viver com presença."
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                O que 94% dos usuários relatam após 30 dias.
+                A proposta da Lytra para os seus próximos 30 dias.
               </p>
             </div>
           </div>
@@ -434,88 +304,7 @@ function Landing() {
 
         <section className="bg-soft pb-24">
           <div className="mx-auto max-w-6xl px-6">
-            <div className="text-center">
-              <p className="text-xs font-medium uppercase tracking-widest text-primary">
-                Resultados verificados pelos próprios usuários
-              </p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-                Números que <span className="font-display italic text-primary">falam</span> por si
-              </h2>
-            </div>
-
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {numeros.map((n) => (
-                <div
-                  key={n.who}
-                  className="rounded-2xl border border-border bg-card p-6 text-center shadow-soft"
-                >
-                  <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-primary">
-                    <n.icon className="h-5 w-5" />
-                  </span>
-                  <p className="mt-5 text-sm">
-                    <span className="text-muted-foreground line-through">{n.before}</span>
-                    <span className="mx-1.5 text-muted-foreground">→</span>
-                    <span className="font-semibold text-foreground">{n.after}</span>
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{n.label}</p>
-                  <p className="mt-3 text-xs font-medium text-primary">{n.who}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mx-auto mt-8 max-w-3xl rounded-3xl bg-primary p-7 text-center text-primary-foreground shadow-glow">
-              <p className="text-base leading-relaxed">
-                "Achei que era vício mesmo, que eu não ia conseguir mudar. Lytra me mostrou que era
-                possível com passos pequenos. Em 21 dias eu era outra pessoa com o celular."
-              </p>
-              <div className="mt-5 inline-flex items-center gap-2.5">
-                <img
-                  src={thiagoImg}
-                  alt="Foto de Thiago C."
-                  width={40}
-                  height={40}
-                  loading="lazy"
-                  className="h-10 w-10 rounded-full object-cover ring-2 ring-white/30"
-                />
-                <div className="text-left">
-                  <p className="text-sm font-semibold">Thiago C., 32</p>
-                  <p className="text-xs opacity-80">21 dias de jornada</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-soft pb-24">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="grid items-center gap-10 rounded-3xl border border-border bg-card p-8 shadow-soft md:grid-cols-2 md:p-12">
-              <div>
-                <p className="text-6xl font-semibold tracking-tight">4.9</p>
-                <div className="mt-2 flex items-center gap-1 text-amber-500">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-current" />
-                  ))}
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Baseado em mais de 1.800 avaliações verificadas
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                {ratingBreakdown.map((r) => (
-                  <div key={r.stars} className="flex items-center gap-3 text-xs">
-                    <span className="w-4 text-muted-foreground">{r.stars}</span>
-                    <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                      <div className="h-full bg-amber-400" style={{ width: `${r.pct}%` }} />
-                    </div>
-                    <span className="w-8 text-right text-muted-foreground">{r.pct}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {seals.map((s) => (
                 <div
                   key={s.title}
@@ -532,85 +321,47 @@ function Landing() {
           </div>
         </section>
 
-        <section id="depoimentos" className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-5xl px-6 py-24">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-medium uppercase tracking-widest text-primary">
-              Prova social
+              Feita para o dia a dia
             </p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Resultados Reais de Pessoas Reais
+              Um acompanhamento que cabe na sua rotina
             </h2>
-            <p className="mt-4 text-base text-muted-foreground">
-              Veja o que está acontecendo depois que as pessoas começaram a usar a Lytra.
+            <p className="mt-4 text-base text-muted-foreground text-balance">
+              Sem fórmulas mágicas e sem promessas. Apenas passos simples, todos os dias, com
+              orientação cuidadosa e suporte humano.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {socialProofGallery.map((item, index) => (
-              <button
-                key={item.src}
-                type="button"
-                onClick={() => setLightboxIndex(index)}
-                className="group overflow-hidden rounded-[28px] border border-border bg-card text-left shadow-soft transition hover:-translate-y-1 hover:shadow-card"
-                aria-label={`Abrir print ${index + 1} em tamanho maior`}
-              >
-                <div className="relative aspect-[9/16] w-full overflow-hidden bg-surface">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    loading="lazy"
-                    width={720}
-                    height={1280}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                  />
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-soft py-24">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-medium uppercase tracking-widest text-primary">
-                Reviews premium
-              </p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-                Avaliações que transmitem confiança
-              </h2>
-              <p className="mt-4 text-base text-muted-foreground">
-                Uma segunda camada de prova social com estética de produto premium e leitura rápida.
+          <div className="mx-auto mt-12 grid max-w-4xl gap-5 sm:grid-cols-3">
+            <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
+              <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-primary-soft text-primary">
+                <Target className="h-5 w-5" />
+              </span>
+              <p className="mt-4 text-sm font-semibold">Plano diário</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Passos curtos e possíveis, pensados para o seu momento.
               </p>
             </div>
-
-            <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {testimonialReviews.map((t) => (
-                <article
-                  key={t.name}
-                  className="rounded-[28px] border border-border bg-card p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-card"
-                >
-                  <img
-                    src={t.img}
-                    alt={`Foto de ${t.name}`}
-                    loading="lazy"
-                    width={520}
-                    height={520}
-                    className="aspect-square w-full rounded-2xl object-cover"
-                  />
-                  <div className="mt-5 flex items-center gap-1 text-amber-500">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current" />
-                    ))}
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-lg font-semibold leading-tight">
-                      {t.name}, {t.age}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">{t.role}</p>
-                  </div>
-                  <p className="mt-4 text-sm leading-relaxed text-foreground/90">“{t.text}”</p>
-                </article>
-              ))}
+            <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
+              <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-primary-soft text-primary">
+                <RefreshCw className="h-5 w-5" />
+              </span>
+              <p className="mt-4 text-sm font-semibold">Jornada personalizada</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                A rotina se adapta a você conforme avança, sem julgamento.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
+              <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-primary-soft text-primary">
+                <ShieldCheck className="h-5 w-5" />
+              </span>
+              <p className="mt-4 text-sm font-semibold">Suporte humano</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Gente de verdade para te ajudar quando você precisar.
+              </p>
             </div>
           </div>
         </section>
@@ -639,7 +390,7 @@ function Landing() {
               return (
                 <div
                   key={key}
-                  className={`relative flex flex-col rounded-3xl border bg-card p-8 ${featured ? "border-2 border-primary shadow-glow md:-translate-y-2" : "border-border shadow-soft"}`}
+                  className={`relative flex flex-col rounded-3xl border bg-card p-6 sm:p-8 ${featured ? "border-2 border-primary shadow-glow md:-translate-y-2" : "border-border shadow-soft"}`}
                 >
                   {plan.badge && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-gradient px-3 py-1 text-xs font-medium text-primary-foreground shadow-glow">
@@ -656,7 +407,7 @@ function Landing() {
                     </span>
                   </div>
                   <div className="mt-1 flex items-baseline gap-1">
-                    <span className="text-5xl font-semibold tracking-tight">
+                    <span className="text-4xl font-semibold tracking-tight sm:text-5xl">
                       {formatBRL(plan.price)}
                     </span>
                     <span className="text-sm text-muted-foreground">{plan.period}</span>
@@ -773,68 +524,6 @@ function Landing() {
 
         <Footer />
       </div>
-
-      {currentLightbox && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/70 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Visualização ampliada do print"
-        >
-          <button
-            type="button"
-            onClick={() => setLightboxIndex(null)}
-            className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-card text-foreground shadow-card transition hover:bg-accent"
-            aria-label="Fechar visualização"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              setLightboxIndex((prev) =>
-                prev == null
-                  ? 0
-                  : (prev - 1 + socialProofGallery.length) % socialProofGallery.length,
-              )
-            }
-            className="absolute left-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-card text-foreground shadow-card transition hover:bg-accent sm:grid"
-            aria-label="Imagem anterior"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <div className="w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-card shadow-card">
-            <img
-              src={currentLightbox.src}
-              alt={currentLightbox.alt}
-              width={720}
-              height={1280}
-              className="h-auto w-full object-contain"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() =>
-              setLightboxIndex((prev) =>
-                prev == null ? 0 : (prev + 1) % socialProofGallery.length,
-              )
-            }
-            className="absolute right-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-card text-foreground shadow-card transition hover:bg-accent sm:grid"
-            aria-label="Próxima imagem"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p className="text-4xl font-semibold tracking-tight md:text-5xl">{value}</p>
-      <p className="mt-1 text-sm opacity-90">{label}</p>
     </div>
   );
 }

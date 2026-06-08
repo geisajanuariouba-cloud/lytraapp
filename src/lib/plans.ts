@@ -55,7 +55,7 @@ export const PLANS: Record<
     key: "lifetime",
     label: "Vitalício",
     price: 79.9,
-    oldPrice: 149.9,
+    oldPrice: 159.9,
     period: "único",
     checkoutUrl: "https://pay.kiwify.com.br/PhPf42z",
     highlights: [
