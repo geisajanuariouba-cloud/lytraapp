@@ -74,8 +74,19 @@ export function formatBRL(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-export function planLabel(key?: string | null): string {
-  if (!key) return "—";
+/**
+ * Considera a assinatura ativa apenas se o status for "active" E ela não estiver
+ * vencida (expires_at no passado). lifetime tem expires_at nulo → sempre ativa.
+ */
+export function isSubscriptionActive(
+  sub?: { status?: string | null; expires_at?: string | null } | null,
+): boolean {
+  if (!sub || sub.status !== "active") return false;
+  if (sub.expires_at && new Date(sub.expires_at).getTime() < Date.now()) return false;
+  return true;
+}
+
+export function planLabel(key?: string | null): string {  if (!key) return "—";
   if (key === "monthly") return "Mensal";
   if (key === "quarterly") return "Trimestral";
   if (key === "lifetime") return "Vitalício";

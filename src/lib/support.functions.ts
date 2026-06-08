@@ -17,7 +17,7 @@ export const listMyTickets = createServerFn({ method: "GET" })
 
 export const getTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const [{ data: ticket }, { data: messages }] = await Promise.all([
@@ -34,7 +34,7 @@ export const getTicket = createServerFn({ method: "POST" })
 
 export const createTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({
       subject: z.string().min(3).max(200),
       message: z.string().min(3).max(4000),
@@ -59,7 +59,7 @@ export const createTicket = createServerFn({ method: "POST" })
 
 export const replyTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({
       ticket_id: z.string().uuid(),
       content: z.string().min(1).max(4000),

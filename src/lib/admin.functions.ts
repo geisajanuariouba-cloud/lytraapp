@@ -44,7 +44,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 
 export const adminUpdateSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({
       user_id: z.string().uuid(),
       status: z.enum(["active", "canceled", "refunded", "chargeback", "inactive"]),

@@ -1,0 +1,19 @@
+BASE=http://localhost:8080
+[shot] / -> landing-desktop.png (final http://localhost:8080/)
+[shot] / -> landing-mobile.png (final http://localhost:8080/)
+[auth] login demo OK (teste@lytra.app).
+[seed] uid=49e14eb4-3ed3-429a-8b78-1d6fe6cd11ae modo=demo (assinatura ativa)
+  profiles PATCH 204
+  onboarding POST 200
+  daily_tasks POST 201 
+  mood POST 201
+  journal POST 201
+  progress PATCH 204
+  ticket POST 201
+[shot] /onboarding -> onboarding.png (final http://localhost:8080/onboarding)
+[shot] /app -> dashboard-desktop.png (final http://localhost:8080/app)
+[shot] /app -> dashboard-mobile.png (final http://localhost:8080/app)
+[shot] /app/sos -> sos.png (final http://localhost:8080/app/sos)
+[shot] /app/suporte -> suporte.png (final http://localhost:8080/app/suporte)
+[shot] /app/configuracoes -> conta.png (final http://localhost:8080/app/configuracoes)
+MODO: demo (assinatura ativa)

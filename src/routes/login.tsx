@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { isSubscriptionActive } from "@/lib/plans";
 import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
@@ -58,11 +59,10 @@ function LoginPage() {
         const userId = data.user.id;
         const [{ data: profile }, { data: sub }] = await Promise.all([
           supabase.from("profiles").select("onboarded, active").eq("id", userId).maybeSingle(),
-          supabase.from("subscriptions").select("status").eq("user_id", userId).maybeSingle(),
+          supabase.from("subscriptions").select("status, expires_at").eq("user_id", userId).maybeSingle(),
         ]);
 
-        const subStatus = sub?.status ?? "inactive";
-        const hasActive = subStatus === "active";
+        const hasActive = isSubscriptionActive(sub);
 
         toast.success("Bem-vindo de volta!");
 

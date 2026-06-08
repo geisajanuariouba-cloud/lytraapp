@@ -18,6 +18,43 @@ function getModel() {
   return createGeminiProvider(key)(model);
 }
 
+/**
+ * Geração de texto resiliente: se a IA falhar (chave ausente, rede, quota, etc.),
+ * retorna um fallback humano e seguro em vez de derrubar a requisição.
+ * Garante que onboarding, diário e SOS continuem funcionando sem o Gemini.
+ */
+async function generateTextSafe(prompt: string, fallback: string): Promise<string> {
+  try {
+    const { text } = await generateText({ model: getModel(), system: SYSTEM_VOICE, prompt });
+    const clean = (text ?? "").trim();
+    return clean || fallback;
+  } catch (e: any) {
+    console.error("[ia] generateText falhou; usando fallback:", e?.message);
+    return fallback;
+  }
+}
+
+const FALLBACK_PLAN = `Reconheço que dar o primeiro passo já é difícil — e você deu. Isso já conta.
+
+Nos próximos 30 dias o foco é simples: reduzir os gatilhos aos poucos e criar pequenas vitórias diárias. Sem radicalismo, um passo de cada vez.
+
+Comece hoje com algo pequeno: deixe o celular fora de alcance por 30 minutos antes de dormir.`;
+
+const FALLBACK_JOURNAL = `Obrigado por escrever — colocar em palavras já é um passo importante. O que você trouxe faz sentido e merece atenção. Quando puder, escolha uma única coisa pequena para fazer agora, sem cobrança. Voltar aqui amanhã já é uma vitória.`;
+
+const FALLBACK_SOS = `Esse impulso parece enorme agora, e tudo bem sentir isso. Ele sobe, mas também passa.
+
+Faça isto pelos próximos 90 segundos: levante, beba um copo de água devagar e respire fundo 5 vezes, contando cada expiração até o fim.
+
+Você não precisa vencer o dia inteiro — só os próximos 10 minutos. E esses, você consegue.`;
+
+const FALLBACK_TASKS = [
+  { title: "30 minutos sem celular", description: "Coloque o celular em outro cômodo. Respire.", category: "gatilho" },
+  { title: "Caminhada curta de 10 min", description: "Saia, sinta o ar, volte.", category: "fisica" },
+  { title: "Reflexão de 3 linhas", description: "Escreva no diário como você se sente agora.", category: "reflexao" },
+  { title: "Respiração 4-7-8", description: "Inspire 4s, segure 7s, expire 8s. Repita 4 vezes.", category: "mental" },
+];
+
 /* ============================================================
    ONBOARDING
    ============================================================ */
@@ -35,7 +72,7 @@ const OnboardingInput = z.object({
 
 export const submitOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => OnboardingInput.parse(d))
+  .validator((d: unknown) => OnboardingInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -53,11 +90,7 @@ Visão em 30 dias: ${data.vision_30_days}
 Escreva em 3 parágrafos curtos: (1) reconhecimento humano do contexto, (2) estratégia central
 para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem títulos.`;
 
-    const { text } = await generateText({
-      model: getModel(),
-      system: SYSTEM_VOICE,
-      prompt,
-    });
+    const text = await generateTextSafe(prompt, FALLBACK_PLAN);
 
     await supabase.from("onboarding").upsert({
       user_id: userId,
@@ -76,7 +109,7 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
 
     await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
 
-    // Gera 3 tarefas iniciais do dia
+    // Gera as tarefas iniciais do dia (com fallback se a IA falhar)
     await generateTasksFor(supabase, userId, data.habit, data.triggers);
 
     return { plan: text };
@@ -98,23 +131,17 @@ ação física, redução de gatilho, exercício mental e reflexão.
 Responda APENAS em JSON válido, array com objetos { "title": string, "description": string, "category": "fisica"|"gatilho"|"mental"|"reflexao" }.
 Sem markdown, sem texto fora do JSON.`;
 
-  const { text } = await generateText({
-    model: getModel(),
-    system: SYSTEM_VOICE,
-    prompt,
-  });
-
+  // Geração resiliente: se a IA falhar ou o JSON vier inválido, usa o fallback.
   let tasks: { title: string; description: string; category: string }[] = [];
   try {
-    const cleaned = text.replace(/```json|```/g, "").trim();
-    tasks = JSON.parse(cleaned);
-  } catch {
-    tasks = [
-      { title: "30 minutos sem celular", description: "Coloque o celular em outro cômodo. Respire.", category: "gatilho" },
-      { title: "Caminhada curta de 10 min", description: "Saia, sinta o ar, volte.", category: "fisica" },
-      { title: "Reflexão de 3 linhas", description: "Escreva no diário como você se sente agora.", category: "reflexao" },
-    ];
+    const { text } = await generateText({ model: getModel(), system: SYSTEM_VOICE, prompt });
+    const cleaned = (text ?? "").replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed) && parsed.length > 0) tasks = parsed;
+  } catch (e: any) {
+    console.error("[ia] geração de tarefas falhou; usando fallback:", e?.message);
   }
+  if (!Array.isArray(tasks) || tasks.length === 0) tasks = [...FALLBACK_TASKS];
 
   const rows = tasks.slice(0, 5).map((t) => ({
     user_id: userId,
@@ -136,11 +163,13 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!onb) throw new Error("Onboarding não encontrado");
     const today = new Date().toISOString().slice(0, 10);
+    // Remove apenas as tarefas ainda NÃO concluídas do dia, preservando o histórico.
     await supabase
       .from("daily_tasks")
       .delete()
       .eq("user_id", userId)
-      .eq("task_date", today);
+      .eq("task_date", today)
+      .eq("completed", false);
     await generateTasksFor(supabase, userId, onb.habit, onb.triggers ?? []);
     return { ok: true };
   });
@@ -196,7 +225,7 @@ export const getTaskHistory = createServerFn({ method: "GET" })
 
 export const toggleTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({ id: z.string().uuid(), completed: z.boolean() }).parse(d),
   )
   .handler(async ({ data, context }) => {
@@ -246,7 +275,7 @@ export const toggleTask = createServerFn({ method: "POST" })
    ============================================================ */
 export const submitJournalEntry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({
       content: z.string().min(1).max(4000),
       mood: z.number().int().min(1).max(5).optional(),
@@ -260,10 +289,8 @@ export const submitJournalEntry = createServerFn({ method: "POST" })
       .eq("user_id", userId)
       .maybeSingle();
 
-    const { text } = await generateText({
-      model: getModel(),
-      system: SYSTEM_VOICE,
-      prompt: `Contexto do usuário: trabalhando em reduzir "${onb?.habit ?? "um hábito"}". Objetivo: ${onb?.goal ?? "—"}.
+    const text = await generateTextSafe(
+      `Contexto do usuário: trabalhando em reduzir "${onb?.habit ?? "um hábito"}". Objetivo: ${onb?.goal ?? "—"}.
 Entrada do diário:
 """
 ${data.content}
@@ -271,7 +298,8 @@ ${data.content}
 Responda em até 4 frases. Reconheça o que está sendo dito antes de qualquer sugestão.
 Sem clichê, sem "respira fundo". Se houver padrão de gatilho, aponte com clareza.
 Termine com um próximo passo pequeno e concreto.`,
-    });
+      FALLBACK_JOURNAL,
+    );
 
     const { data: row, error } = await supabase
       .from("journal_entries")
@@ -287,7 +315,7 @@ Termine com um próximo passo pequeno e concreto.`,
    ============================================================ */
 export const emergencyResponse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({ context: z.string().max(500).optional() }).parse(d),
   )
   .handler(async ({ data, context }) => {
@@ -298,24 +326,23 @@ export const emergencyResponse = createServerFn({ method: "POST" })
       .eq("user_id", userId)
       .maybeSingle();
 
-    const { text } = await generateText({
-      model: getModel(),
-      system: SYSTEM_VOICE,
-      prompt: `O usuário está prestes a recair em "${onb?.habit ?? "um hábito"}".
+    const text = await generateTextSafe(
+      `O usuário está prestes a recair em "${onb?.habit ?? "um hábito"}".
 Contexto que ele escreveu: ${data.context || "(nada)"}.
 Gere uma resposta de 3 partes, separadas por linha em branco:
 1) Uma frase curta de reconhecimento — sem julgamento.
 2) Uma ação física de 90 segundos para interromper o impulso (concreta, fácil agora).
 3) Uma frase final, estratégica, que devolva o poder pra ele.
 Sem títulos, sem listas numeradas.`,
-    });
+      FALLBACK_SOS,
+    );
 
     return { message: text };
   });
 
 export const registerRelapse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({
       context: z.string().max(500).optional(),
       trigger: z.string().max(120).optional(),
@@ -371,7 +398,7 @@ export const getDashboard = createServerFn({ method: "GET" })
 
 export const submitMood = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z.object({ mood: z.number().int().min(1).max(5), note: z.string().max(300).optional() }).parse(d),
   )
   .handler(async ({ data, context }) => {

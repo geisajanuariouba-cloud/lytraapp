@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import { getDashboard } from "@/lib/lytra.functions";
+import { isSubscriptionActive } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 
@@ -30,7 +31,7 @@ function AppLayout() {
 
   // Subscription gate — bloqueia exceto conta e suporte
   const subStatus = data?.subscription?.status;
-  const hasActive = subStatus === "active";
+  const hasActive = isSubscriptionActive(data?.subscription);
   const allowedWithoutSub = ["/app/configuracoes", "/app/suporte"];
   const isAllowedPath = allowedWithoutSub.some((p) => loc.pathname.startsWith(p));
 
