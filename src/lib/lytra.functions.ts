@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createGeminiProvider } from "./ai-gateway.server";
 import { generateText } from "ai";
 import { z } from "zod";
 
@@ -12,9 +12,10 @@ substitui profissional de saúde. Você reconhece a dor antes de propor ação. 
 um próximo passo concreto e pequeno.`;
 
 function getModel() {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("LOVABLE_API_KEY ausente");
-  return createLovableAiGatewayProvider(key)("google/gemini-3-flash-preview");
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY ausente");
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  return createGeminiProvider(key)(model);
 }
 
 /* ============================================================
