@@ -198,7 +198,9 @@ export const Route = createFileRoute("/api/public/kiwify")({
           // E-mail de acesso: SOMENTE na primeira compra (usuário recém-criado).
           // Em renovações/recompras/reenvios da Kiwify, não reenvia.
           if (isNewUser) {
-            const siteUrl = process.env.SITE_URL || `https://${url.host}`;
+            // Normaliza barra(s) finais para evitar URL malformada tipo
+            // "https://lytra.shop//redefinir-senha" caso SITE_URL venha com "/".
+            const siteUrl = (process.env.SITE_URL || `https://${url.host}`).replace(/\/+$/, "");
             try {
               // resetPasswordForEmail dispara o e-mail de fato (depende do SMTP do Supabase).
               const { error: mailErr } = await supabaseAdmin.auth.resetPasswordForEmail(
