@@ -138,31 +138,32 @@ export const Route = createFileRoute("/api/public/kiwify")({
           let isNewUser = false;
 
           if (!userId) {
-            // Primeira compra → cria o usuário (única origem de contas, signup público off).
-            const tempPassword = crypto.randomUUID() + "Aa1!";
-            const { data: created, error: createErr } =
-              await supabaseAdmin.auth.admin.createUser({
-                email,
-                password: tempPassword,
-                email_confirm: true,
-                user_metadata: { full_name: fullName, source: "kiwify" },
+            // Primeira compra → cria o usuário VIA CONVITE (única origem de contas,
+            // signup público off). inviteUserByEmail cria o usuário E dispara o e-mail
+            // "Invite user" (template separado do de recuperação), com link de primeiro
+            // acesso apontando para /criar-senha.
+            const siteUrl = (process.env.SITE_URL || `https://${url.host}`).replace(/\/+$/, "");
+            const { data: invited, error: inviteErr } =
+              await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+                redirectTo: `${siteUrl}/criar-senha`,
+                data: { full_name: fullName, source: "kiwify" },
               });
 
-            if (createErr || !created?.user?.id) {
+            if (inviteErr || !invited?.user?.id) {
               // Defensivo: com signup off isso não deve ocorrer. Se o e-mail já existir
               // em auth mas sem mapeamento na app, não derrubamos o webhook — sinalizamos
               // para reconciliação manual e devolvemos 200 (evita retries infinitos).
-              console.error("[kiwify] createUser falhou:", createErr?.message);
+              console.error("[kiwify] inviteUserByEmail falhou:", inviteErr?.message);
               return Response.json({
                 ok: true,
                 handled: false,
-                reason: "user_create_failed_or_exists_unmapped",
+                reason: "user_invite_failed_or_exists_unmapped",
                 email,
                 order_id: String(orderId),
               });
             }
 
-            userId = created.user.id;
+            userId = invited.user.id;
             isNewUser = true;
           }
 
@@ -195,27 +196,10 @@ export const Route = createFileRoute("/api/public/kiwify")({
             .update({ created_user_id: userId })
             .eq("order_id", String(orderId));
 
-          // E-mail de acesso: SOMENTE na primeira compra (usuário recém-criado).
-          // Em renovações/recompras/reenvios da Kiwify, não reenvia.
-          if (isNewUser) {
-            // Normaliza barra(s) finais para evitar URL malformada tipo
-            // "https://lytra.shop//redefinir-senha" caso SITE_URL venha com "/".
-            const siteUrl = (process.env.SITE_URL || `https://${url.host}`).replace(/\/+$/, "");
-            try {
-              // resetPasswordForEmail dispara o e-mail de fato (depende do SMTP do Supabase).
-              const { error: mailErr } = await supabaseAdmin.auth.resetPasswordForEmail(
-                email,
-                { redirectTo: `${siteUrl}/redefinir-senha` },
-              );
-              if (mailErr) {
-                console.error("[kiwify] envio do e-mail de acesso falhou:", mailErr.message);
-              }
-            } catch (e: any) {
-              // Não falha o webhook: a assinatura já está ativa; o usuário pode usar
-              // "esqueci minha senha" no login. Apenas registramos.
-              console.error("[kiwify] exceção ao enviar e-mail de acesso:", e?.message);
-            }
-          }
+          // O e-mail de primeiro acesso é o próprio convite (inviteUserByEmail),
+          // enviado apenas na criação do usuário (1ª compra). Em renovações/recompras/
+          // reenvios da Kiwify, o usuário já existe e nenhum e-mail é disparado aqui.
+          // Se o convite expirar, o usuário usa "Esqueci minha senha" no login (recovery).
 
           return Response.json({
             ok: true,
