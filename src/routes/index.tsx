@@ -1,15 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
-  Check,
+  ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Clock,
   MessageCircle,
-  Smartphone,
-  Target,
-  X,
-  ShieldCheck,
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
@@ -27,8 +22,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Lytra" },
       {
         property: "og:description",
-        content:
-          "Recupere foco, disciplina e controle dos impulsos com um plano diário e personalizado.",
+        content: "Recupere foco, disciplina e controle dos impulsos com um plano diário e personalizado.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -36,489 +30,631 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-// ── Problema ────────────────────────────────────────────────────────
-const reconhece = [
+// ── dados ────────────────────────────────────────────────────────────
+
+const dores = [
   {
-    icon: Smartphone,
-    title: "Você abre o celular por um instante e perde duas horas.",
-    text: "Não é falta de força de vontade. É como o cérebro foi condicionado a buscar recompensas rápidas, uma notificação de cada vez.",
+    title: "Você abre o celular por um segundo e perde duas horas.",
+    text: "Não é fraqueza. É como o cérebro foi condicionado a buscar dopamina, uma notificação de cada vez.",
   },
   {
-    icon: Clock,
     title: "Você adia o que importa e cumpre o que não importa.",
-    text: "A procrastinação crônica costuma ser um sinal de exaustão, ansiedade ou perfeccionismo, não de preguiça.",
+    text: "Procrastinação crônica costuma ser exaustão e ansiedade disfarçadas, não preguiça.",
   },
   {
-    icon: Target,
     title: "Você decide mudar. Amanhã. De novo.",
-    text: "O ciclo se repete porque métodos genéricos ignoram o lado emocional. Sem acolhimento real, toda estratégia vira mais uma coisa para abandonar.",
+    text: "O ciclo se repete porque métodos genéricos ignoram o lado emocional. Sem acolhimento, nenhuma estratégia dura.",
   },
 ];
 
-// ── Como funciona (3 passos) ────────────────────────────────────────
 const passos = [
   {
-    title: "Diagnóstico Rápido",
-    text: "A plataforma entende seu momento atual, seus gatilhos e o que precisa ser reconstruído.",
+    num: "01",
+    title: "Diagnóstico rápido",
+    text: "Em minutos a Lytra entende seu momento, seus gatilhos e o que precisa ser reconstruído.",
   },
   {
-    title: "Plano Sob Medida",
-    text: "Você recebe missões curtas e diárias que se adaptam à sua rotina real, sem pressão.",
+    num: "02",
+    title: "Plano feito para você",
+    text: "Missões curtas e diárias que se encaixam na sua rotina real, sem pressão e sem padrões prontos.",
   },
   {
-    title: "Acompanhamento Diário",
-    text: "A rotina se ajusta conforme você avança. Você registra progresso e mantém a consistência.",
+    num: "03",
+    title: "Acompanhamento que evolui",
+    text: "A jornada se ajusta conforme você avança. Cada passo registrado é prova do quanto você já foi.",
   },
 ];
 
-// ── Benefícios (antes / depois) ─────────────────────────────────────
-const antes = [
-  "Horas no feed sem perceber o tempo passar",
-  "Sono ruim e cansaço constante",
-  "Adiar o que realmente importa",
-  "Culpa e desânimo no fim do dia",
-  "Decidir mudar e não conseguir manter",
+const transformacoes = [
+  { de: "Horas no feed sem perceber", para: "Mais presença e clareza no dia" },
+  { de: "Sono ruim, cansaço constante", para: "Noites tranquilas, manhãs com propósito" },
+  { de: "Adiar o que realmente importa", para: "Missões pequenas que cabem na rotina" },
+  { de: "Culpa e desânimo no fim do dia", para: "Progresso gentil, sem julgamento" },
+  { de: "Decisões que não se sustentam", para: "Disciplina construída um passo de cada vez" },
 ];
 
-const depois = [
-  "Mais presença e clareza no dia a dia",
-  "Noites tranquilas e foco recuperado",
-  "Missões pequenas que cabem na rotina",
-  "Progresso gentil, sem julgamento",
-  "Disciplina construída um passo de cada vez",
-];
-
-// ── Valor Percebido ─────────────────────────────────────────────────
-const recursos = [
+const oQueVoceRecebe = [
   {
-    title: "Diário Emocional Inteligente",
-    desc: "Registre como se sente e ganhe clareza imediata sobre seus gatilhos.",
+    titulo: "Clareza mental",
+    desc: "Entenda seus padrões, gatilhos e emoções com um diário que organiza o que você sente.",
   },
   {
-    title: "Missões Personalizadas",
-    desc: "Ações diárias desenhadas para o seu contexto e sua disponibilidade.",
+    titulo: "Foco recuperado",
+    desc: "Missões diárias personalizadas para recondicionar sua atenção sem esforço excessivo.",
   },
   {
-    title: "Plano de Evolução Adaptável",
-    desc: "Seu caminho se ajusta ao seu progresso, garantindo que você nunca se sinta sobrecarregado.",
+    titulo: "Controle emocional",
+    desc: "Ferramentas práticas para pausar, respirar e responder em vez de reagir no automático.",
   },
   {
-    title: "Registro de Conquistas",
-    desc: "Métricas simples e visuais para você ver, na prática, a retomada do seu foco.",
+    titulo: "Disciplina real",
+    desc: "Um sistema de progresso que celebra cada passo, mantendo você no caminho sem pressão.",
+  },
+  {
+    titulo: "Redução de distrações",
+    desc: "Estratégias concretas para recuperar as horas perdidas em estímulos que não te servem.",
+  },
+  {
+    titulo: "Evolução visível",
+    desc: "Registro de conquistas que transforma pequenas vitórias em prova de que você está mudando.",
   },
 ];
 
-// ── Depoimentos Estruturais (Aguardando Materiais) ──────────────────
-// Insira as URLs reais das imagens e textos quando os materiais estiverem disponíveis.
-const testimonials: { name: string; text: string; photo: string }[] = [
-  {
-    name: "[Nome do Usuário 1]",
-    text: "[Texto do depoimento real do usuário relatando a transformação e melhora no foco. Substituir assim que o material estiver disponível.]",
-    photo: "", // ex: "/depoimentos/foto1.jpg"
+// Planos: apresentação visual separada do preço (que vem de plans.ts)
+const planDisplay = {
+  monthly: {
+    destaque: "Custo mais alto por mês",
+    features: [
+      "Acesso completo",
+      "Diário emocional",
+      "Missões personalizadas",
+      "Sistema de conquistas",
+      "Suporte incluso",
+    ],
   },
-  {
-    name: "[Nome do Usuário 2]",
-    text: "[Texto do depoimento real do usuário relatando como parou de procrastinar. Substituir assim que o material estiver disponível.]",
-    photo: "",
+  quarterly: {
+    destaque: "Equivale a R$ 13,30/mês · 33% de economia",
+    features: [
+      "Tudo do mensal",
+      "Mesmo acesso completo",
+      "Mesmo conteúdo e suporte",
+      "Preço por mês bem menor",
+    ],
+    recommended: true,
   },
-  {
-    name: "[Nome do Usuário 3]",
-    text: "[Texto do depoimento real do usuário relatando o impacto positivo na rotina. Substituir assim que o material estiver disponível.]",
-    photo: "",
+  lifetime: {
+    destaque: "Você paga uma vez. Para sempre.",
+    features: [
+      "Tudo do trimestral",
+      "Sem mensalidades",
+      "Sem renovações",
+      "Acesso permanente",
+    ],
   },
-];
+} as const;
 
-// ── Depoimentos WhatsApp (Aguardando Materiais) ─────────────────────
-// Adicione as URLs dos prints reais na lista abaixo.
-const whatsappShots: { src: string; alt: string }[] = [
-  // { src: "/whatsapp/print-1.png", alt: "Conversa real" },
-];
+const testimonials: { name: string; text: string; photo?: string }[] = [];
+
+const whatsappShots: { src: string; alt: string }[] = [];
 
 const faqs = [
   {
-    q: "Como funciona a Lytra?",
-    a: "Você responde um diagnóstico rápido, recebe um plano personalizado e, todos os dias, tem missões e reflexões curtas que se adaptam ao seu progresso.",
+    q: "Como a Lytra funciona?",
+    a: "Você responde um diagnóstico rápido, recebe um plano diário personalizado e acompanha sua evolução com missões e reflexões que se adaptam ao seu progresso.",
   },
   {
-    q: "A Lytra substitui terapia?",
+    q: "Substitui terapia?",
     a: "Não. É um apoio comportamental e de rotina. Para quadros clínicos, procure um profissional de saúde.",
   },
   {
-    q: "Como recebo o acesso depois de comprar?",
-    a: "Logo após a confirmação do pagamento, você recebe um e-mail com acesso imediato para definir sua senha e entrar na plataforma.",
+    q: "Como recebo o acesso após comprar?",
+    a: "Logo após o pagamento você recebe um e-mail com um link para criar sua senha e entrar na plataforma.",
   },
   {
     q: "Funciona no celular?",
-    a: "Sim. A Lytra foi projetada primariamente para uso em smartphones, funcionando de forma fluida direto no navegador.",
+    a: "Sim. A Lytra é pensada para o celular e roda direto no navegador, sem precisar baixar nada.",
+  },
+  {
+    q: "Em quanto tempo sinto resultado?",
+    a: "Muitas pessoas percebem mais foco e presença já nas primeiras semanas. A consistência é o que sustenta a mudança.",
   },
 ];
 
+// ── componente do carrossel WhatsApp ─────────────────────────────────
 function WhatsappCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
-
-  const scrollBy = (dir: 1 | -1) => {
+  const scroll = (dir: 1 | -1) => {
     const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * Math.min(el.clientWidth * 0.85, 360), behavior: "smooth" });
+    if (el) el.scrollBy({ left: dir * Math.min(el.clientWidth * 0.85, 320), behavior: "smooth" });
   };
 
   const slides = whatsappShots.length
     ? whatsappShots
-    : Array.from({ length: 4 }, (_, i) => ({ src: "", alt: `Aguardando print ${i + 1}` }));
+    : Array.from({ length: 4 }, (_, i) => ({ src: "", alt: `Print ${i + 1}` }));
 
   return (
-    <div className="relative mt-12 w-full max-w-5xl mx-auto px-6">
+    <div className="relative mt-14">
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-8 pt-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {slides.map((shot, i) => (
           <div
             key={i}
-            className="w-[280px] shrink-0 snap-center overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm sm:w-[320px] transition-transform hover:-translate-y-1"
+            className="w-[260px] shrink-0 snap-center overflow-hidden rounded-3xl border border-primary/10 bg-white shadow-soft sm:w-[300px]"
           >
             {shot.src ? (
-              <img
-                src={shot.src}
-                alt={shot.alt}
-                loading="lazy"
-                className="aspect-[9/16] w-full object-cover"
-              />
+              <img src={shot.src} alt={shot.alt} loading="lazy" className="aspect-[9/16] w-full object-cover" />
             ) : (
-              <div className="grid aspect-[9/16] w-full place-items-center bg-gray-50 text-center">
-                <div className="flex flex-col items-center gap-3 text-gray-400">
+              <div className="grid aspect-[9/16] w-full place-items-center bg-primary-soft/30">
+                <div className="flex flex-col items-center gap-3 text-primary/40">
                   <MessageCircle className="h-8 w-8" />
-                  <span className="text-sm font-medium">Print de Conversa</span>
-                  <span className="text-xs">[Inserir Imagem]</span>
+                  <span className="text-xs font-medium">Conversa real</span>
                 </div>
               </div>
             )}
           </div>
         ))}
       </div>
-
-      <div className="mt-2 flex justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => scrollBy(-1)}
-          aria-label="Anterior"
-          className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollBy(1)}
-          aria-label="Próximo"
-          className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
+      <div className="mt-6 flex justify-center gap-3">
+        {([-1, 1] as const).map((dir) => (
+          <button
+            key={dir}
+            type="button"
+            onClick={() => scroll(dir)}
+            aria-label={dir === -1 ? "Anterior" : "Próximo"}
+            className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-soft transition hover:bg-primary-soft"
+          >
+            {dir === -1 ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+        ))}
       </div>
     </div>
   );
 }
 
+// ── página ───────────────────────────────────────────────────────────
 function Landing() {
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
       <Navbar />
 
-      {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative mx-auto max-w-4xl px-6 pt-32 pb-24 text-center md:pt-40 md:pb-32">
-        <h1 className="text-5xl font-bold tracking-tight text-balance md:text-7xl text-gray-900">
-          Recupere o controle <br className="hidden md:block" /> da sua mente.
-        </h1>
-        <p className="mx-auto mt-8 max-w-2xl text-lg text-gray-500 text-balance leading-relaxed">
-          Um acompanhamento diário e prático para retomar seu foco, disciplina e controle dos impulsos. Tudo no seu ritmo, um passo de cada vez.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="#precos"
-            className="inline-flex h-12 items-center justify-center rounded-lg bg-black px-8 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-          >
-            Começar agora
-          </a>
-          <a
-            href="#como-funciona"
-            className="inline-flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white px-8 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
-          >
-            Entenda como funciona
-          </a>
-        </div>
-      </section>
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden">
+        {/* fundo: gradiente verde cobrindo toda a área superior */}
+        <div className="absolute inset-0 bg-hero-glow" aria-hidden />
+        {/* camada extra de verde sutil na parte superior */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-[70%]"
+          style={{
+            background:
+              "radial-gradient(ellipse 100% 80% at 50% -10%, oklch(0.94 0.06 158 / 0.7), transparent 70%)",
+          }}
+          aria-hidden
+        />
 
-      {/* ── Problema ───────────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32 border-t border-gray-100">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Não é preguiça. É exaustão e hábito.
-          </h2>
-        </div>
+        <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-20 text-center md:pt-36 md:pb-28">
+          {/* pílula de abertura verde */}
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
+            Recupere o controle
+          </span>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {reconhece.map((c) => (
-            <div key={c.title} className="flex flex-col gap-4">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-gray-100 text-gray-900">
-                <c.icon className="h-5 w-5" />
+          <h1 className="mt-7 font-display text-5xl font-semibold leading-[1.04] tracking-tight text-balance text-foreground md:text-6xl lg:text-7xl">
+            Sua mente{" "}
+            <em className="not-italic" style={{ color: "var(--primary)" }}>
+              pode
+            </em>{" "}
+            ser diferente.
+          </h1>
+
+          <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground text-balance">
+            Um acompanhamento diário e pessoal para retomar o foco, reduzir distrações e reconstruir
+            sua rotina. No seu ritmo, um passo de cada vez.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="#precos"
+              className="group inline-flex h-13 items-center gap-2 rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 hover:shadow-[0_0_40px_-8px_oklch(0.52_0.13_158/0.5)]"
+              style={{ height: "3.25rem" }}
+            >
+              Começar a jornada
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href="#como-funciona"
+              className="inline-flex h-13 items-center justify-center rounded-full border border-primary/20 bg-white/60 px-8 text-sm font-medium text-foreground backdrop-blur transition hover:bg-primary-soft/60"
+              style={{ height: "3.25rem" }}
+            >
+              Como funciona
+            </a>
+          </div>
+
+          {/* três micro-promessas verdes */}
+          <div className="mx-auto mt-12 flex flex-wrap justify-center gap-3">
+            {["Foco recuperado", "Menos distrações", "Disciplina real"].map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/50" aria-hidden />
+                {tag}
               </span>
-              <h3 className="text-lg font-semibold text-gray-900">{c.title}</h3>
-              <p className="text-sm leading-relaxed text-gray-500">{c.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Benefícios (O Contraste) ───────────────────────────── */}
-      <section className="bg-gray-50 py-24 md:py-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-3">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600">
-                  <X className="h-3.5 w-3.5" />
-                </span>
-                Rotina Atual
-              </h3>
-              <ul className="mt-8 space-y-4">
-                {antes.map((t) => (
-                  <li key={t} className="flex items-start gap-3 text-sm text-gray-500">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-300" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10 shadow-sm ring-1 ring-gray-900/5">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-3">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                Com a Lytra
-              </h3>
-              <ul className="mt-8 space-y-4">
-                {depois.map((t) => (
-                  <li key={t} className="flex items-start gap-3 text-sm text-gray-900 font-medium">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-gray-900" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Como funciona ──────────────────────────────────────── */}
-      <section id="como-funciona" className="mx-auto max-w-5xl px-6 py-24 md:py-32">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Simples. Direto. Efetivo.
+      {/* ── Problema ── */}
+      <section id="problema" className="mx-auto max-w-4xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            Você se reconhece aqui?
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            Não é falta de força de vontade.
           </h2>
-          <p className="mt-4 text-gray-500">
-            A consistência é o que traz resultado, não atalhos milagrosos.
+          <p className="mt-4 text-lg italic text-primary">
+            É como o cérebro aprendeu a funcionar.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-12 md:grid-cols-3">
-          {passos.map((p, i) => (
-            <div key={p.title} className="relative">
-              <span className="text-5xl font-bold text-gray-100 absolute -top-8 -left-4 -z-10">
+        <div className="mt-14 space-y-4">
+          {dores.map((d, i) => (
+            <div
+              key={d.title}
+              className="flex items-start gap-5 rounded-2xl border border-border bg-card px-6 py-5 shadow-soft transition-shadow hover:shadow-card"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-sm font-bold text-primary">
                 {i + 1}
               </span>
-              <h3 className="text-lg font-semibold text-gray-900 mt-4">{p.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-500">{p.text}</p>
+              <div>
+                <p className="font-semibold text-foreground">{d.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{d.text}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Depoimentos WhatsApp ───────────────────────────────── */}
-      <section className="bg-gray-50 py-24 md:py-32 border-y border-gray-100">
-        <div className="text-center max-w-2xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Quem já retomou o controle
-          </h2>
-          <p className="mt-4 text-gray-500">
-            Pessoas reais recuperando horas do seu dia com a Lytra.
-          </p>
-        </div>
-        <WhatsappCarousel />
-      </section>
-
-      {/* ── O que você recebe (Valor Percebido) ────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            O que está incluído
-          </h2>
-          <p className="mt-4 text-gray-500">
-            Ferramentas pensadas exclusivamente para manter você no caminho.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {recursos.map((r) => (
-            <div key={r.title} className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8">
-              <h3 className="text-base font-semibold text-gray-900">{r.title}</h3>
-              <p className="mt-2 text-sm text-gray-500 leading-relaxed">{r.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Depoimentos Escritos ───────────────────────────────── */}
-      <section className="bg-gray-50 py-24 md:py-32 border-t border-gray-100">
+      {/* ── Como funciona ── */}
+      <section
+        id="como-funciona"
+        className="py-24 md:py-32"
+        style={{ background: "linear-gradient(160deg, oklch(0.97 0.02 158), oklch(1 0 0) 70%)" }}
+      >
         <div className="mx-auto max-w-5xl px-6">
-          <div className="grid gap-8 md:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <div key={i} className="flex flex-col rounded-2xl bg-white p-8 border border-gray-200">
-                <p className="flex-1 text-sm leading-relaxed text-gray-700 italic">
-                  "{t.text}"
-                </p>
-                <div className="mt-8 flex items-center gap-4">
-                  {t.photo ? (
-                    <img
-                      src={t.photo}
-                      alt={t.name}
-                      loading="lazy"
-                      className="h-10 w-10 rounded-full object-cover bg-gray-100"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
-                      Foto
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-gray-900">{t.name}</span>
-                </div>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Como funciona
+            </p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              Simples de começar. Feito para continuar.
+            </h2>
+          </div>
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-3">
+            {passos.map((p) => (
+              <div key={p.num} className="relative rounded-3xl border border-primary/10 bg-white p-8 shadow-soft">
+                <span className="text-5xl font-bold text-primary/10 select-none">{p.num}</span>
+                <h3 className="mt-4 text-lg font-semibold text-foreground">{p.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-1 rounded-b-3xl"
+                  style={{ background: "linear-gradient(90deg, var(--primary), var(--primary-glow))" }}
+                  aria-hidden
+                />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Preços & Garantia ──────────────────────────────────── */}
-      <section id="precos" className="mx-auto max-w-5xl px-6 py-24 md:py-32">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Sua jornada começa aqui
+      {/* ── Transformação (antes / depois) ── */}
+      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            A virada
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            O que muda na prática
           </h2>
-          <p className="mt-4 text-gray-500">
-            Acesso completo em todos os planos. A única diferença é o preço por período.
+        </div>
+
+        <div className="mx-auto mt-14 max-w-3xl overflow-hidden rounded-3xl border border-border bg-card shadow-card">
+          {/* cabeçalho das colunas */}
+          <div className="grid grid-cols-2 border-b border-border">
+            <div className="border-r border-border bg-muted/40 px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Hoje
+            </div>
+            <div className="bg-primary px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest text-primary-foreground">
+              Com a Lytra
+            </div>
+          </div>
+
+          {/* linhas */}
+          {transformacoes.map((t, i) => (
+            <div
+              key={t.de}
+              className={`grid grid-cols-2 ${i < transformacoes.length - 1 ? "border-b border-border" : ""}`}
+            >
+              <div className="border-r border-border px-5 py-4 text-sm text-muted-foreground">
+                {t.de}
+              </div>
+              <div className="bg-primary/5 px-5 py-4 text-sm font-medium text-primary">
+                {t.para}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── O que você recebe ── */}
+      <section
+        id="recursos"
+        className="py-24 md:py-32"
+        style={{ background: "linear-gradient(180deg, oklch(0.96 0.03 158 / 0.4), transparent 60%)" }}
+      >
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              O que você recebe
+            </p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              Não ferramentas. Transformações.
+            </h2>
+            <p className="mt-4 text-base text-muted-foreground">
+              Cada parte da Lytra foi pensada para um resultado real na sua vida, não para parecer
+              completa numa lista.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {oQueVoceRecebe.map((item) => (
+              <div
+                key={item.titulo}
+                className="group rounded-2xl border border-primary/10 bg-white p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-card"
+              >
+                <div className="h-1 w-8 rounded-full bg-primary transition-all group-hover:w-12" aria-hidden />
+                <h3 className="mt-5 text-base font-semibold text-foreground">{item.titulo}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Depoimentos ── */}
+      <section id="depoimentos" className="mx-auto max-w-5xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            Histórias reais
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            Quem voltou ao controle
+          </h2>
+        </div>
+
+        <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {(testimonials.length
+            ? testimonials
+            : Array.from({ length: 3 }, () => null)
+          ).map((t, i) => (
+            <figure
+              key={i}
+              className="flex flex-col rounded-3xl border border-primary/10 bg-white p-7 shadow-soft"
+            >
+              {/* aspas decorativas em verde */}
+              <span className="font-display text-5xl leading-none text-primary/25 select-none" aria-hidden>
+                "
+              </span>
+              <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-foreground">
+                {t ? `"${t.text}"` : "Depoimento em breve."}
+              </blockquote>
+              <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
+                {t?.photo ? (
+                  <img
+                    src={t.photo}
+                    alt={t.name}
+                    loading="lazy"
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="h-10 w-10 shrink-0 rounded-full bg-primary/10" aria-hidden />
+                )}
+                <span className="text-sm font-semibold text-foreground">{t ? t.name : "—"}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* ── WhatsApp ── */}
+      <section
+        className="py-24 md:py-32"
+        style={{ background: "linear-gradient(160deg, oklch(0.97 0.02 158), oklch(1 0 0) 70%)" }}
+      >
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Conversas reais
+            </p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              O que chega pra gente todo dia
+            </h2>
+          </div>
+          <WhatsappCarousel />
+        </div>
+      </section>
+
+      {/* ── Preços ── */}
+      <section id="precos" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            Escolha seu plano
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            Comece hoje.
+          </h2>
+          <p className="mt-4 text-base text-muted-foreground">
+            Acesso completo em todos os planos. O que muda é o custo por período.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 items-start max-w-4xl mx-auto">
+        <div className="mx-auto mt-14 grid max-w-5xl items-start gap-6 md:grid-cols-3">
           {(["monthly", "quarterly", "lifetime"] as const).map((key) => {
             const plan = PLANS[key];
-            const isFeatured = key === "quarterly";
-            
+            const display = planDisplay[key];
+            const featured = "recommended" in display && display.recommended;
+
             return (
               <div
                 key={key}
-                className={`relative flex flex-col rounded-2xl p-8 bg-white ${
-                  isFeatured
-                    ? "border-2 border-black shadow-lg md:-translate-y-2"
-                    : "border border-gray-200"
+                className={`relative flex flex-col rounded-3xl p-7 ${
+                  featured
+                    ? "border-2 border-primary bg-white shadow-glow md:-translate-y-2"
+                    : "border border-border bg-card shadow-soft"
                 }`}
               >
-                {isFeatured && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
-                    Plano Recomendado
+                {featured && (
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow-glow">
+                    Mais recomendado
                   </span>
                 )}
-                
-                <h3 className="text-base font-semibold text-gray-900">{plan.label}</h3>
-                
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-gray-900">
+
+                <p className="text-sm font-semibold text-muted-foreground">{plan.label}</p>
+
+                <div className="mt-3 flex items-baseline gap-1.5">
+                  <span className="text-4xl font-bold tracking-tight text-foreground">
                     {formatBRL(plan.price)}
                   </span>
-                  <span className="text-sm font-medium text-gray-500">
-                    {plan.period === "único" ? "único" : plan.period}
+                  <span className="text-sm text-muted-foreground">
+                    {plan.period === "único" ? "pagamento único" : plan.period}
                   </span>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-3 flex-1">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Check className="h-4 w-4 text-gray-900" />
-                    <span>Acesso Completo</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Check className="h-4 w-4 text-gray-900" />
-                    <span>Todas as ferramentas</span>
-                  </div>
-                </div>
+                <p
+                  className={`mt-3 rounded-full px-3 py-1 text-xs font-semibold w-fit ${
+                    featured
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {display.destaque}
+                </p>
+
+                <ul className="mt-6 space-y-2.5">
+                  {display.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2.5 text-sm">
+                      <span
+                        className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${
+                          featured ? "bg-primary" : "bg-primary/20"
+                        }`}
+                        style={{ height: "1.125rem", width: "1.125rem" }}
+                      >
+                        <svg viewBox="0 0 12 9" className="h-2.5 w-2.5" aria-hidden>
+                          <path
+                            d="M1 4l3.5 3.5L11 1"
+                            stroke={featured ? "white" : "oklch(0.52 0.13 158)"}
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            fill="none"
+                          />
+                        </svg>
+                      </span>
+                      <span className={featured ? "text-foreground" : "text-muted-foreground"}>
+                        {f}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
 
                 <a
                   href={plan.checkoutUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`mt-8 inline-flex h-12 w-full items-center justify-center rounded-lg font-medium transition-colors ${
-                    isFeatured
-                      ? "bg-black text-white hover:bg-gray-800"
-                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                  className={`mt-8 inline-flex h-11 w-full items-center justify-center rounded-full text-sm font-semibold transition-all ${
+                    featured
+                      ? "bg-primary text-primary-foreground shadow-glow hover:opacity-90"
+                      : "border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                   }`}
                 >
-                  Adquirir {plan.label}
+                  Adquirir agora
                 </a>
               </div>
             );
           })}
         </div>
+      </section>
 
-        {/* Informação Order Bump */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            * Após a compra, você poderá adicionar acesso pelo WhatsApp e suporte prioritário por apenas R$ 9,90.
-          </p>
-        </div>
-
-        {/* Garantia */}
-        <div className="mt-16 flex flex-col items-center justify-center gap-4 rounded-2xl bg-gray-50 p-8 border border-gray-100 max-w-2xl mx-auto text-center">
-          <ShieldCheck className="h-10 w-10 text-gray-900" />
-          <h3 className="text-lg font-semibold text-gray-900">Garantia Incondicional de 7 Dias</h3>
-          <p className="text-sm text-gray-500">
-            Você tem 7 dias para acessar a Lytra, ver como funciona na prática e decidir se é para você. Se achar que não ajudou, devolvemos 100% do seu dinheiro, sem complicações. Risco zero.
-          </p>
+      {/* ── FAQ ── */}
+      <section
+        id="faq"
+        className="py-24 md:py-32"
+        style={{ background: "linear-gradient(160deg, oklch(0.97 0.02 158), oklch(1 0 0) 70%)" }}
+      >
+        <div className="mx-auto max-w-3xl px-6">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">Dúvidas</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+              Perguntas frequentes
+            </h2>
+          </div>
+          <div className="mt-12 space-y-3">
+            {faqs.map((f) => (
+              <details
+                key={f.q}
+                className="group rounded-2xl border border-primary/10 bg-white p-6 shadow-soft transition-shadow hover:shadow-card"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-foreground">
+                  {f.q}
+                  <span className="ml-6 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── FAQ ────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-3xl px-6 py-24 border-t border-gray-100">
-        <h2 className="text-2xl font-semibold tracking-tight md:text-3xl mb-12 text-center">
-          Perguntas Frequentes
-        </h2>
-        <div className="space-y-4">
-          {faqs.map((f) => (
-            <details
-              key={f.q}
-              className="group rounded-xl border border-gray-200 bg-white p-6 [&_summary::-webkit-details-marker]:hidden"
-            >
-              <summary className="flex cursor-pointer items-center justify-between font-semibold text-gray-900">
-                {f.q}
-                <span className="ml-6 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="mt-4 text-sm leading-relaxed text-gray-500 pr-8">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CTA final ──────────────────────────────────────────── */}
-      <section className="mx-auto max-w-4xl px-6 py-24 md:py-32 text-center">
-        <h2 className="text-3xl font-semibold tracking-tight md:text-5xl text-gray-900">
-          Sua próxima versão começa hoje.
-        </h2>
-        <a
-          href="#precos"
-          className="mt-10 inline-flex h-14 items-center justify-center rounded-lg bg-black px-10 text-base font-medium text-white transition-colors hover:bg-gray-800"
+      {/* ── CTA Final ── */}
+      <section className="mx-auto max-w-4xl px-6 pb-24 md:pb-32">
+        <div
+          className="relative overflow-hidden rounded-[2.5rem] p-12 text-center shadow-glow md:p-20"
+          style={{
+            background:
+              "linear-gradient(145deg, var(--primary) 0%, oklch(0.62 0.15 160) 100%)",
+          }}
         >
-          Retomar o controle
-        </a>
+          {/* brilho interno */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 60% at 50% -10%, oklch(1 0 0 / 0.18), transparent 70%)",
+            }}
+            aria-hidden
+          />
+
+          <h2 className="relative text-4xl font-semibold tracking-tight text-white text-balance md:text-5xl">
+            Sua próxima versão começa hoje.
+          </h2>
+          <p className="relative mx-auto mt-5 max-w-lg text-lg text-white/75 text-balance">
+            Foco. Clareza. Controle. Um passo de cada vez.
+          </p>
+          <a
+            href="#precos"
+            className="relative mt-9 inline-flex h-13 items-center gap-2 rounded-full bg-white px-9 text-sm font-bold text-primary shadow-lg transition hover:bg-primary-soft"
+            style={{ height: "3.25rem" }}
+          >
+            Começar agora
+            <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
       </section>
 
       <Footer />
