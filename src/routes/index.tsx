@@ -266,15 +266,9 @@ function Landing() {
       {/* ── Problema ── */}
       <section id="problema" className="mx-auto max-w-4xl px-6 py-24 md:py-32">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+          <h2 className="font-display text-4xl text-balance md:text-5xl">
             Você se reconhece aqui?
-          </p>
-          <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
-            Não é falta de força de vontade.
           </h2>
-          <p className="mt-4 font-display text-xl italic text-primary">
-            É como o cérebro aprendeu a funcionar.
-          </p>
         </div>
 
         <div className="mt-14 space-y-4">
@@ -292,6 +286,15 @@ function Landing() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mx-auto mt-12 max-w-2xl text-center">
+          <p className="font-display text-2xl text-foreground md:text-3xl">
+            Não é falta de força de vontade.
+          </p>
+          <p className="mt-3 font-display text-xl italic text-primary">
+            É como o cérebro aprendeu a funcionar.
+          </p>
         </div>
       </section>
 
