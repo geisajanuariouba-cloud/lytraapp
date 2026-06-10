@@ -5,18 +5,17 @@ interface LogoProps {
 }
 
 /**
- * Logo oficial da Lytra — wordmark "lytra" em verde (sem ícone).
+ * Logo oficial da Lytra — wordmark "lytra" na fonte display da marca (DM Serif Display).
  *
- * Renderizado como texto vetorial na fonte display do projeto: alta qualidade
- * em qualquer tamanho, fundo 100% transparente (sem caixa) e sem depender de
- * arquivo de imagem externo, então nunca quebra.
+ * Usa a mesma fonte serif carregada para os headings, que replica o caráter
+ * da logo original (serifa de alto contraste, curvas orgânicas).
+ * Fundo 100% transparente, sem arquivo externo — nunca quebra.
  *
- * Para usar a arte PNG exata no lugar, troque o <span> abaixo por:
+ * Para substituir pela arte PNG exata (com fundo transparente):
  *   <img src="/lytra-logo.png" alt="Lytra" style={{ height }} />
- * (use uma versão com fundo transparente).
  */
 export function Logo({ className = "", height = 40 }: LogoProps) {
-  const fontSize = Math.round(height * 0.72);
+  const fontSize = Math.round(height * 0.78);
 
   return (
     <span
@@ -26,8 +25,14 @@ export function Logo({ className = "", height = 40 }: LogoProps) {
       aria-label="Lytra"
     >
       <span
-        className="font-display font-semibold lowercase tracking-tight text-primary"
-        style={{ fontSize, lineHeight: 1 }}
+        style={{
+          fontFamily: '"DM Serif Display", "Georgia", serif',
+          fontSize,
+          lineHeight: 1,
+          color: "var(--primary)",
+          fontWeight: 400,           // DM Serif Display tem só regular — não use bold
+          letterSpacing: "-0.01em",  // igual ao tracking das logos serif premium
+        }}
       >
         lytra
       </span>

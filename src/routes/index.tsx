@@ -240,19 +240,15 @@ function Landing() {
             Recupere o controle
           </span>
 
-          <h1 className="mt-7 font-display text-5xl font-semibold leading-[1.04] tracking-tight text-balance text-foreground md:text-6xl lg:text-7xl">
-            Sua mente{" "}
-            <em className="not-italic" style={{ color: "var(--primary)" }}>
-              pode
-            </em>{" "}
-            ser diferente.
+          <h1 className="mt-7 font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
+            Você merece uma mente{" "}
+            <span style={{ color: "var(--primary)" }}>em paz.</span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground text-balance">
-            Um acompanhamento diário e pessoal para retomar o foco, reduzir distrações e reconstruir
-            sua rotina. No seu ritmo, um passo de cada vez.
+            Acompanhamento diário e pessoal para retomar foco, reduzir distrações e reconstruir
+            sua rotina — no seu ritmo, um passo de cada vez.
           </p>
-
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
               href="#precos"
@@ -292,10 +288,10 @@ function Landing() {
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Você se reconhece aqui?
           </p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+          <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
             Não é falta de força de vontade.
           </h2>
-          <p className="mt-4 text-lg italic text-primary">
+          <p className="mt-4 font-display text-xl italic text-primary">
             É como o cérebro aprendeu a funcionar.
           </p>
         </div>
@@ -329,7 +325,7 @@ function Landing() {
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
               Como funciona
             </p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
               Simples de começar. Feito para continuar.
             </h2>
           </div>
@@ -357,7 +353,7 @@ function Landing() {
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             A virada
           </p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+          <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
             O que muda na prática
           </h2>
         </div>
@@ -401,7 +397,7 @@ function Landing() {
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
               O que você recebe
             </p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
               Não ferramentas. Transformações.
             </h2>
             <p className="mt-4 text-base text-muted-foreground">
@@ -431,7 +427,7 @@ function Landing() {
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Histórias reais
           </p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+          <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
             Quem voltou ao controle
           </h2>
         </div>
@@ -480,7 +476,7 @@ function Landing() {
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
               Conversas reais
             </p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+            <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
               O que chega pra gente todo dia
             </h2>
           </div>
@@ -494,7 +490,7 @@ function Landing() {
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Escolha seu plano
           </p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+          <h2 className="mt-4 font-display text-4xl text-balance md:text-5xl">
             Comece hoje.
           </h2>
           <p className="mt-4 text-base text-muted-foreground">
@@ -598,7 +594,7 @@ function Landing() {
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">Dúvidas</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+            <h2 className="mt-4 font-display text-4xl md:text-5xl">
               Perguntas frequentes
             </h2>
           </div>
@@ -640,7 +636,7 @@ function Landing() {
             aria-hidden
           />
 
-          <h2 className="relative text-4xl font-semibold tracking-tight text-white text-balance md:text-5xl">
+          <h2 className="relative font-display text-4xl text-white text-balance md:text-5xl">
             Sua próxima versão começa hoje.
           </h2>
           <p className="relative mx-auto mt-5 max-w-lg text-lg text-white/75 text-balance">
