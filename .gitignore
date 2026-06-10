@@ -26,6 +26,10 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Scripts de teste temporários (nunca commitar — podem ser usados com secrets no shell)
+test-first-access.mjs
+test-invite.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -16,12 +16,14 @@ import { Route as ReembolsoRouteImport } from './routes/reembolso'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CriarSenhaRouteImport } from './routes/criar-senha'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as ApiPublicTestInviteRouteImport } from './routes/api/public/test-invite'
 import { Route as ApiPublicKiwifyRouteImport } from './routes/api/public/kiwify'
 import { Route as AuthenticatedAppSuporteRouteImport } from './routes/_authenticated/app/suporte'
 import { Route as AuthenticatedAppSosRouteImport } from './routes/_authenticated/app/sos'
@@ -66,6 +68,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CriarSenhaRoute = CriarSenhaRouteImport.update({
+  id: '/criar-senha',
+  path: '/criar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -94,6 +101,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const ApiPublicTestInviteRoute = ApiPublicTestInviteRouteImport.update({
+  id: '/api/public/test-invite',
+  path: '/api/public/test-invite',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicKiwifyRoute = ApiPublicKiwifyRouteImport.update({
   id: '/api/public/kiwify',
@@ -142,6 +154,7 @@ const AuthenticatedAppSuporteIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/criar-senha': typeof CriarSenhaRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -159,11 +172,13 @@ export interface FileRoutesByFullPath {
   '/app/sos': typeof AuthenticatedAppSosRoute
   '/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
+  '/api/public/test-invite': typeof ApiPublicTestInviteRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/criar-senha': typeof CriarSenhaRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -180,6 +195,7 @@ export interface FileRoutesByTo {
   '/app/sos': typeof AuthenticatedAppSosRoute
   '/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
+  '/api/public/test-invite': typeof ApiPublicTestInviteRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
@@ -187,6 +203,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/criar-senha': typeof CriarSenhaRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -204,6 +221,7 @@ export interface FileRoutesById {
   '/_authenticated/app/sos': typeof AuthenticatedAppSosRoute
   '/_authenticated/app/suporte': typeof AuthenticatedAppSuporteRouteWithChildren
   '/api/public/kiwify': typeof ApiPublicKiwifyRoute
+  '/api/public/test-invite': typeof ApiPublicTestInviteRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/suporte/$id': typeof AuthenticatedAppSuporteIdRoute
 }
@@ -211,6 +229,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/criar-senha'
     | '/login'
     | '/privacidade'
     | '/redefinir-senha'
@@ -228,11 +247,13 @@ export interface FileRouteTypes {
     | '/app/sos'
     | '/app/suporte'
     | '/api/public/kiwify'
+    | '/api/public/test-invite'
     | '/app/'
     | '/app/suporte/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/criar-senha'
     | '/login'
     | '/privacidade'
     | '/redefinir-senha'
@@ -249,12 +270,14 @@ export interface FileRouteTypes {
     | '/app/sos'
     | '/app/suporte'
     | '/api/public/kiwify'
+    | '/api/public/test-invite'
     | '/app'
     | '/app/suporte/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/criar-senha'
     | '/login'
     | '/privacidade'
     | '/redefinir-senha'
@@ -272,6 +295,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/sos'
     | '/_authenticated/app/suporte'
     | '/api/public/kiwify'
+    | '/api/public/test-invite'
     | '/_authenticated/app/'
     | '/_authenticated/app/suporte/$id'
   fileRoutesById: FileRoutesById
@@ -279,6 +303,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  CriarSenhaRoute: typeof CriarSenhaRoute
   LoginRoute: typeof LoginRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
@@ -287,6 +312,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
   ApiPublicKiwifyRoute: typeof ApiPublicKiwifyRoute
+  ApiPublicTestInviteRoute: typeof ApiPublicTestInviteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -340,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/criar-senha': {
+      id: '/criar-senha'
+      path: '/criar-senha'
+      fullPath: '/criar-senha'
+      preLoaderRoute: typeof CriarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -381,6 +414,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/api/public/test-invite': {
+      id: '/api/public/test-invite'
+      path: '/api/public/test-invite'
+      fullPath: '/api/public/test-invite'
+      preLoaderRoute: typeof ApiPublicTestInviteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/kiwify': {
       id: '/api/public/kiwify'
@@ -497,6 +537,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  CriarSenhaRoute: CriarSenhaRoute,
   LoginRoute: LoginRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
@@ -505,6 +546,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
   ApiPublicKiwifyRoute: ApiPublicKiwifyRoute,
+  ApiPublicTestInviteRoute: ApiPublicTestInviteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
