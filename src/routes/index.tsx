@@ -234,20 +234,14 @@ function Landing() {
         />
 
         <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-20 text-center md:pt-36 md:pb-28">
-          {/* pílula de abertura verde */}
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-            Recupere o controle
-          </span>
-
-          <h1 className="mt-7 font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
+          <h1 className="font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
             Você merece uma mente{" "}
             <span style={{ color: "var(--primary)" }}>em paz.</span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground text-balance">
             Acompanhamento diário e pessoal para retomar foco, reduzir distrações e reconstruir
-            sua rotina — no seu ritmo, um passo de cada vez.
+            sua rotina. No seu ritmo, um passo de cada vez.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
@@ -265,19 +259,6 @@ function Landing() {
             >
               Como funciona
             </a>
-          </div>
-
-          {/* três micro-promessas verdes */}
-          <div className="mx-auto mt-12 flex flex-wrap justify-center gap-3">
-            {["Foco recuperado", "Menos distrações", "Disciplina real"].map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-primary/50" aria-hidden />
-                {tag}
-              </span>
-            ))}
           </div>
         </div>
       </section>
