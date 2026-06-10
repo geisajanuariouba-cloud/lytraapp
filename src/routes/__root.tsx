@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lytra — Recupere o controle da sua mente" },
+      { title: "Lytra" },
       {
         name: "description",
         content:
           "A Lytra te acompanha com um plano diário e personalizado para reduzir vícios, recuperar foco e reconstruir sua rotina, com passos simples e suporte humano.",
       },
       { name: "author", content: "Lytra" },
-      { property: "og:title", content: "Lytra — Recupere o controle da sua mente" },
+      { property: "og:title", content: "Lytra" },
       {
         property: "og:description",
         content: "Acompanhamento guiado para reduzir vícios, recuperar foco e reconstruir sua rotina, com passos simples e suporte humano.",
@@ -99,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "icon",
-        href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.6 19.4C4.6 10.4 10.4 4.6 19.4 4.6 19.4 13.6 13.6 19.4 4.6 19.4Z' fill='%2312A36A'/%3E%3C/svg%3E",
+        href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A7A4D'/%3E%3Ctext x='32' y='34' text-anchor='middle' dominant-baseline='central' font-family='Georgia,serif' font-style='italic' font-size='40' fill='white'%3Ey%3C/text%3E%3C/svg%3E",
       },
     ],
   }),

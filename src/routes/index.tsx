@@ -1,22 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
-  ArrowRight,
-  CheckCircle2,
+  Check,
   ChevronLeft,
   ChevronRight,
   Clock,
-  Headphones,
   MessageCircle,
-  NotebookPen,
-  Quote,
-  RefreshCw,
   Smartphone,
-  Sparkles,
   Target,
-  TrendingUp,
-  Trophy,
-  XCircle,
+  X,
+  ShieldCheck,
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
@@ -25,13 +18,13 @@ import { PLANS, formatBRL } from "@/lib/plans";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lytra · Recupere o controle da sua mente" },
+      { title: "Lytra" },
       {
         name: "description",
         content:
           "Um acompanhamento diário e personalizado para recuperar foco, disciplina e controle dos impulsos. Passos simples, no seu ritmo.",
       },
-      { property: "og:title", content: "Lytra · Recupere o controle da sua mente" },
+      { property: "og:title", content: "Lytra" },
       {
         property: "og:description",
         content:
@@ -43,7 +36,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-// ── Problema (você se reconhece aqui?) ──────────────────────────────
+// ── Problema ────────────────────────────────────────────────────────
 const reconhece = [
   {
     icon: Smartphone,
@@ -56,7 +49,7 @@ const reconhece = [
     text: "A procrastinação crônica costuma ser um sinal de exaustão, ansiedade ou perfeccionismo, não de preguiça.",
   },
   {
-    icon: RefreshCw,
+    icon: Target,
     title: "Você decide mudar. Amanhã. De novo.",
     text: "O ciclo se repete porque métodos genéricos ignoram o lado emocional. Sem acolhimento real, toda estratégia vira mais uma coisa para abandonar.",
   },
@@ -65,26 +58,23 @@ const reconhece = [
 // ── Como funciona (3 passos) ────────────────────────────────────────
 const passos = [
   {
-    icon: Sparkles,
-    title: "Você responde um diagnóstico rápido",
-    text: "Em poucos minutos, a Lytra entende seu momento, seus gatilhos e o que você quer reconstruir.",
+    title: "Diagnóstico Rápido",
+    text: "A plataforma entende seu momento atual, seus gatilhos e o que precisa ser reconstruído.",
   },
   {
-    icon: Target,
-    title: "Recebe um plano diário sob medida",
-    text: "Missões curtas e possíveis, pensadas para a sua rotina, um passo de cada vez.",
+    title: "Plano Sob Medida",
+    text: "Você recebe missões curtas e diárias que se adaptam à sua rotina real, sem pressão.",
   },
   {
-    icon: TrendingUp,
-    title: "Acompanha sua evolução com clareza",
-    text: "A rotina se adapta conforme você avança, com registro de progresso e reconhecimento a cada passo.",
+    title: "Acompanhamento Diário",
+    text: "A rotina se ajusta conforme você avança. Você registra progresso e mantém a consistência.",
   },
 ];
 
 // ── Benefícios (antes / depois) ─────────────────────────────────────
 const antes = [
   "Horas no feed sem perceber o tempo passar",
-  "Sono ruim e cansaço que não passa",
+  "Sono ruim e cansaço constante",
   "Adiar o que realmente importa",
   "Culpa e desânimo no fim do dia",
   "Decidir mudar e não conseguir manter",
@@ -92,112 +82,57 @@ const antes = [
 
 const depois = [
   "Mais presença e clareza no dia a dia",
-  "Noites mais tranquilas e foco recuperado",
-  "Missões pequenas que cabem na sua vida",
+  "Noites tranquilas e foco recuperado",
+  "Missões pequenas que cabem na rotina",
   "Progresso gentil, sem julgamento",
   "Disciplina construída um passo de cada vez",
 ];
 
-// ── O que você recebe / Valor percebido (mesma base) ────────────────
-const entregaveis = [
+// ── Valor Percebido ─────────────────────────────────────────────────
+const recursos = [
   {
-    icon: NotebookPen,
-    title: "Diário emocional inteligente",
-    desc: "Registre como se sente e ganhe clareza sobre seus gatilhos.",
-    value: 29,
+    title: "Diário Emocional Inteligente",
+    desc: "Registre como se sente e ganhe clareza imediata sobre seus gatilhos.",
   },
   {
-    icon: Target,
-    title: "Missões personalizadas",
-    desc: "Pequenas ações diárias que se adaptam ao seu momento.",
-    value: 39,
+    title: "Missões Personalizadas",
+    desc: "Ações diárias desenhadas para o seu contexto e sua disponibilidade.",
   },
   {
-    icon: Sparkles,
-    title: "Plano diário de evolução",
-    desc: "Um caminho claro para seguir, um passo de cada vez.",
-    value: 29,
+    title: "Plano de Evolução Adaptável",
+    desc: "Seu caminho se ajusta ao seu progresso, garantindo que você nunca se sinta sobrecarregado.",
   },
   {
-    icon: RefreshCw,
-    title: "Sistema de acompanhamento",
-    desc: "Sua rotina se ajusta conforme você avança.",
-    value: 39,
-  },
-  {
-    icon: TrendingUp,
-    title: "Registro de progresso",
-    desc: "Veja sua evolução de forma concreta e motivadora.",
-    value: 19,
-  },
-  {
-    icon: Trophy,
-    title: "Sistema de conquistas",
-    desc: "Reconhecimento a cada passo que você dá.",
-    value: 19,
-  },
-  {
-    icon: Headphones,
-    title: "Central de suporte",
-    desc: "Gente de verdade para te ajudar quando precisar.",
-    value: 19,
-  },
-  {
-    icon: Sparkles,
-    title: "Atualizações futuras",
-    desc: "A plataforma evolui junto com você, sem custo extra.",
-    value: 49,
+    title: "Registro de Conquistas",
+    desc: "Métricas simples e visuais para você ver, na prática, a retomada do seu foco.",
   },
 ];
 
-const valorTotal = entregaveis.reduce((sum, item) => sum + item.value, 0);
-
-// ── Conteúdo dos planos (apenas apresentação; preço/checkout vêm de PLANS) ──
-const planContent: Record<
-  "monthly" | "quarterly" | "lifetime",
-  { features: string[]; note: string; recommended?: boolean }
-> = {
-  monthly: {
-    features: [
-      "Acesso completo à plataforma",
-      "Diário emocional",
-      "Missões personalizadas",
-      "Sistema de progresso",
-      "Sistema de conquistas",
-      "Área de suporte",
-      "Atualizações futuras",
-    ],
-    note: "Custo mais alto por mês",
+// ── Depoimentos Estruturais (Aguardando Materiais) ──────────────────
+// Insira as URLs reais das imagens e textos quando os materiais estiverem disponíveis.
+const testimonials: { name: string; text: string; photo: string }[] = [
+  {
+    name: "[Nome do Usuário 1]",
+    text: "[Texto do depoimento real do usuário relatando a transformação e melhora no foco. Substituir assim que o material estiver disponível.]",
+    photo: "", // ex: "/depoimentos/foto1.jpg"
   },
-  quarterly: {
-    features: [
-      "Tudo do plano mensal",
-      "Mesmo acesso completo",
-      "Mesmo conteúdo e suporte",
-      "Mesmo sistema, por menos",
-    ],
-    note: "Economize 33% · equivale a R$ 13,30/mês",
-    recommended: true,
+  {
+    name: "[Nome do Usuário 2]",
+    text: "[Texto do depoimento real do usuário relatando como parou de procrastinar. Substituir assim que o material estiver disponível.]",
+    photo: "",
   },
-  lifetime: {
-    features: [
-      "Tudo do plano trimestral",
-      "Sem mensalidades",
-      "Sem renovações",
-      "Acesso permanente",
-    ],
-    note: "Menor custo no longo prazo · você paga uma vez",
+  {
+    name: "[Nome do Usuário 3]",
+    text: "[Texto do depoimento real do usuário relatando o impacto positivo na rotina. Substituir assim que o material estiver disponível.]",
+    photo: "",
   },
-};
+];
 
-// ── Depoimentos (estrutura pronta; preencher quando as imagens chegarem) ──
-// Para ativar, adicione objetos: { name, photo, text }
-//   photo: caminho público (ex.: "/depoimentos/ana.jpg") ou URL.
-const testimonials: { name: string; photo?: string; text: string }[] = [];
-
-// ── Depoimentos em WhatsApp (carrossel; preencher com os prints reais) ──
-//   { src: "/whatsapp/print-1.png", alt: "Conversa com cliente" }
-const whatsappShots: { src: string; alt: string }[] = [];
+// ── Depoimentos WhatsApp (Aguardando Materiais) ─────────────────────
+// Adicione as URLs dos prints reais na lista abaixo.
+const whatsappShots: { src: string; alt: string }[] = [
+  // { src: "/whatsapp/print-1.png", alt: "Conversa real" },
+];
 
 const faqs = [
   {
@@ -210,19 +145,11 @@ const faqs = [
   },
   {
     q: "Como recebo o acesso depois de comprar?",
-    a: "Logo após a confirmação do pagamento, você recebe um e-mail para criar sua senha e entrar na plataforma.",
+    a: "Logo após a confirmação do pagamento, você recebe um e-mail com acesso imediato para definir sua senha e entrar na plataforma.",
   },
   {
     q: "Funciona no celular?",
-    a: "Sim. A Lytra é pensada para o celular e funciona como um app direto no navegador.",
-  },
-  {
-    q: "Posso usar no meu próprio ritmo?",
-    a: "Sim. As missões são curtas e se ajustam ao seu momento. A evolução é gentil e sem cobrança.",
-  },
-  {
-    q: "Em quanto tempo vejo resultado?",
-    a: "Muitas pessoas percebem mais foco e presença já nas primeiras semanas. A consistência é o que sustenta a mudança.",
+    a: "Sim. A Lytra foi projetada primariamente para uso em smartphones, funcionando de forma fluida direto no navegador.",
   },
 ];
 
@@ -237,22 +164,18 @@ function WhatsappCarousel() {
 
   const slides = whatsappShots.length
     ? whatsappShots
-    : // Placeholders enquanto os prints reais não chegam.
-      Array.from({ length: 4 }, (_, i) => ({ src: "", alt: `Conversa ${i + 1}` }));
+    : Array.from({ length: 4 }, (_, i) => ({ src: "", alt: `Aguardando print ${i + 1}` }));
 
   return (
-    <div className="relative mt-12">
-      <div className="pointer-events-none absolute -left-4 top-0 z-10 hidden h-full w-12 bg-gradient-to-r from-soft to-transparent md:block" />
-      <div className="pointer-events-none absolute -right-4 top-0 z-10 hidden h-full w-12 bg-gradient-to-l from-soft to-transparent md:block" />
-
+    <div className="relative mt-12 w-full max-w-5xl mx-auto px-6">
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-8 pt-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {slides.map((shot, i) => (
           <div
             key={i}
-            className="w-[260px] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-soft sm:w-[280px]"
+            className="w-[280px] shrink-0 snap-center overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm sm:w-[320px] transition-transform hover:-translate-y-1"
           >
             {shot.src ? (
               <img
@@ -262,10 +185,12 @@ function WhatsappCarousel() {
                 className="aspect-[9/16] w-full object-cover"
               />
             ) : (
-              <div className="grid aspect-[9/16] w-full place-items-center bg-[linear-gradient(160deg,oklch(0.96_0.01_160),oklch(0.93_0.02_160))] text-center">
-                <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft text-primary">
-                  <MessageCircle className="h-6 w-6" />
-                </span>
+              <div className="grid aspect-[9/16] w-full place-items-center bg-gray-50 text-center">
+                <div className="flex flex-col items-center gap-3 text-gray-400">
+                  <MessageCircle className="h-8 w-8" />
+                  <span className="text-sm font-medium">Print de Conversa</span>
+                  <span className="text-xs">[Inserir Imagem]</span>
+                </div>
               </div>
             )}
           </div>
@@ -277,7 +202,7 @@ function WhatsappCarousel() {
           type="button"
           onClick={() => scrollBy(-1)}
           aria-label="Anterior"
-          className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:bg-accent"
+          className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -285,7 +210,7 @@ function WhatsappCarousel() {
           type="button"
           onClick={() => scrollBy(1)}
           aria-label="Próximo"
-          className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:bg-accent"
+          className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -296,424 +221,304 @@ function WhatsappCarousel() {
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-black selection:text-white">
       <Navbar />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-hero-glow" aria-hidden />
-        <div className="relative mx-auto max-w-3xl px-6 pt-20 pb-16 text-center md:pt-28 md:pb-24">
-          <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight text-balance md:text-6xl">
-            Recupere o controle{" "}
-            <span className="bg-primary-gradient bg-clip-text text-transparent">da sua mente.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground text-balance">
-            Um acompanhamento diário e personalizado para recuperar foco, disciplina e controle dos
-            impulsos. No seu ritmo, um passo de cada vez.
-          </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="#precos"
-              className="group inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-7 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-            >
-              Começar agora
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-            </a>
-            <a
-              href="#como-funciona"
-              className="inline-flex h-12 items-center justify-center rounded-full border border-border bg-card px-7 text-sm font-medium text-foreground shadow-soft transition hover:bg-accent"
-            >
-              Ver como funciona
-            </a>
-          </div>
+      <section className="relative mx-auto max-w-4xl px-6 pt-32 pb-24 text-center md:pt-40 md:pb-32">
+        <h1 className="text-5xl font-bold tracking-tight text-balance md:text-7xl text-gray-900">
+          Recupere o controle <br className="hidden md:block" /> da sua mente.
+        </h1>
+        <p className="mx-auto mt-8 max-w-2xl text-lg text-gray-500 text-balance leading-relaxed">
+          Um acompanhamento diário e prático para retomar seu foco, disciplina e controle dos impulsos. Tudo no seu ritmo, um passo de cada vez.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href="#precos"
+            className="inline-flex h-12 items-center justify-center rounded-lg bg-black px-8 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          >
+            Começar agora
+          </a>
+          <a
+            href="#como-funciona"
+            className="inline-flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white px-8 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
+          >
+            Entenda como funciona
+          </a>
         </div>
       </section>
 
       {/* ── Problema ───────────────────────────────────────────── */}
-      <section id="problema" className="mx-auto max-w-3xl px-6 py-24">
-        <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">
-            Você se reconhece aqui?
-          </p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Não é falta de força
-            <br /> de vontade.
+      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32 border-t border-gray-100">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Não é preguiça. É exaustão e hábito.
           </h2>
-          <p className="mt-3 font-display text-lg italic text-primary">
-            É como o cérebro foi condicionado.
-          </p>
         </div>
 
-        <div className="mt-12 space-y-3">
+        <div className="mt-16 grid gap-8 md:grid-cols-3">
           {reconhece.map((c) => (
-            <div
-              key={c.title}
-              className="flex items-start gap-4 rounded-2xl border border-border bg-surface p-5 shadow-soft"
-            >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
+            <div key={c.title} className="flex flex-col gap-4">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-gray-100 text-gray-900">
                 <c.icon className="h-5 w-5" />
               </span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">{c.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{c.text}</p>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-900">{c.title}</h3>
+              <p className="text-sm leading-relaxed text-gray-500">{c.text}</p>
             </div>
           ))}
         </div>
       </section>
 
+      {/* ── Benefícios (O Contraste) ───────────────────────────── */}
+      <section className="bg-gray-50 py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-3">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600">
+                  <X className="h-3.5 w-3.5" />
+                </span>
+                Rotina Atual
+              </h3>
+              <ul className="mt-8 space-y-4">
+                {antes.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-sm text-gray-500">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-300" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10 shadow-sm ring-1 ring-gray-900/5">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-3">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white">
+                  <Check className="h-3.5 w-3.5" />
+                </span>
+                Com a Lytra
+              </h3>
+              <ul className="mt-8 space-y-4">
+                {depois.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-sm text-gray-900 font-medium">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-gray-900" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Como funciona ──────────────────────────────────────── */}
-      <section id="como-funciona" className="bg-soft py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
-              Como funciona
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Simples de começar. Feito para continuar.
-            </h2>
-            <p className="mt-4 text-base text-muted-foreground text-balance">
-              Sem fórmulas mágicas e sem promessas. Apenas passos claros, todos os dias, com
-              orientação cuidadosa.
-            </p>
-          </div>
-
-          <div className="mx-auto mt-12 grid max-w-4xl gap-5 sm:grid-cols-3">
-            {passos.map((p, i) => (
-              <div
-                key={p.title}
-                className="relative rounded-3xl border border-border bg-card p-6 shadow-soft"
-              >
-                <span className="text-xs font-semibold text-primary">0{i + 1}</span>
-                <span className="mt-3 grid h-11 w-11 place-items-center rounded-full bg-primary-soft text-primary">
-                  <p.icon className="h-5 w-5" />
-                </span>
-                <p className="mt-4 text-sm font-semibold">{p.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Benefícios (antes / depois) ────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-24">
-        <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">A virada</p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            O que muda na sua vida
+      <section id="como-funciona" className="mx-auto max-w-5xl px-6 py-24 md:py-32">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Simples. Direto. Efetivo.
           </h2>
-          <p className="mt-3 font-display text-lg italic text-primary">
-            quando sua mente descansa
+          <p className="mt-4 text-gray-500">
+            A consistência é o que traz resultado, não atalhos milagrosos.
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl gap-5 md:grid-cols-2">
-          <div className="rounded-3xl border border-border bg-card p-7 shadow-soft">
-            <span className="inline-flex rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-destructive">
-              Antes
-            </span>
-            <ul className="mt-5 space-y-3 text-sm">
-              {antes.map((t) => (
-                <li key={t} className="flex items-start gap-2.5 text-muted-foreground">
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive/70" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-3xl bg-primary p-7 text-primary-foreground shadow-glow">
-            <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider">
-              Com a Lytra
-            </span>
-            <ul className="mt-5 space-y-3 text-sm">
-              {depois.map((t) => (
-                <li key={t} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ── O que você recebe ──────────────────────────────────── */}
-      <section id="recursos" className="bg-soft py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
-              Tudo incluído
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              O que você recebe
-            </h2>
-            <p className="mt-4 text-base text-muted-foreground text-balance">
-              Um conjunto completo de ferramentas para reconstruir sua rotina com leveza.
-            </p>
-          </div>
-
-          <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2">
-            {entregaveis.map((item) => (
-              <div
-                key={item.title}
-                className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5 shadow-soft"
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
-                  <item.icon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Valor percebido ────────────────────────────────────── */}
-      <section className="mx-auto max-w-3xl px-6 py-24">
-        <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">
-            O valor real
-          </p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Muito mais do que você paga
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground text-balance">
-            Tudo o que está incluído na sua jornada, e o valor que cada parte representa.
-          </p>
-        </div>
-
-        <div className="mt-12 overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
-          <ul className="divide-y divide-border">
-            {entregaveis.map((item) => (
-              <li key={item.title} className="flex items-center justify-between gap-4 px-6 py-4">
-                <span className="flex items-center gap-3 text-sm font-medium text-foreground">
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
-                    <item.icon className="h-4 w-4" />
-                  </span>
-                  {item.title}
-                </span>
-                <span className="shrink-0 text-sm text-muted-foreground">
-                  {formatBRL(item.value)}
-                </span>
-              </li>
-            ))}
-            <li className="flex items-center justify-between gap-4 bg-surface px-6 py-4">
-              <span className="text-sm font-semibold text-foreground">Valor total percebido</span>
-              <span className="text-base font-semibold text-muted-foreground line-through">
-                {formatBRL(valorTotal)}+
+        <div className="mt-16 grid gap-12 md:grid-cols-3">
+          {passos.map((p, i) => (
+            <div key={p.title} className="relative">
+              <span className="text-5xl font-bold text-gray-100 absolute -top-8 -left-4 -z-10">
+                {i + 1}
               </span>
-            </li>
-          </ul>
-
-          <div className="border-t border-border bg-primary-soft/40 px-6 py-7 text-center">
-            <p className="text-sm text-muted-foreground">Hoje você começa por apenas</p>
-            <p className="mt-1 text-4xl font-semibold tracking-tight text-primary">
-              {formatBRL(PLANS.monthly.price)}
-            </p>
-            <a
-              href="#precos"
-              className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-7 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-            >
-              Ver planos
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
+              <h3 className="text-lg font-semibold text-gray-900 mt-4">{p.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-500">{p.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── Depoimentos ────────────────────────────────────────── */}
-      <section id="depoimentos" className="bg-soft py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
-              Quem usa, sente a diferença
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Histórias de quem voltou ao controle
-            </h2>
-          </div>
+      {/* ── Depoimentos WhatsApp ───────────────────────────────── */}
+      <section className="bg-gray-50 py-24 md:py-32 border-y border-gray-100">
+        <div className="text-center max-w-2xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Quem já retomou o controle
+          </h2>
+          <p className="mt-4 text-gray-500">
+            Pessoas reais recuperando horas do seu dia com a Lytra.
+          </p>
+        </div>
+        <WhatsappCarousel />
+      </section>
 
-          <div className="mx-auto mt-12 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {(testimonials.length
-              ? testimonials
-              : Array.from({ length: 3 }, () => null)
-            ).map((t, i) => (
-              <figure
-                key={i}
-                className="flex h-full flex-col rounded-3xl border border-border bg-card p-6 shadow-soft"
-              >
-                <Quote className="h-6 w-6 text-primary/40" />
-                <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-foreground">
-                  {t ? t.text : "Depoimento em breve."}
-                </blockquote>
-                <figcaption className="mt-5 flex items-center gap-3">
-                  {t?.photo ? (
+      {/* ── O que você recebe (Valor Percebido) ────────────────── */}
+      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            O que está incluído
+          </h2>
+          <p className="mt-4 text-gray-500">
+            Ferramentas pensadas exclusivamente para manter você no caminho.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {recursos.map((r) => (
+            <div key={r.title} className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8">
+              <h3 className="text-base font-semibold text-gray-900">{r.title}</h3>
+              <p className="mt-2 text-sm text-gray-500 leading-relaxed">{r.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Depoimentos Escritos ───────────────────────────────── */}
+      <section className="bg-gray-50 py-24 md:py-32 border-t border-gray-100">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="grid gap-8 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <div key={i} className="flex flex-col rounded-2xl bg-white p-8 border border-gray-200">
+                <p className="flex-1 text-sm leading-relaxed text-gray-700 italic">
+                  "{t.text}"
+                </p>
+                <div className="mt-8 flex items-center gap-4">
+                  {t.photo ? (
                     <img
                       src={t.photo}
                       alt={t.name}
                       loading="lazy"
-                      className="h-10 w-10 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full object-cover bg-gray-100"
                     />
                   ) : (
-                    <span className="h-10 w-10 rounded-full bg-muted" aria-hidden />
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                      Foto
+                    </div>
                   )}
-                  <span className="text-sm font-semibold text-foreground">
-                    {t ? t.name : "—"}
-                  </span>
-                </figcaption>
-              </figure>
+                  <span className="text-sm font-semibold text-gray-900">{t.name}</span>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Depoimentos em WhatsApp ────────────────────────────── */}
-      <section className="bg-soft pb-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
-              Conversas reais
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              O que chega pra gente no dia a dia
-            </h2>
-          </div>
-          <WhatsappCarousel />
-        </div>
-      </section>
-
-      {/* ── Preços ─────────────────────────────────────────────── */}
-      <section id="precos" className="mx-auto max-w-6xl px-6 py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">
-            Escolha seu plano
-          </p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Comece hoje.
+      {/* ── Preços & Garantia ──────────────────────────────────── */}
+      <section id="precos" className="mx-auto max-w-5xl px-6 py-24 md:py-32">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Sua jornada começa aqui
           </h2>
-          <p className="mt-4 text-base text-muted-foreground text-balance">
-            O mesmo acesso completo em todos os planos. Quanto maior o período, menor o custo.
+          <p className="mt-4 text-gray-500">
+            Acesso completo em todos os planos. A única diferença é o preço por período.
           </p>
         </div>
 
-        <div className="mx-auto mt-14 grid max-w-5xl items-start gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3 items-start max-w-4xl mx-auto">
           {(["monthly", "quarterly", "lifetime"] as const).map((key) => {
             const plan = PLANS[key];
-            const content = planContent[key];
-            const featured = content.recommended;
-            const periodLabel = plan.period === "único" ? "pagamento único" : plan.period;
+            const isFeatured = key === "quarterly";
+            
             return (
               <div
                 key={key}
-                className={`relative flex flex-col rounded-3xl border bg-card p-6 sm:p-8 ${
-                  featured
-                    ? "border-2 border-primary shadow-glow md:-translate-y-2"
-                    : "border-border shadow-soft"
+                className={`relative flex flex-col rounded-2xl p-8 bg-white ${
+                  isFeatured
+                    ? "border-2 border-black shadow-lg md:-translate-y-2"
+                    : "border border-gray-200"
                 }`}
               >
-                {featured && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-gradient px-3 py-1 text-xs font-medium text-primary-foreground shadow-glow">
-                    Mais recomendado
+                {isFeatured && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                    Plano Recomendado
                   </span>
                 )}
-
-                <p className="text-sm font-medium text-muted-foreground">{plan.label}</p>
-
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                
+                <h3 className="text-base font-semibold text-gray-900">{plan.label}</h3>
+                
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold tracking-tight text-gray-900">
                     {formatBRL(plan.price)}
                   </span>
-                  <span className="text-sm text-muted-foreground">{periodLabel}</span>
+                  <span className="text-sm font-medium text-gray-500">
+                    {plan.period === "único" ? "único" : plan.period}
+                  </span>
                 </div>
 
-                <p
-                  className={`mt-3 inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                    featured
-                      ? "bg-primary-soft text-primary"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {content.note}
-                </p>
-
-                <ul className="mt-6 space-y-2.5 text-sm">
-                  {content.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-6 flex flex-col gap-3 flex-1">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Check className="h-4 w-4 text-gray-900" />
+                    <span>Acesso Completo</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Check className="h-4 w-4 text-gray-900" />
+                    <span>Todas as ferramentas</span>
+                  </div>
+                </div>
 
                 <a
                   href={plan.checkoutUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`mt-8 inline-flex h-11 w-full items-center justify-center rounded-full font-medium transition ${
-                    featured
-                      ? "bg-primary-gradient text-primary-foreground shadow-glow hover:opacity-95"
-                      : "border border-border bg-card hover:bg-accent"
+                  className={`mt-8 inline-flex h-12 w-full items-center justify-center rounded-lg font-medium transition-colors ${
+                    isFeatured
+                      ? "bg-black text-white hover:bg-gray-800"
+                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
                   }`}
                 >
-                  Adquirir agora
+                  Adquirir {plan.label}
                 </a>
               </div>
             );
           })}
         </div>
+
+        {/* Informação Order Bump */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            * Após a compra, você poderá adicionar acesso pelo WhatsApp e suporte prioritário por apenas R$ 9,90.
+          </p>
+        </div>
+
+        {/* Garantia */}
+        <div className="mt-16 flex flex-col items-center justify-center gap-4 rounded-2xl bg-gray-50 p-8 border border-gray-100 max-w-2xl mx-auto text-center">
+          <ShieldCheck className="h-10 w-10 text-gray-900" />
+          <h3 className="text-lg font-semibold text-gray-900">Garantia Incondicional de 7 Dias</h3>
+          <p className="text-sm text-gray-500">
+            Você tem 7 dias para acessar a Lytra, ver como funciona na prática e decidir se é para você. Se achar que não ajudou, devolvemos 100% do seu dinheiro, sem complicações. Risco zero.
+          </p>
+        </div>
       </section>
 
       {/* ── FAQ ────────────────────────────────────────────────── */}
-      <section id="faq" className="bg-soft py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">Dúvidas</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Perguntas frequentes.
-            </h2>
-          </div>
-          <div className="mt-12 space-y-3">
-            {faqs.map((f) => (
-              <details
-                key={f.q}
-                className="group rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:shadow-card"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
-                  {f.q}
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-primary-soft text-primary transition group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
-              </details>
-            ))}
-          </div>
+      <section className="mx-auto max-w-3xl px-6 py-24 border-t border-gray-100">
+        <h2 className="text-2xl font-semibold tracking-tight md:text-3xl mb-12 text-center">
+          Perguntas Frequentes
+        </h2>
+        <div className="space-y-4">
+          {faqs.map((f) => (
+            <details
+              key={f.q}
+              className="group rounded-xl border border-gray-200 bg-white p-6 [&_summary::-webkit-details-marker]:hidden"
+            >
+              <summary className="flex cursor-pointer items-center justify-between font-semibold text-gray-900">
+                {f.q}
+                <span className="ml-6 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-4 text-sm leading-relaxed text-gray-500 pr-8">{f.a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
       {/* ── CTA final ──────────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-12 text-center shadow-card md:p-20">
-          <div className="absolute inset-0 -z-10 bg-hero-glow" aria-hidden />
-          <h2 className="text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            Sua próxima versão começa hoje.
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground text-balance">
-            Recupere foco, disciplina e controle dos impulsos, um passo de cada vez.
-          </p>
-          <a
-            href="#precos"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary-gradient px-8 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-95"
-          >
-            Começar agora
-            <ArrowRight className="h-4 w-4" />
-          </a>
-        </div>
+      <section className="mx-auto max-w-4xl px-6 py-24 md:py-32 text-center">
+        <h2 className="text-3xl font-semibold tracking-tight md:text-5xl text-gray-900">
+          Sua próxima versão começa hoje.
+        </h2>
+        <a
+          href="#precos"
+          className="mt-10 inline-flex h-14 items-center justify-center rounded-lg bg-black px-10 text-base font-medium text-white transition-colors hover:bg-gray-800"
+        >
+          Retomar o controle
+        </a>
       </section>
 
       <Footer />
