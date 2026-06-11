@@ -1,10 +1,9 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
-// ssr: false — a sessão do Supabase mora no localStorage do navegador.
-// Sem isso, qualquer navegação dura (window.location.assign, refresh, deep link)
-// renderiza no servidor sem token → getUser() retorna null → redirect /login,
-// causando o "loop" em que o formulário some e volta limpo.
+// ssr: false — the Supabase session lives in localStorage.
+// Without this, any hard navigation (refresh, deep link) renders on the server
+// without a token → getUser() returns null → redirect /login, causing a loop.
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
@@ -12,7 +11,17 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) {
       throw redirect({ to: "/login" });
     }
-    return { userId: data.user.id };
+
+    // Fetch onboarding status once here — passed as context to all child routes.
+    // This avoids duplicate Supabase calls in app.tsx and onboarding.tsx beforeLoads,
+    // which were causing hangs (extra round-trips) during the post-submit navigation.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarded")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    return { userId: data.user.id, onboarded: profile?.onboarded ?? false };
   },
   component: () => <Outlet />,
 });

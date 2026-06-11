@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, redirect } from "@tanstack/react-router";
 import { Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck, History } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -6,25 +6,11 @@ import { getDashboard } from "@/lib/lytra.functions";
 import { isSubscriptionActive } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { supabase } from "@/integrations/supabase/client";
-import { redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/app")({
-  // Onboarding gate runs in beforeLoad (server/router side) — no flash, deterministic.
-  // This replaces the fragile useEffect approach that caused the dashboard-to-quiz loop.
-  beforeLoad: async () => {
-    const { data: authData } = await supabase.auth.getUser();
-    if (!authData.user) throw redirect({ to: "/login" });
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarded")
-      .eq("id", authData.user.id)
-      .maybeSingle();
-
-    // Only redirect to onboarding if the user has not yet completed it.
-    // profiles.onboarded is the single source of truth for onboarding state.
-    if (!profile?.onboarded) {
+  // Use onboarded flag from parent context (_authenticated.tsx) — zero extra Supabase calls.
+  beforeLoad: ({ context }) => {
+    if (!context.onboarded) {
       throw redirect({ to: "/onboarding" });
     }
   },

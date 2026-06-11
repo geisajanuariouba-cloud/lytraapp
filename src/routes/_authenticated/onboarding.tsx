@@ -4,24 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import { supabase } from "@/integrations/supabase/client";
 import { submitOnboarding } from "@/lib/lytra.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  beforeLoad: async () => {
-    const { data: authData } = await supabase.auth.getUser();
-    if (!authData.user) throw redirect({ to: "/login" });
-
-    // Idempotency: if onboarding is already complete, send to dashboard immediately.
-    // Prevents re-doing the quiz and overwriting an existing plan.
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarded")
-      .eq("id", authData.user.id)
-      .maybeSingle();
-
-    if (profile?.onboarded) {
+  // Use onboarded flag from parent context (_authenticated.tsx) — zero extra Supabase calls.
+  // If already onboarded, redirect immediately to app without rendering the quiz.
+  beforeLoad: ({ context }) => {
+    if (context.onboarded) {
       throw redirect({ to: "/app" });
     }
   },
