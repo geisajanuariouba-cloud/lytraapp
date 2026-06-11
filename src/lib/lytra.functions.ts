@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createGeminiProvider } from "./ai-gateway.server";
 import { generateText } from "ai";
 import { z } from "zod";
@@ -122,11 +123,15 @@ export const submitOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => OnboardingInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    // Use service_role client for all writes — bypasses RLS which was causing
+    // "permission denied for table onboarding" when the anon-key client was used
+    // server-side. The user's identity is already validated by requireSupabaseAuth.
+    const { userId } = context;
+    const db = supabaseAdmin; // service_role, bypasses RLS
     console.log("[submitOnboarding] started userId=", userId);
 
     // --- Idempotency: do NOT overwrite an existing plan ---
-    const { data: existing, error: existErr } = await supabase
+    const { data: existing, error: existErr } = await db
       .from("onboarding")
       .select("user_id, ai_plan")
       .eq("user_id", userId)
@@ -136,7 +141,7 @@ export const submitOnboarding = createServerFn({ method: "POST" })
 
     if (existing?.ai_plan) {
       console.log("[submitOnboarding] plan already exists, marking onboarded and returning");
-      await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
+      await db.from("profiles").update({ onboarded: true }).eq("id", userId);
       return { ok: true, plan: existing.ai_plan };
     }
 
@@ -171,9 +176,9 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
     const text = await generateTextSafe(prompt, FALLBACK_PLAN);
     console.log("[submitOnboarding] gemini_request_success plan_length=", text.length);
 
-    // --- Save plan ---
+    // --- Save plan (service_role → bypasses RLS) ---
     console.log("[submitOnboarding] plan_save_started");
-    const { error: upsertErr } = await supabase.from("onboarding").upsert({
+    const { error: upsertErr } = await db.from("onboarding").upsert({
       user_id: userId,
       habit: data.habit,
       intensity: data.intensity,
@@ -196,25 +201,24 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
 
     // --- Mark onboarded AFTER plan saved ---
     console.log("[submitOnboarding] profile_update_started");
-    const { error: profileErr } = await supabase
+    const { error: profileErr } = await db
       .from("profiles")
       .update({ onboarded: true })
       .eq("id", userId);
 
     if (profileErr) {
       console.error("[submitOnboarding] profile_update_error:", profileErr.message);
-      // Don't throw — plan is already saved. Log and continue.
+      // Non-fatal: plan is already saved. User can be marked onboarded on next request.
     } else {
       console.log("[submitOnboarding] profile_update_success");
     }
 
     // --- Generate today's tasks (best-effort, never blocks the flow) ---
     try {
-      await generateTasksFor(supabase, userId, data.habit, data.triggers);
+      await generateTasksFor(db, userId, data.habit, data.triggers);
       console.log("[submitOnboarding] tasks_generated");
     } catch (taskErr: any) {
       console.error("[submitOnboarding] tasks_generation_error (non-fatal):", taskErr?.message);
-      // Non-fatal: tasks can be generated later via regenerate button
     }
 
     console.log("[submitOnboarding] finished ok");
