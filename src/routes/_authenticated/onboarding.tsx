@@ -77,15 +77,31 @@ function OnboardingPage() {
       toast.error("Preencha os campos principais.");
       return;
     }
+    console.log("[onboarding] submit_clicked");
     setLoading(true);
     try {
-      await submit({ data: form });
-      // Hard navigation: forces _authenticated.tsx beforeLoad to re-run and read
-      // the freshly-saved onboarded=true from Supabase. Client-side nav() reuses
-      // the cached context (onboarded=false) and would redirect back to /onboarding.
-      window.location.href = "/app";
+      console.log("[onboarding] submit_started");
+      const result = await submit({ data: form });
+      console.log("[onboarding] submit_success result=", result);
+
+      if (!result || !(result as any).ok) {
+        console.error("[onboarding] submit returned non-ok:", result);
+        toast.error("Não foi possível gerar seu plano agora. Tente novamente em alguns minutos.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("[onboarding] redirecting_to_app");
+      // Hard navigation forces _authenticated.tsx to re-read onboarded=true from DB.
+      window.location.assign("/app");
     } catch (e: any) {
-      toast.error(e?.message ?? "Erro ao gerar seu plano.");
+      const msg = e?.message || e?.toString() || "Erro desconhecido";
+      console.error("[onboarding] submit_error:", msg, e);
+      toast.error(
+        msg.includes("Não foi possível")
+          ? msg
+          : `Não foi possível gerar seu plano agora. Tente novamente em alguns minutos. (${msg})`,
+      );
       setLoading(false);
     }
   }

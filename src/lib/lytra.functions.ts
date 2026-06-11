@@ -123,21 +123,25 @@ export const submitOnboarding = createServerFn({ method: "POST" })
   .validator((d: unknown) => OnboardingInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    console.log("[submitOnboarding] started userId=", userId);
 
     // --- Idempotency: do NOT overwrite an existing plan ---
-    const { data: existing } = await supabase
+    const { data: existing, error: existErr } = await supabase
       .from("onboarding")
       .select("user_id, ai_plan")
       .eq("user_id", userId)
       .maybeSingle();
 
+    if (existErr) console.error("[submitOnboarding] existing check error:", existErr.message);
+
     if (existing?.ai_plan) {
-      // Plan already generated — mark as onboarded in case it wasn't and return existing
+      console.log("[submitOnboarding] plan already exists, marking onboarded and returning");
       await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
-      return { plan: existing.ai_plan };
+      return { ok: true, plan: existing.ai_plan };
     }
 
     // --- Validate answer quality before calling the AI ---
+    console.log("[submitOnboarding] validation_passed");
     const openFields: [string, string, number][] = [
       [data.goal, "Objetivo", 2],
       [data.current_feeling, "Como você se sente", 2],
@@ -148,6 +152,8 @@ export const submitOnboarding = createServerFn({ method: "POST" })
       if (value.trim()) validateAnswerQuality(value, label, minWords);
     }
 
+    // --- Generate plan text ---
+    console.log("[submitOnboarding] gemini_request_started");
     const prompt = `Construa um plano inicial de reconstrução para uma pessoa.
 Hábito a reduzir: ${data.habit}
 Intensidade (1-5): ${data.intensity}
@@ -163,8 +169,11 @@ Escreva em 3 parágrafos curtos: (1) reconhecimento humano do contexto, (2) estr
 para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem títulos.`;
 
     const text = await generateTextSafe(prompt, FALLBACK_PLAN);
+    console.log("[submitOnboarding] gemini_request_success plan_length=", text.length);
 
-    await supabase.from("onboarding").upsert({
+    // --- Save plan ---
+    console.log("[submitOnboarding] plan_save_started");
+    const { error: upsertErr } = await supabase.from("onboarding").upsert({
       user_id: userId,
       habit: data.habit,
       intensity: data.intensity,
@@ -179,13 +188,37 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
       updated_at: new Date().toISOString(),
     });
 
-    // Only mark onboarded AFTER plan is successfully saved
-    await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
+    if (upsertErr) {
+      console.error("[submitOnboarding] plan_save_error:", upsertErr.message, upsertErr.code);
+      throw new Error(`Erro ao salvar plano: ${upsertErr.message}`);
+    }
+    console.log("[submitOnboarding] plan_save_success");
 
-    // Generate today's tasks (with fallback if AI fails)
-    await generateTasksFor(supabase, userId, data.habit, data.triggers);
+    // --- Mark onboarded AFTER plan saved ---
+    console.log("[submitOnboarding] profile_update_started");
+    const { error: profileErr } = await supabase
+      .from("profiles")
+      .update({ onboarded: true })
+      .eq("id", userId);
 
-    return { plan: text };
+    if (profileErr) {
+      console.error("[submitOnboarding] profile_update_error:", profileErr.message);
+      // Don't throw — plan is already saved. Log and continue.
+    } else {
+      console.log("[submitOnboarding] profile_update_success");
+    }
+
+    // --- Generate today's tasks (best-effort, never blocks the flow) ---
+    try {
+      await generateTasksFor(supabase, userId, data.habit, data.triggers);
+      console.log("[submitOnboarding] tasks_generated");
+    } catch (taskErr: any) {
+      console.error("[submitOnboarding] tasks_generation_error (non-fatal):", taskErr?.message);
+      // Non-fatal: tasks can be generated later via regenerate button
+    }
+
+    console.log("[submitOnboarding] finished ok");
+    return { ok: true, plan: text };
   });
 
 /* ============================================================
@@ -204,15 +237,16 @@ ação física, redução de gatilho, exercício mental e reflexão.
 Responda APENAS em JSON válido, array com objetos { "title": string, "description": string, "category": "fisica"|"gatilho"|"mental"|"reflexao" }.
 Sem markdown, sem texto fora do JSON.`;
 
-  // Geração resiliente: se a IA falhar ou o JSON vier inválido, usa o fallback.
+  // Geração resiliente: getModel() can throw if GEMINI_API_KEY absent; catch all.
   let tasks: { title: string; description: string; category: string }[] = [];
   try {
-    const { text } = await generateText({ model: getModel(), system: SYSTEM_VOICE, prompt });
+    const model = getModel(); // can throw if key absent — caught below
+    const { text } = await generateText({ model, system: SYSTEM_VOICE, prompt });
     const cleaned = (text ?? "").replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
     if (Array.isArray(parsed) && parsed.length > 0) tasks = parsed;
   } catch (e: any) {
-    console.error("[ia] geração de tarefas falhou; usando fallback:", e?.message);
+    console.error("[generateTasksFor] falhou; usando fallback:", e?.message);
   }
   if (!Array.isArray(tasks) || tasks.length === 0) tasks = [...FALLBACK_TASKS];
 
