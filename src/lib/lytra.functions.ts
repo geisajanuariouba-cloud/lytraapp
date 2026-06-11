@@ -123,12 +123,26 @@ export const submitOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => OnboardingInput.parse(d))
   .handler(async ({ data, context }) => {
-    // Use service_role client for all writes — bypasses RLS which was causing
-    // "permission denied for table onboarding" when the anon-key client was used
-    // server-side. The user's identity is already validated by requireSupabaseAuth.
     const { userId } = context;
-    const db = supabaseAdmin; // service_role, bypasses RLS
     console.log("[submitOnboarding] started userId=", userId);
+
+    // Verify service_role key is set and looks correct (starts with eyJ, much longer than anon key)
+    const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+    const anonKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? "";
+    if (!svcKey) {
+      console.error("[submitOnboarding] CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set in environment");
+      throw new Error("Configuração do servidor incompleta. Contate o suporte.");
+    }
+    if (svcKey === anonKey) {
+      console.error("[submitOnboarding] CRITICAL: SUPABASE_SERVICE_ROLE_KEY equals SUPABASE_PUBLISHABLE_KEY — wrong key configured");
+      throw new Error("Configuração do servidor incorreta. Contate o suporte.");
+    }
+    // Log partial key for verification without exposing the full secret
+    console.log("[submitOnboarding] service_role key prefix=", svcKey.slice(0, 20), "length=", svcKey.length);
+
+    // Use service_role client for all writes — bypasses RLS
+    const db = supabaseAdmin;
+    console.log("[submitOnboarding] using supabaseAdmin (service_role)");
 
     // --- Idempotency: do NOT overwrite an existing plan ---
     const { data: existing, error: existErr } = await db
@@ -208,7 +222,6 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
 
     if (profileErr) {
       console.error("[submitOnboarding] profile_update_error:", profileErr.message);
-      // Non-fatal: plan is already saved. User can be marked onboarded on next request.
     } else {
       console.log("[submitOnboarding] profile_update_success");
     }
