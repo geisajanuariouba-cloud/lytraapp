@@ -35,7 +35,7 @@ function TicketPage() {
   if (!data) return <p className="text-sm text-muted-foreground">Carregando...</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:pt-16">
       <header>
         <h1 className="text-xl font-semibold">{data.ticket.subject}</h1>
         <p className="text-xs text-muted-foreground capitalize">{data.ticket.status}</p>
@@ -68,6 +68,7 @@ function TicketPage() {
           onChange={(e) => setContent(e.target.value)}
         />
         <Button
+          size="lg"
           disabled={content.trim().length < 1 || mut.isPending}
           onClick={() => mut.mutate()}
         >

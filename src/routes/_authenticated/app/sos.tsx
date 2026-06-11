@@ -80,7 +80,7 @@ function SosPage() {
         <button
           onClick={() => relapse.mutate()}
           disabled={relapse.isPending}
-          className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-background px-5 text-sm font-medium text-muted-foreground transition hover:text-foreground disabled:opacity-50"
+          className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-full border border-border bg-background px-5 text-sm font-medium text-muted-foreground transition hover:text-foreground disabled:opacity-50"
         >
           {relapse.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           Registrar recaída

@@ -303,7 +303,7 @@ function MultiChips({
           <button
             key={o}
             onClick={() => onToggle(o)}
-            className={`rounded-full border px-4 py-2 text-sm transition ${
+            className={`rounded-full border px-4 py-2.5 text-sm transition ${
               active
                 ? "border-primary bg-primary-soft text-foreground shadow-glow"
                 : "border-border bg-card text-muted-foreground hover:text-foreground"

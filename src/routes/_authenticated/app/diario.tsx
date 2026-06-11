@@ -82,7 +82,7 @@ function DiarioPage() {
           <button
             disabled={!text.trim() || mut.isPending}
             onClick={() => mut.mutate(text.trim())}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-50"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-50"
           >
             {mut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Enviar

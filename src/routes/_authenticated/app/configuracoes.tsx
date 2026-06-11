@@ -137,14 +137,14 @@ function ConfigPage() {
             <button
               onClick={handleSaveName}
               disabled={saving}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-60"
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-60"
             >
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
               Salvar
             </button>
             <button
               onClick={handleResetPassword}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-background px-5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-background px-5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
             >
               <Mail className="h-4 w-4" /> Redefinir senha
             </button>
@@ -224,7 +224,7 @@ function ConfigPage() {
         </p>
         <button
           onClick={handleLogout}
-          className="mt-5 inline-flex h-10 items-center gap-2 rounded-full border border-destructive/30 bg-background px-5 text-sm font-medium text-destructive transition hover:bg-destructive/10"
+          className="mt-5 inline-flex h-11 items-center gap-2 rounded-full border border-destructive/30 bg-background px-5 text-sm font-medium text-destructive transition hover:bg-destructive/10"
         >
           <LogOut className="h-4 w-4" /> Sair da conta
         </button>

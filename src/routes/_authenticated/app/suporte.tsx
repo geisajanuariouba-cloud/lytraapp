@@ -36,7 +36,7 @@ function SupportPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 md:pt-16">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Suporte</h1>
         <p className="text-sm text-muted-foreground">
@@ -58,6 +58,7 @@ function SupportPage() {
           onChange={(e) => setMessage(e.target.value)}
         />
         <Button
+          size="lg"
           disabled={subject.trim().length < 3 || message.trim().length < 3 || mut.isPending}
           onClick={() => mut.mutate()}
         >

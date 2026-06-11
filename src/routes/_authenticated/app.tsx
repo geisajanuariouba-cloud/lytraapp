@@ -86,7 +86,7 @@ function AppLayout() {
                 ? "Sua assinatura foi cancelada."
                 : "Não encontramos uma assinatura ativa vinculada à sua conta."}
             </p>
-            <div className="flex gap-2 justify-center">
+            <div className="flex flex-wrap gap-2 justify-center">
               <Button asChild>
                 <Link to="/">Reativar acesso</Link>
               </Button>

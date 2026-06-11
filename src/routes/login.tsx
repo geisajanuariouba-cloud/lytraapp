@@ -137,7 +137,7 @@ function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -158,7 +158,7 @@ function LoginPage() {
           <div className="mt-6 flex flex-col items-center gap-3 text-sm text-muted-foreground">
             {mode === "login" && (
               <>
-                <button onClick={() => setMode("reset")} className="hover:text-foreground">
+                <button onClick={() => setMode("reset")} className="py-2 px-2 hover:text-foreground">
                   Esqueci minha senha
                 </button>
                 <div className="my-2 h-px w-full bg-border" />
@@ -166,7 +166,7 @@ function LoginPage() {
                 <Link
                   to="/"
                   hash="precos"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-5 text-sm font-medium text-primary transition hover:bg-primary-soft"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary-soft/40 px-5 text-sm font-medium text-primary transition hover:bg-primary-soft"
                 >
                   Adquirir agora
                   <ArrowRight className="h-4 w-4" />
