@@ -80,8 +80,6 @@ function OnboardingPage() {
     setLoading(true);
     try {
       await submit({ data: form });
-      // Clear the dashboard cache so the fresh load fetches up-to-date data.
-      qc.removeQueries({ queryKey: ["dashboard"] });
       // Hard navigation: forces _authenticated.tsx beforeLoad to re-run and read
       // the freshly-saved onboarded=true from Supabase. Client-side nav() reuses
       // the cached context (onboarded=false) and would redirect back to /onboarding.
