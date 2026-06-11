@@ -4,7 +4,12 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  Lock,
   MessageCircle,
+  RefreshCw,
+  ShieldCheck,
+  X,
+  Zap,
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
@@ -568,13 +573,15 @@ function Landing() {
       <section className="mx-auto max-w-5xl px-6 pb-6">
         <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { icon: "🔒", title: "Dados criptografados", sub: "Segurança de nível bancário" },
-            { icon: "⚡", title: "Acesso imediato",      sub: "Pronto em menos de 5 min" },
-            { icon: "↩️", title: "Garantia 7 dias",      sub: "Reembolso sem perguntas" },
-            { icon: "✕",  title: "Cancele quando quiser", sub: "Sem fidelidade" },
+            { Icon: Lock,       title: "Dados criptografados", sub: "Segurança de nível bancário" },
+            { Icon: Zap,        title: "Acesso imediato",      sub: "Pronto em menos de 5 min" },
+            { Icon: RefreshCw,  title: "Garantia 7 dias",      sub: "Reembolso sem perguntas" },
+            { Icon: X,          title: "Cancele quando quiser", sub: "Sem fidelidade" },
           ].map((s) => (
-            <div key={s.title} className="flex flex-col items-center gap-1.5 rounded-2xl border border-primary/10 bg-white px-4 py-5 text-center shadow-soft">
-              <span className="text-xl">{s.icon}</span>
+            <div key={s.title} className="flex flex-col items-center gap-2 rounded-2xl border border-primary/10 bg-white px-4 py-5 text-center shadow-soft">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-primary">
+                <s.Icon className="h-4.5 w-4.5" style={{ height: "1.125rem", width: "1.125rem" }} />
+              </span>
               <p className="text-xs font-semibold text-foreground">{s.title}</p>
               <p className="text-[11px] text-muted-foreground">{s.sub}</p>
             </div>
