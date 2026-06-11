@@ -1,19 +1,37 @@
-import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck, History } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect } from "react";
 import { getDashboard } from "@/lib/lytra.functions";
 import { isSubscriptionActive } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { supabase } from "@/integrations/supabase/client";
+import { redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/app")({
+  // Onboarding gate runs in beforeLoad (server/router side) — no flash, deterministic.
+  // This replaces the fragile useEffect approach that caused the dashboard-to-quiz loop.
+  beforeLoad: async () => {
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) throw redirect({ to: "/login" });
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarded")
+      .eq("id", authData.user.id)
+      .maybeSingle();
+
+    // Only redirect to onboarding if the user has not yet completed it.
+    // profiles.onboarded is the single source of truth for onboarding state.
+    if (!profile?.onboarded) {
+      throw redirect({ to: "/onboarding" });
+    }
+  },
   component: AppLayout,
 });
 
 function AppLayout() {
-  const nav = useNavigate();
   const loc = useLocation();
   const fetchDash = useServerFn(getDashboard);
 
@@ -22,14 +40,7 @@ function AppLayout() {
     queryFn: () => fetchDash(),
   });
 
-  // Onboarding gate
-  useEffect(() => {
-    if (!isLoading && data && data.onboarding == null && !loc.pathname.includes("/onboarding")) {
-      nav({ to: "/onboarding" });
-    }
-  }, [isLoading, data, loc.pathname, nav]);
-
-  // Subscription gate — bloqueia exceto conta e suporte
+  // Subscription gate — blocks all routes except account and support
   const subStatus = data?.subscription?.status;
   const hasActive = isSubscriptionActive(data?.subscription);
   const allowedWithoutSub = ["/app/configuracoes", "/app/suporte"];

@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +10,20 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/login" });
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) throw redirect({ to: "/login" });
+
+    // Idempotency: if onboarding is already complete, send to dashboard immediately.
+    // Prevents re-doing the quiz and overwriting an existing plan.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarded")
+      .eq("id", authData.user.id)
+      .maybeSingle();
+
+    if (profile?.onboarded) {
+      throw redirect({ to: "/app" });
+    }
   },
   component: OnboardingPage,
 });
@@ -44,6 +57,7 @@ const HOURS_OPTIONS = ["Manhã", "Tarde", "Final do dia", "Noite", "Madrugada"];
 
 function OnboardingPage() {
   const nav = useNavigate();
+  const qc = useQueryClient();
   const submit = useServerFn(submitOnboarding);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -79,6 +93,9 @@ function OnboardingPage() {
     setLoading(true);
     try {
       await submit({ data: form });
+      // Clear the dashboard cache so app.tsx's beforeLoad reads fresh onboarded=true
+      // and doesn't send the user back to /onboarding on the redirect.
+      qc.removeQueries({ queryKey: ["dashboard"] });
       nav({ to: "/app" });
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao gerar seu plano.");

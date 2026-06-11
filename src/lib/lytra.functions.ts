@@ -70,11 +70,83 @@ const OnboardingInput = z.object({
   vision_30_days: z.string().max(500),
 });
 
+/**
+ * Validates that open-text answers contain meaningful content.
+ * Blocks:
+ *   - strings under a meaningful word count
+ *   - keyboard-mash / random sequences (no vowels or no spaces in long strings)
+ *   - pure repetition ("aaaa", "asdf asdf", "teste teste teste")
+ *   - strings with fewer than 2 distinct words
+ */
+function validateAnswerQuality(value: string, fieldName: string, minWords = 2): void {
+  const trimmed = value.trim();
+  if (!trimmed) return; // empty already blocked by zod min
+
+  // Must have at least minWords recognisable tokens
+  const words = trimmed
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length >= 2);
+  if (words.length < minWords) {
+    throw new Error(
+      `Não foi possível gerar seu plano com essas respostas. Responda o campo "${fieldName}" com mais detalhes para que a Lytra consiga entender sua rotina e seus desafios.`,
+    );
+  }
+
+  // Must contain at least one vowel (rules out pure consonant mash)
+  if (!/[aeiouáéíóúâêîôûãõ]/i.test(trimmed)) {
+    throw new Error(
+      `Não foi possível gerar seu plano com essas respostas. Responda o campo "${fieldName}" com palavras reais.`,
+    );
+  }
+
+  // Detect pure repetition: take all unique words; if the ratio of unique to total is < 0.4 and total > 4, it's repetitive
+  const uniqueWords = new Set(words);
+  if (words.length > 4 && uniqueWords.size / words.length < 0.4) {
+    throw new Error(
+      `Não foi possível gerar seu plano com essas respostas. Evite repetições no campo "${fieldName}" e descreva sua situação com suas próprias palavras.`,
+    );
+  }
+
+  // Detect keyboard mash in long words (word > 7 chars with no recognisable vowel clusters)
+  const longWords = words.filter((w) => w.length > 7);
+  const mashCount = longWords.filter((w) => !/[aeiouáéíóúâêîôûãõ]{1}/i.test(w)).length;
+  if (mashCount > 0 && mashCount >= longWords.length * 0.6) {
+    throw new Error(
+      `Não foi possível gerar seu plano com essas respostas. Parece que o campo "${fieldName}" contém texto sem sentido. Por favor, descreva sua situação real.`,
+    );
+  }
+}
+
 export const submitOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => OnboardingInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    // --- Idempotency: do NOT overwrite an existing plan ---
+    const { data: existing } = await supabase
+      .from("onboarding")
+      .select("user_id, ai_plan")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existing?.ai_plan) {
+      // Plan already generated — mark as onboarded in case it wasn't and return existing
+      await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
+      return { plan: existing.ai_plan };
+    }
+
+    // --- Validate answer quality before calling the AI ---
+    const openFields: [string, string, number][] = [
+      [data.goal, "Objetivo", 2],
+      [data.current_feeling, "Como você se sente", 2],
+      [data.biggest_obstacle, "Maior obstáculo", 2],
+      [data.vision_30_days, "Visão em 30 dias", 3],
+    ];
+    for (const [value, label, minWords] of openFields) {
+      if (value.trim()) validateAnswerQuality(value, label, minWords);
+    }
 
     const prompt = `Construa um plano inicial de reconstrução para uma pessoa.
 Hábito a reduzir: ${data.habit}
@@ -107,9 +179,10 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
       updated_at: new Date().toISOString(),
     });
 
+    // Only mark onboarded AFTER plan is successfully saved
     await supabase.from("profiles").update({ onboarded: true }).eq("id", userId);
 
-    // Gera as tarefas iniciais do dia (com fallback se a IA falhar)
+    // Generate today's tasks (with fallback if AI fails)
     await generateTasksFor(supabase, userId, data.habit, data.triggers);
 
     return { plan: text };
