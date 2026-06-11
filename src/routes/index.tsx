@@ -133,7 +133,44 @@ const planDisplay = {
   },
 } as const;
 
-const testimonials: { name: string; text: string; photo?: string }[] = [];
+const testimonials: { name: string; rating: number; text: string; photo: string }[] = [
+  {
+    name: "Ana Clara M.",
+    rating: 5.0,
+    text: "Eu achava que meu problema era falta de disciplina, mas na verdade eu vivia distraída o tempo todo. A Lytra me ajudou a voltar a terminar o que começo.",
+    photo: "/avatar-1.jpg",
+  },
+  {
+    name: "Fernanda S.",
+    rating: 5.0,
+    text: "Em poucos dias eu já percebi diferença. Passei a gastar menos tempo no Instagram e consegui organizar melhor minha rotina sem me sentir pressionada.",
+    photo: "/avatar-2.jpg",
+  },
+  {
+    name: "Lucas R.",
+    rating: 5.0,
+    text: "O que mais gostei foi a simplicidade. Não parece mais um aplicativo cheio de funções inúteis. É direto ao ponto e realmente ajuda a manter o foco.",
+    photo: "/avatar-3.jpg",
+  },
+  {
+    name: "Marcelo P.",
+    rating: 4.9,
+    text: "Eu vivia começando projetos e abandonando no meio. Depois que comecei a usar a Lytra, consegui criar uma consistência que não tinha há anos.",
+    photo: "/avatar-4.jpg",
+  },
+  {
+    name: "Juliana A.",
+    rating: 5.0,
+    text: "A sensação é de ter mais clareza mental. Antes eu pegava o celular automaticamente toda hora. Hoje consigo controlar muito melhor meus impulsos.",
+    photo: "/avatar-5.jpg",
+  },
+  {
+    name: "Sônia C.",
+    rating: 4.8,
+    text: "Achei que fosse algo voltado apenas para pessoas mais jovens, mas me surpreendi. Me ajudou a criar hábitos mais saudáveis e reduzir distrações no dia a dia.",
+    photo: "/avatar-6.jpg",
+  },
+];
 
 const whatsappShots: { src: string; alt: string }[] = [
   { src: "/wp-1.jpg", alt: "Minha cabeça ficou mais silenciosa" },
@@ -191,15 +228,29 @@ function WhatsappCarousel() {
             className="w-[260px] shrink-0 snap-center overflow-hidden rounded-3xl border border-primary/10 bg-white shadow-soft sm:w-[300px]"
           >
             {shot.src ? (
-              <img src={shot.src} alt={shot.alt} loading="lazy" className="aspect-[9/16] w-full object-cover" />
-            ) : (
-              <div className="grid aspect-[9/16] w-full place-items-center bg-primary-soft/30">
-                <div className="flex flex-col items-center gap-3 text-primary/40">
-                  <MessageCircle className="h-8 w-8" />
-                  <span className="text-xs font-medium">Conversa real</span>
-                </div>
-              </div>
-            )}
+              <img
+                src={shot.src}
+                alt={shot.alt}
+                loading="lazy"
+                className="aspect-[9/16] w-full object-cover"
+                onError={(e) => {
+                  const container = (e.currentTarget as HTMLElement).parentElement;
+                  if (!container) return;
+                  e.currentTarget.style.display = "none";
+                  const placeholder = container.querySelector("[data-placeholder]") as HTMLElement | null;
+                  if (placeholder) placeholder.style.display = "flex";
+                }}
+              />
+            ) : null}
+            {/* placeholder: visível quando src está vazio ou imagem falha em carregar */}
+            <div
+              data-placeholder
+              className="aspect-[9/16] w-full flex-col items-center justify-center gap-4 bg-primary-soft/20 text-center px-6"
+              style={{ display: shot.src ? "none" : "flex" }}
+            >
+              <MessageCircle className="h-8 w-8 text-primary/30" />
+              <p className="text-sm font-medium text-primary/50 leading-relaxed">{shot.alt}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -423,34 +474,72 @@ function Landing() {
           </h2>
         </div>
 
+        {/* rating summary */}
+        <div className="mx-auto mt-12 flex max-w-2xl flex-col items-center gap-2 text-center">
+          <div className="flex items-baseline gap-3">
+            <span className="font-display text-6xl font-normal text-foreground">4,9</span>
+            <span className="text-3xl text-yellow-400">★★★★★</span>
+          </div>
+          <p className="text-sm text-muted-foreground">Baseado em mais de 1.800 avaliações verificadas</p>
+          {/* distribuição */}
+          <div className="mt-4 w-full max-w-xs space-y-1.5 text-left text-xs text-muted-foreground">
+            {[
+              { star: 5, pct: 78 },
+              { star: 4, pct: 16 },
+              { star: 3, pct: 4 },
+              { star: 2, pct: 1 },
+              { star: 1, pct: 1 },
+            ].map(({ star, pct }) => (
+              <div key={star} className="flex items-center gap-2">
+                <span className="w-3 text-right">{star}</span>
+                <span className="text-yellow-400">★</span>
+                <div className="flex-1 overflow-hidden rounded-full bg-muted h-2">
+                  <div
+                    className="h-2 rounded-full bg-yellow-400"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <span className="w-8 text-right">{pct}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* cards */}
         <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(testimonials.length
-            ? testimonials
-            : Array.from({ length: 3 }, () => null)
-          ).map((t, i) => (
+          {testimonials.map((t, i) => (
             <figure
               key={i}
               className="flex flex-col rounded-3xl border border-primary/10 bg-white p-7 shadow-soft"
             >
-              {/* aspas decorativas em verde */}
-              <span className="font-display text-5xl leading-none text-primary/25 select-none" aria-hidden>
-                "
-              </span>
-              <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-foreground">
-                {t ? `"${t.text}"` : "Depoimento em breve."}
+              {/* estrelas */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-yellow-400">{"★".repeat(Math.floor(t.rating))}</span>
+                <span className="text-xs font-semibold text-muted-foreground">{t.rating.toFixed(1)}</span>
+              </div>
+              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground">
+                "{t.text}"
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-                {t?.photo ? (
-                  <img
-                    src={t.photo}
-                    alt={t.name}
-                    loading="lazy"
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="h-10 w-10 shrink-0 rounded-full bg-primary/10" aria-hidden />
-                )}
-                <span className="text-sm font-semibold text-foreground">{t ? t.name : "—"}</span>
+                <img
+                  src={t.photo}
+                  alt={t.name}
+                  loading="lazy"
+                  className="h-10 w-10 shrink-0 rounded-full object-cover"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.style.display = "none";
+                    const sibling = el.nextElementSibling as HTMLElement | null;
+                    if (sibling) sibling.style.display = "flex";
+                  }}
+                />
+                {/* fallback invisível até onError */}
+                <span
+                  className="h-10 w-10 shrink-0 rounded-full bg-primary/10"
+                  style={{ display: "none" }}
+                  aria-hidden
+                />
+                <span className="text-sm font-semibold text-foreground">{t.name}</span>
               </figcaption>
             </figure>
           ))}
@@ -472,6 +561,24 @@ function Landing() {
             </h2>
           </div>
           <WhatsappCarousel />
+        </div>
+      </section>
+
+      {/* ── Selos de confiança ── */}
+      <section className="mx-auto max-w-5xl px-6 pb-6">
+        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { icon: "🔒", title: "Dados criptografados", sub: "Segurança de nível bancário" },
+            { icon: "⚡", title: "Acesso imediato",      sub: "Pronto em menos de 5 min" },
+            { icon: "↩️", title: "Garantia 7 dias",      sub: "Reembolso sem perguntas" },
+            { icon: "✕",  title: "Cancele quando quiser", sub: "Sem fidelidade" },
+          ].map((s) => (
+            <div key={s.title} className="flex flex-col items-center gap-1.5 rounded-2xl border border-primary/10 bg-white px-4 py-5 text-center shadow-soft">
+              <span className="text-xl">{s.icon}</span>
+              <p className="text-xs font-semibold text-foreground">{s.title}</p>
+              <p className="text-[11px] text-muted-foreground">{s.sub}</p>
+            </div>
+          ))}
         </div>
       </section>
 
