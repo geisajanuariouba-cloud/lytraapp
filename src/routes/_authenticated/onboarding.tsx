@@ -1,7 +1,6 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { submitOnboarding } from "@/lib/lytra.functions";
@@ -46,8 +45,6 @@ const TRIGGERS_OPTIONS = [
 const HOURS_OPTIONS = ["Manhã", "Tarde", "Final do dia", "Noite", "Madrugada"];
 
 function OnboardingPage() {
-  const nav = useNavigate();
-  const qc = useQueryClient();
   const submit = useServerFn(submitOnboarding);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -83,13 +80,14 @@ function OnboardingPage() {
     setLoading(true);
     try {
       await submit({ data: form });
-      // Clear the dashboard cache so app.tsx's beforeLoad reads fresh onboarded=true
-      // and doesn't send the user back to /onboarding on the redirect.
+      // Clear the dashboard cache so the fresh load fetches up-to-date data.
       qc.removeQueries({ queryKey: ["dashboard"] });
-      nav({ to: "/app" });
+      // Hard navigation: forces _authenticated.tsx beforeLoad to re-run and read
+      // the freshly-saved onboarded=true from Supabase. Client-side nav() reuses
+      // the cached context (onboarded=false) and would redirect back to /onboarding.
+      window.location.href = "/app";
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao gerar seu plano.");
-    } finally {
       setLoading(false);
     }
   }
