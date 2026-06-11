@@ -179,7 +179,7 @@ const testimonials: { name: string; rating: number; text: string; photo: string 
 
 const whatsappShots: { src: string; alt: string }[] = [
   { src: "/wp-1.jpg", alt: "Minha cabeça ficou mais silenciosa" },
-  { src: "/wp-2.jpg", alt: "Primeira vez que completo tudo na mesma semana" },
+  { src: "/wp-7.jpg", alt: "é normal eu estar perdendo a vontade de abrir instagram?" },
   { src: "/wp-3.jpg", alt: "Eu jurava que meu problema era falta de disciplina" },
   { src: "/wp-4.jpg", alt: "Já faz uma semana, tô começando a acreditar que consigo" },
   { src: "/wp-5.jpg", alt: "Minha ansiedade diminuiu muito" },
