@@ -84,20 +84,20 @@ const oQueVoceRecebe = [
     desc: "Entenda seus padrões, gatilhos e emoções com um diário que organiza o que você sente.",
   },
   {
-    titulo: "Foco recuperado",
-    desc: "Missões diárias personalizadas para recondicionar sua atenção sem esforço excessivo.",
+    titulo: "Progresso real",
+    desc: "Missões diárias personalizadas que cabem na sua rotina e mostram avanço concreto a cada dia.",
   },
   {
-    titulo: "Controle emocional",
+    titulo: "Presença no dia",
     desc: "Ferramentas práticas para pausar, respirar e responder em vez de reagir no automático.",
   },
   {
-    titulo: "Disciplina real",
+    titulo: "Rotina reconstruída",
     desc: "Um sistema de progresso que celebra cada passo, mantendo você no caminho sem pressão.",
   },
   {
-    titulo: "Redução de distrações",
-    desc: "Estratégias concretas para recuperar as horas perdidas em estímulos que não te servem.",
+    titulo: "Horas de volta",
+    desc: "Estratégias concretas para recuperar o tempo perdido em estímulos que não te servem.",
   },
   {
     titulo: "Evolução visível",
@@ -459,8 +459,7 @@ function Landing() {
                 key={item.titulo}
                 className="group rounded-2xl border border-primary/10 bg-white p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-card"
               >
-                <div className="h-1 w-8 rounded-full bg-primary transition-all group-hover:w-12" aria-hidden />
-                <h3 className="mt-5 text-base font-semibold text-foreground">{item.titulo}</h3>
+                <h3 className="text-base font-semibold text-foreground">{item.titulo}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
               </div>
             ))}
