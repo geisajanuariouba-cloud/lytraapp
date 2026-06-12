@@ -21,6 +21,9 @@ export const Route = createFileRoute("/_authenticated")({
       .eq("id", data.user.id)
       .maybeSingle();
 
+    console.log("[beforeLoad] user_id=", data.user.id);
+    console.log("[beforeLoad] profiles.onboarded=", profile?.onboarded, "raw_profile=", JSON.stringify(profile));
+
     return { userId: data.user.id, onboarded: profile?.onboarded ?? false };
   },
   component: () => <Outlet />,

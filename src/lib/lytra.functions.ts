@@ -214,16 +214,18 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
     console.log("[submitOnboarding] plan_save_success");
 
     // --- Mark onboarded AFTER plan saved ---
-    console.log("[submitOnboarding] profile_update_started");
-    const { error: profileErr } = await db
+    console.log("[submitOnboarding] profile_update_started userId=", userId);
+    const { data: profileUpdateData, error: profileErr } = await db
       .from("profiles")
       .update({ onboarded: true })
-      .eq("id", userId);
+      .eq("id", userId)
+      .select("id, onboarded")
+      .maybeSingle();
 
     if (profileErr) {
-      console.error("[submitOnboarding] profile_update_error:", profileErr.message);
+      console.error("[submitOnboarding] profile_update_error:", profileErr.message, profileErr.code);
     } else {
-      console.log("[submitOnboarding] profile_update_success");
+      console.log("[submitOnboarding] profile_update_success data=", JSON.stringify(profileUpdateData));
     }
 
     // --- Generate today's tasks (best-effort, never blocks the flow) ---
