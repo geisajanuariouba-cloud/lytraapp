@@ -254,6 +254,7 @@ function OnboardingPage() {
 
         <div className="mt-10 flex items-center justify-between">
           <button
+            type="button"
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0 || loading}
             className="inline-flex h-11 items-center gap-1 rounded-full px-4 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30"
@@ -262,6 +263,7 @@ function OnboardingPage() {
           </button>
           {!last ? (
             <button
+              type="button"
               onClick={handleNext}
               disabled={!canContinue}
               className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow transition disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
@@ -270,6 +272,7 @@ function OnboardingPage() {
             </button>
           ) : (
             <button
+              type="button"
               onClick={handleFinish}
               disabled={loading || !canContinue}
               className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow transition disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
