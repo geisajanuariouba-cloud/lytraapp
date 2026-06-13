@@ -8,11 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/_authenticated/app")({
-  // Use onboarded flag from parent context (_authenticated.tsx) — zero extra Supabase calls.
+  // ssr: false — parent (_authenticated) also has ssr: false and provides context.onboarded.
+  // Without this, the server skips the parent beforeLoad (no context), then this guard
+  // sees context.onboarded = undefined → !undefined = true → wrongly redirects to /onboarding.
+  ssr: false,
   beforeLoad: ({ context }) => {
+    console.log("[app beforeLoad] onboarded=", context.onboarded);
     if (!context.onboarded) {
+      console.log("[app beforeLoad] decision=redirect_onboarding");
       throw redirect({ to: "/onboarding" });
     }
+    console.log("[app beforeLoad] decision=allow_app");
   },
   component: AppLayout,
 });

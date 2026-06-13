@@ -23,6 +23,7 @@ export const Route = createFileRoute("/_authenticated")({
 
     console.log("[beforeLoad] user_id=", data.user.id);
     console.log("[beforeLoad] profiles.onboarded=", profile?.onboarded, "raw_profile=", JSON.stringify(profile));
+    console.log("[beforeLoad] decision=", profile?.onboarded ? "onboarded=true" : "onboarded=false");
 
     return { userId: data.user.id, onboarded: profile?.onboarded ?? false };
   },

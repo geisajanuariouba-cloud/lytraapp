@@ -7,12 +7,17 @@ import { submitOnboarding } from "@/lib/lytra.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  // Use onboarded flag from parent context (_authenticated.tsx) — zero extra Supabase calls.
-  // If already onboarded, redirect immediately to app without rendering the quiz.
+  // ssr: false — parent (_authenticated) also has ssr: false and provides context.onboarded.
+  // Without this, the server skips the parent beforeLoad (no context), then this guard
+  // sees context.onboarded = undefined → truthy check fails → quiz renders even for onboarded users.
+  ssr: false,
   beforeLoad: ({ context }) => {
+    console.log("[onboarding beforeLoad] onboarded=", context.onboarded);
     if (context.onboarded) {
+      console.log("[onboarding beforeLoad] decision=redirect_app (already onboarded)");
       throw redirect({ to: "/app" });
     }
+    console.log("[onboarding beforeLoad] decision=allow_onboarding");
   },
   component: OnboardingPage,
 });
