@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useLocation, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Home, BookHeart, ShieldAlert, TrendingUp, Settings, LifeBuoy, ShieldCheck, History } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -8,18 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/_authenticated/app")({
-  // ssr: false — parent (_authenticated) also has ssr: false and provides context.onboarded.
-  // Without this, the server skips the parent beforeLoad (no context), then this guard
-  // sees context.onboarded = undefined → !undefined = true → wrongly redirects to /onboarding.
-  ssr: false,
-  beforeLoad: ({ context }) => {
-    console.log("[app beforeLoad] onboarded=", context.onboarded);
-    if (!context.onboarded) {
-      console.log("[app beforeLoad] decision=redirect_onboarding");
-      throw redirect({ to: "/onboarding" });
-    }
-    console.log("[app beforeLoad] decision=allow_app");
-  },
+  // Guard lives in parent _authenticated.tsx — which has ssr:false and reads fresh DB.
+  // No beforeLoad here: child route beforeLoads run on the server even with ssr:false,
+  // and at SSR time the parent context (session/profile) is not available.
   component: AppLayout,
 });
 

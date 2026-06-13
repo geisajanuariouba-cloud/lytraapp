@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
@@ -7,18 +7,9 @@ import { submitOnboarding } from "@/lib/lytra.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  // ssr: false — parent (_authenticated) also has ssr: false and provides context.onboarded.
-  // Without this, the server skips the parent beforeLoad (no context), then this guard
-  // sees context.onboarded = undefined → truthy check fails → quiz renders even for onboarded users.
-  ssr: false,
-  beforeLoad: ({ context }) => {
-    console.log("[onboarding beforeLoad] onboarded=", context.onboarded);
-    if (context.onboarded) {
-      console.log("[onboarding beforeLoad] decision=redirect_app (already onboarded)");
-      throw redirect({ to: "/app" });
-    }
-    console.log("[onboarding beforeLoad] decision=allow_onboarding");
-  },
+  // Guard lives in parent _authenticated.tsx — which has ssr:false and reads fresh DB.
+  // No beforeLoad here: child route beforeLoads run on the server even with ssr:false,
+  // and at SSR time the parent context (session/profile) is not available.
   component: OnboardingPage,
 });
 
