@@ -54,7 +54,7 @@ function SupportPage() {
             acesso@lytra.shop
           </a>
           <a
-            href="https://wa.me/5532984258011"
+            href="https://wa.me/553298425801"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition hover:border-primary/50 hover:text-foreground"

@@ -73,7 +73,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href="https://wa.me/5532984258011" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
+              <a href="https://wa.me/553298425801" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
                 WhatsApp: +55 32 9842-5801
               </a>
             </li>
