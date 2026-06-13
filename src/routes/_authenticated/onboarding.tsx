@@ -88,8 +88,12 @@ function OnboardingPage() {
       }
 
       console.log("[onboarding] redirecting_to_app");
-      // Hard navigation forces _authenticated.tsx to re-read onboarded=true from DB.
-      window.location.assign("/app");
+      // Use replace (not assign) to avoid a stale history entry,
+      // and add a small delay so the server function response is fully settled
+      // before the router picks up the new navigation.
+      setTimeout(() => {
+        window.location.replace("/app");
+      }, 100);
     } catch (e: any) {
       const msg = e?.message || e?.toString() || "Erro desconhecido";
       console.error("[onboarding] submit_error:", msg, e);

@@ -41,6 +41,24 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
+  // Auto-recover from navigation-related errors (e.g. the onboarding → /app
+  // transition where a route beforeLoad throws during a concurrent navigation).
+  // These are transient and self-heal on a fresh load — no need to show the user.
+  useEffect(() => {
+    const msg = error?.message ?? "";
+    const isNavigationError =
+      msg.includes("redirect") ||
+      msg.includes("navigation") ||
+      msg.includes("beforeLoad") ||
+      msg.includes("router") ||
+      msg.includes("Cannot read properties of undefined");
+
+    if (isNavigationError) {
+      router.invalidate();
+      reset();
+    }
+  }, [error, reset, router]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
