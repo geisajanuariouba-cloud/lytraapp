@@ -113,6 +113,6 @@ export function detectPlanKey(payload: any): PlanKey | null {
 
   if (/vital[ií]ci|lifetime|phpf42z/.test(haystack)) return "lifetime";
   if (/trimestr|quarter|i4aekft/.test(haystack)) return "quarterly";
-  if (/mensal|month|dyg3zsk/.test(haystack)) return "monthly";
+  if (/mensal|month|dyg3zsk|5ixm09x/.test(haystack)) return "monthly";
   return null;
 }

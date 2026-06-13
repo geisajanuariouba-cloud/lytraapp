@@ -584,3 +584,65 @@ export const submitMood = createServerFn({ method: "POST" })
       .upsert({ user_id: userId, checkin_date: today, mood: data.mood, note: data.note });
     return { ok: true };
   });
+
+/* ============================================================
+   REENVIO MANUAL DE CONVITE (admin / suporte)
+   Reusable quando o e-mail automático do webhook não chegou.
+   ============================================================ */
+export const resendInvite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) =>
+    z.object({ email: z.string().email() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId: requesterId } = context;
+
+    // Only admins can trigger this
+    const { data: isAdmin } = await supabaseAdmin.rpc("has_role", {
+      _user_id: requesterId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Acesso negado.");
+
+    const email = data.email.toLowerCase().trim();
+    console.log("[resendInvite] requested by=", requesterId, "for=", email);
+
+    const siteUrl = (process.env.SITE_URL ?? "https://www.lytra.shop").replace(/\/+$/, "");
+    const redirectTo = `${siteUrl}/criar-senha`;
+
+    // Find or create the user
+    const { data: userList } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = userList?.users?.find((u) => u.email?.toLowerCase() === email);
+
+    let accessLink: string | null = null;
+
+    if (existingUser) {
+      console.log("[resendInvite] existing user id=", existingUser.id);
+      // Generate recovery link → /criar-senha (set new password)
+      const { data: gen, error } = await supabaseAdmin.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: { redirectTo },
+      });
+      if (error) throw new Error(`Erro ao gerar link: ${error.message}`);
+      accessLink = gen?.properties?.action_link ?? null;
+    } else {
+      console.log("[resendInvite] new user — inviting");
+      const { data: gen, error } = await supabaseAdmin.auth.admin.generateLink({
+        type: "invite",
+        email,
+        options: { redirectTo, data: { source: "kiwify" } },
+      });
+      if (error) throw new Error(`Erro ao criar convite: ${error.message}`);
+      accessLink = gen?.properties?.action_link ?? null;
+    }
+
+    if (!accessLink) throw new Error("Não foi possível gerar link de acesso.");
+
+    const { sendAccessEmail } = await import("@/lib/email.server");
+    const result = await sendAccessEmail({ to: email, fullName: null, accessUrl: accessLink });
+    if (!result.ok) throw new Error(`Falha ao enviar e-mail: ${result.error}`);
+
+    console.log("[resendInvite] email sent ok id=", result.id, "to=", email);
+    return { ok: true, email, resend_id: result.id };
+  });
