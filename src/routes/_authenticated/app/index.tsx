@@ -65,12 +65,14 @@ function HomePage() {
     if (!data) return;
     if (data.tasks.length > 0) return; // already have tasks
     ensureFn().then((res) => {
+      // generated=true means tasks were just created — refresh the dashboard
       if ((res as any)?.generated) {
         qc.invalidateQueries({ queryKey: ["dashboard"] });
       }
-    }).catch(() => {/* silent — user can retry manually */});
+    }).catch(() => {/* silent — user can retry manually via the button */});
+  // Re-run whenever task count goes to 0 (e.g. after a full regen that clears tasks)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.tasks?.length === 0]);
+  }, [!!data, data?.tasks?.length === 0]);
 
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),

@@ -331,13 +331,8 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { data: onb } = await supabase
-      .from("onboarding")
-      .select("habit, triggers")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (!onb) throw new Error("Onboarding não encontrado");
     const today = new Date().toISOString().slice(0, 10);
+
     // Remove apenas as tarefas ainda NÃO concluídas do dia, preservando o histórico.
     await supabase
       .from("daily_tasks")
@@ -345,7 +340,20 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
       .eq("user_id", userId)
       .eq("task_date", today)
       .eq("completed", false);
-    await generateTasksFor(supabase, userId, onb.habit, onb.triggers ?? []);
+
+    const { data: onb } = await supabase
+      .from("onboarding")
+      .select("habit, triggers")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    // Use fallback habit/triggers when onboarding data isn't available —
+    // never block the user because of a missing onboarding row.
+    const habit = onb?.habit ?? "foco e disciplina";
+    const triggers: string[] = onb?.triggers ?? [];
+    console.log("[daily_mission] regenerate userId=", userId, "onboarding_found=", Boolean(onb), "using_fallback=", !onb);
+
+    await generateTasksFor(supabase, userId, habit, triggers);
     return { ok: true };
   });
 
@@ -353,6 +361,7 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
  * Garante que existam tarefas geradas para o dia atual.
  * Se já existirem (qualquer quantidade), retorna sem fazer nada.
  * Se não existirem, gera automaticamente — chamado na abertura do app.
+ * Nunca falha: usa fallback quando dados do onboarding não estão disponíveis.
  */
 export const ensureTodayTasks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -369,20 +378,25 @@ export const ensureTodayTasks = createServerFn({ method: "POST" })
       .limit(1);
 
     if (existing && existing.length > 0) {
+      console.log("[daily_mission] ensure userId=", userId, "tasks_already_exist=true");
       return { generated: false, reason: "tasks_already_exist" };
     }
 
-    // No tasks yet — generate them now
-    const { data: onb } = await supabase
+    // No tasks yet — look up onboarding data (optional, fallback used if absent)
+    const { data: onb, error: onbErr } = await supabase
       .from("onboarding")
       .select("habit, triggers")
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (!onb) return { generated: false, reason: "no_onboarding" };
+    const habit = onb?.habit ?? "foco e disciplina";
+    const triggers: string[] = onb?.triggers ?? [];
+    const usingFallback = !onb;
 
-    await generateTasksFor(supabase, userId, onb.habit, onb.triggers ?? []);
-    return { generated: true };
+    console.log("[daily_mission] ensure userId=", userId, "onboarding_found=", Boolean(onb), "using_fallback=", usingFallback, "onb_err=", onbErr?.message ?? null);
+
+    await generateTasksFor(supabase, userId, habit, triggers);
+    return { generated: true, used_fallback: usingFallback };
   });
 
 /**
