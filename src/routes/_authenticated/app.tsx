@@ -90,7 +90,7 @@ function AppLayout() {
               </div>
               <div className="flex flex-wrap gap-3 justify-center pt-1">
                 <Button asChild>
-                  <Link to="/">Reativar acesso</Link>
+                  <a href="https://www.lytra.shop/#precos">Reativar acesso</a>
                 </Button>
                 <Button asChild variant="outline">
                   <Link to="/app/suporte">Falar com suporte</Link>
