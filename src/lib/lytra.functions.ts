@@ -155,21 +155,37 @@ export const submitOnboarding = createServerFn({ method: "POST" })
 
     if (existing?.ai_plan) {
       console.log("[submitOnboarding] plan already exists, updating onboarded and returning");
-      const { data: existingProfileData, error: existingProfileErr } = await db
+      // Step 1: plain UPDATE — does NOT insert, only updates existing row
+      const { data: updateData, error: updateErr, count: updateCount } = await db
         .from("profiles")
-        .upsert({ id: userId, onboarded: true }, { onConflict: "id" })
-        .select("id, onboarded")
-        .maybeSingle();
-      console.log("[submitOnboarding] existing_plan_profile_update_result", {
-        data: JSON.stringify(existingProfileData),
-        error: existingProfileErr?.message ?? null,
+        .update({ onboarded: true, updated_at: new Date().toISOString() })
+        .eq("id", userId)
+        .select("id, onboarded");
+      console.log("[submitOnboarding] existing_plan_update_result", {
+        data: JSON.stringify(updateData),
+        error: updateErr?.message ?? null,
+        count: updateCount,
       });
-      if (existingProfileErr) {
-        console.error("[submitOnboarding] existing_plan_profile_upsert_error:", existingProfileErr.message);
-        throw new Error(`Erro ao atualizar perfil: ${existingProfileErr.message}`);
+      if (updateErr) {
+        console.error("[submitOnboarding] existing_plan_update_error:", updateErr.message, updateErr.code);
+        throw new Error(`Erro ao atualizar perfil: ${updateErr.message}`);
       }
-      if (!existingProfileData?.onboarded) {
-        console.error("[submitOnboarding] existing_plan_profile_still_false after upsert — data:", JSON.stringify(existingProfileData));
+      // Step 2: verify with a fresh SELECT
+      const { data: verifyData, error: verifyErr } = await db
+        .from("profiles")
+        .select("id, onboarded")
+        .eq("id", userId)
+        .maybeSingle();
+      console.log("[submitOnboarding] existing_plan_verify_result", {
+        data: JSON.stringify(verifyData),
+        error: verifyErr?.message ?? null,
+      });
+      if (verifyErr) {
+        console.error("[submitOnboarding] existing_plan_verify_error:", verifyErr.message);
+        throw new Error(`Erro ao verificar perfil: ${verifyErr.message}`);
+      }
+      if (!verifyData?.onboarded) {
+        console.error("[submitOnboarding] existing_plan_onboarded_still_false after update+verify — data:", JSON.stringify(verifyData), "updateData:", JSON.stringify(updateData));
         throw new Error("Não foi possível confirmar conclusão do onboarding. Tente novamente.");
       }
       console.log("[submitOnboarding] existing_plan_onboarded_confirmed=true");
@@ -234,25 +250,31 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
     console.log("[submitOnboarding] profile_update_started userId=", userId);
     const { data: profileUpdateData, error: profileErr } = await db
       .from("profiles")
-      .upsert({ id: userId, onboarded: true }, { onConflict: "id" })
-      .select("id, onboarded")
-      .maybeSingle();
+      .update({ onboarded: true, updated_at: new Date().toISOString() })
+      .eq("id", userId)
+      .select("id, onboarded");
+
+    console.log("[submitOnboarding] profile_update_result data=", JSON.stringify(profileUpdateData), "error=", profileErr?.message ?? null, "code=", profileErr?.code ?? null);
 
     if (profileErr) {
       console.error("[submitOnboarding] profile_update_error:", profileErr.message, profileErr.code);
-      // Non-fatal attempt 2: try plain update as fallback
-      const { data: fallbackData, error: fallbackErr } = await db
-        .from("profiles")
-        .update({ onboarded: true })
-        .eq("id", userId)
-        .select("id, onboarded")
-        .maybeSingle();
-      console.log("[submitOnboarding] profile_update_fallback result:", JSON.stringify(fallbackData), fallbackErr?.message ?? null);
+      throw new Error(`Erro ao marcar onboarding: ${profileErr.message}`);
+    }
+
+    // Verify with a fresh SELECT after update
+    const { data: profileVerifyData, error: profileVerifyErr } = await db
+      .from("profiles")
+      .select("id, onboarded")
+      .eq("id", userId)
+      .maybeSingle();
+    console.log("[submitOnboarding] profile_verify_result data=", JSON.stringify(profileVerifyData), "error=", profileVerifyErr?.message ?? null);
+
+    if (profileVerifyErr) {
+      console.error("[submitOnboarding] profile_verify_error:", profileVerifyErr.message);
+    } else if (!profileVerifyData?.onboarded) {
+      console.error("[submitOnboarding] profile_still_false after update+verify — updateData:", JSON.stringify(profileUpdateData), "verifyData:", JSON.stringify(profileVerifyData));
     } else {
-      console.log("[submitOnboarding] profile_update_success data=", JSON.stringify(profileUpdateData));
-      if (!profileUpdateData?.onboarded) {
-        console.error("[submitOnboarding] profile_still_false after upsert — data:", JSON.stringify(profileUpdateData));
-      }
+      console.log("[submitOnboarding] profile_onboarded_confirmed=true");
     }
 
     // --- Generate today's tasks (best-effort, never blocks the flow) ---
