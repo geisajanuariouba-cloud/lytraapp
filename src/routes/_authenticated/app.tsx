@@ -69,24 +69,33 @@ function AppLayout() {
 
       <main className="mx-auto max-w-3xl px-5 py-6">
         {!isLoading && data && !hasActive && !isAllowedPath ? (
-          <div className="rounded-2xl border border-border bg-card p-8 text-center space-y-4">
-            <h2 className="text-xl font-semibold">Sua jornada está pausada</h2>
-            <p className="text-sm text-muted-foreground">
-              {subStatus === "refunded"
-                ? "Identificamos um reembolso. O acesso foi pausado."
-                : subStatus === "chargeback"
-                ? "Identificamos um chargeback. O acesso foi pausado."
-                : subStatus === "canceled"
-                ? "Sua assinatura foi cancelada."
-                : "Não encontramos uma assinatura ativa vinculada à sua conta."}
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Button asChild>
-                <Link to="/">Reativar acesso</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/app/suporte">Falar com suporte</Link>
-              </Button>
+          <div className="rounded-2xl border border-border bg-card px-8 py-14 text-center md:pt-20">
+            <div className="flex flex-col items-center gap-5">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold">Sua jornada está pausada</h2>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                  {subStatus === "refunded"
+                    ? "Identificamos um reembolso. O acesso foi pausado."
+                    : subStatus === "chargeback"
+                    ? "Identificamos um chargeback. O acesso foi pausado."
+                    : subStatus === "canceled"
+                    ? "Sua assinatura foi cancelada."
+                    : "Não encontramos uma assinatura ativa vinculada à sua conta."}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 justify-center pt-1">
+                <Button asChild>
+                  <Link to="/">Reativar acesso</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/app/suporte">Falar com suporte</Link>
+                </Button>
+              </div>
             </div>
           </div>
         ) : (

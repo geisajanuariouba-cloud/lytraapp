@@ -16,7 +16,7 @@ export const Route = createFileRoute("/reembolso")({
       </p>
       <h3>1. Como solicitar</h3>
       <p>
-        Envie um email para suporte.lytra@gmail.com dentro de 7 dias após a compra. Não precisa
+        Envie um email para acesso@lytra.shop dentro de 7 dias após a compra. Não precisa
         justificar. O estorno é processado em até 7 dias úteis pelo mesmo meio de pagamento.
       </p>
       <h3>2. Após o prazo de garantia</h3>

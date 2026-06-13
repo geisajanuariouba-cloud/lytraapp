@@ -68,8 +68,13 @@ export function Footer() {
           <h4 className="text-sm font-semibold text-gray-900">Contato</h4>
           <ul className="mt-4 space-y-2 text-sm text-gray-500">
             <li>
-              <a href="mailto:suporte.lytra@gmail.com" className="hover:text-gray-900 transition-colors">
-                suporte.lytra@gmail.com
+              <a href="mailto:acesso@lytra.shop" className="hover:text-gray-900 transition-colors">
+                acesso@lytra.shop
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/5532984255801" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
+                WhatsApp: +55 32 9842-5801
               </a>
             </li>
           </ul>

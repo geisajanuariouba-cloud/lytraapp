@@ -45,6 +45,26 @@ function SupportPage() {
       </header>
 
       <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
+        <h2 className="font-medium text-sm">Contato direto</h2>
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="mailto:acesso@lytra.shop"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition hover:border-primary/50 hover:text-foreground"
+          >
+            acesso@lytra.shop
+          </a>
+          <a
+            href="https://wa.me/5532984255801"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition hover:border-primary/50 hover:text-foreground"
+          >
+            WhatsApp +55 32 9842-5801
+          </a>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
         <h2 className="font-medium">Novo ticket</h2>
         <Input
           placeholder="Assunto"
