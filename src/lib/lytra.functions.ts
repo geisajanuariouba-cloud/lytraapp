@@ -596,7 +596,10 @@ export const getDashboard = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const today = new Date().toISOString().slice(0, 10);
 
-    const [profile, onb, tasks, progress, todayMood, journal, relapses, subscription, roleRes] = await Promise.all([
+    console.log("[daily_mission] dashboard_load_start", { userId, today });
+
+    // Fetch everything in parallel first
+    const [profile, onb, tasksRes, progress, todayMood, journal, relapses, subscription, roleRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("onboarding").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at"),
@@ -608,10 +611,58 @@ export const getDashboard = createServerFn({ method: "GET" })
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
     ]);
 
+    let tasks = tasksRes.data ?? [];
+    console.log("[daily_mission] existing_tasks_count", tasks.length, "onboarding_found", Boolean(onb.data));
+
+    // If no tasks exist for today, generate them NOW on the server — before returning.
+    // This guarantees the frontend always receives a populated list.
+    if (tasks.length === 0) {
+      try {
+        const habit = onb.data?.habit ?? "foco e disciplina";
+        const triggers: string[] = onb.data?.triggers ?? [];
+        console.log("[daily_mission] no tasks today — generating now, habit=", habit, "using_fallback=", !onb.data);
+
+        await generateTasksFor(supabase, userId, habit, triggers);
+
+        // Fetch the freshly created tasks
+        const { data: freshTasks, error: freshErr } = await supabase
+          .from("daily_tasks")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("task_date", today)
+          .order("created_at");
+
+        if (freshErr) {
+          console.error("[daily_mission] fresh_tasks_fetch_error", freshErr.message);
+        } else {
+          tasks = freshTasks ?? [];
+          console.log("[daily_mission] tasks_after_generate_count", tasks.length);
+        }
+      } catch (genErr: any) {
+        // Generation failed — log but don't crash; frontend will show retry button
+        console.error("[daily_mission] generation_error", genErr?.message);
+        // Last resort: return inline fallback tasks so the UI never shows empty
+        tasks = FALLBACK_TASKS.map((t, i) => ({
+          id: `fallback-${i}`,
+          user_id: userId,
+          task_date: today,
+          title: t.title,
+          description: t.description,
+          category: t.category,
+          completed: false,
+          completed_at: null,
+          created_at: new Date().toISOString(),
+        }));
+        console.log("[daily_mission] using_inline_fallback tasks_count=", tasks.length);
+      }
+    }
+
+    console.log("[daily_mission] returning_tasks_count", tasks.length);
+
     return {
       profile: profile.data,
       onboarding: onb.data,
-      tasks: tasks.data ?? [],
+      tasks,
       progress: progress.data,
       todayMood: todayMood.data,
       journal: journal.data ?? [],

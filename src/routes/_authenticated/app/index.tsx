@@ -6,7 +6,6 @@ import {
   toggleTask,
   submitMood,
   regenerateTodayTasks,
-  ensureTodayTasks,
 } from "@/lib/lytra.functions";
 import {
   CheckCircle2,
@@ -51,7 +50,6 @@ function HomePage() {
   const toggleFn = useServerFn(toggleTask);
   const moodFn = useServerFn(submitMood);
   const regenFn = useServerFn(regenerateTodayTasks);
-  const ensureFn = useServerFn(ensureTodayTasks);
 
   const [regenerating, setRegenerating] = useState(false);
 
@@ -60,23 +58,7 @@ function HomePage() {
     queryFn: () => fetchDash(),
   });
 
-  const taskCount = data?.tasks?.length ?? 0;
-
-  // Auto-generate tasks on first load of the day — silently, no button needed.
-  useEffect(() => {
-    if (!data) return;        // data not loaded yet
-    if (taskCount > 0) return; // tasks already exist
-    ensureFn()
-      .then((res) => {
-        // whether generated or not, always force a fresh fetch so the list updates
-        qc.refetchQueries({ queryKey: ["dashboard"] });
-      })
-      .catch(() => {
-        // silent — user can use the retry button
-      });
-  // Run when data first arrives (isLoading → false) and whenever taskCount hits 0
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskCount, !!data]);
+  // No useEffect needed — getDashboard generates tasks server-side before returning.
 
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),
@@ -123,7 +105,7 @@ function HomePage() {
   async function handleRetryGenerate() {
     setRegenerating(true);
     try {
-      await ensureFn();
+      // getDashboard itself will auto-generate tasks if none exist
       await qc.refetchQueries({ queryKey: ["dashboard"] });
     } catch {
       toast.error("Não conseguimos carregar sua missão de hoje. Tente novamente.");
