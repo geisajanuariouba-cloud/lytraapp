@@ -154,8 +154,25 @@ export const submitOnboarding = createServerFn({ method: "POST" })
     if (existErr) console.error("[submitOnboarding] existing check error:", existErr.message);
 
     if (existing?.ai_plan) {
-      console.log("[submitOnboarding] plan already exists, marking onboarded and returning");
-      await db.from("profiles").update({ onboarded: true }).eq("id", userId);
+      console.log("[submitOnboarding] plan already exists, updating onboarded and returning");
+      const { data: existingProfileData, error: existingProfileErr } = await db
+        .from("profiles")
+        .upsert({ id: userId, onboarded: true }, { onConflict: "id" })
+        .select("id, onboarded")
+        .maybeSingle();
+      console.log("[submitOnboarding] existing_plan_profile_update_result", {
+        data: JSON.stringify(existingProfileData),
+        error: existingProfileErr?.message ?? null,
+      });
+      if (existingProfileErr) {
+        console.error("[submitOnboarding] existing_plan_profile_upsert_error:", existingProfileErr.message);
+        throw new Error(`Erro ao atualizar perfil: ${existingProfileErr.message}`);
+      }
+      if (!existingProfileData?.onboarded) {
+        console.error("[submitOnboarding] existing_plan_profile_still_false after upsert — data:", JSON.stringify(existingProfileData));
+        throw new Error("Não foi possível confirmar conclusão do onboarding. Tente novamente.");
+      }
+      console.log("[submitOnboarding] existing_plan_onboarded_confirmed=true");
       return { ok: true, plan: existing.ai_plan };
     }
 
@@ -217,15 +234,25 @@ para os próximos 30 dias, (3) o primeiro passo de hoje. Sem listas, sem título
     console.log("[submitOnboarding] profile_update_started userId=", userId);
     const { data: profileUpdateData, error: profileErr } = await db
       .from("profiles")
-      .update({ onboarded: true })
-      .eq("id", userId)
+      .upsert({ id: userId, onboarded: true }, { onConflict: "id" })
       .select("id, onboarded")
       .maybeSingle();
 
     if (profileErr) {
       console.error("[submitOnboarding] profile_update_error:", profileErr.message, profileErr.code);
+      // Non-fatal attempt 2: try plain update as fallback
+      const { data: fallbackData, error: fallbackErr } = await db
+        .from("profiles")
+        .update({ onboarded: true })
+        .eq("id", userId)
+        .select("id, onboarded")
+        .maybeSingle();
+      console.log("[submitOnboarding] profile_update_fallback result:", JSON.stringify(fallbackData), fallbackErr?.message ?? null);
     } else {
       console.log("[submitOnboarding] profile_update_success data=", JSON.stringify(profileUpdateData));
+      if (!profileUpdateData?.onboarded) {
+        console.error("[submitOnboarding] profile_still_false after upsert — data:", JSON.stringify(profileUpdateData));
+      }
     }
 
     // --- Generate today's tasks (best-effort, never blocks the flow) ---
