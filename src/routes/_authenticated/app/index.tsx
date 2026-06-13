@@ -60,19 +60,23 @@ function HomePage() {
     queryFn: () => fetchDash(),
   });
 
+  const taskCount = data?.tasks?.length ?? 0;
+
   // Auto-generate tasks on first load of the day — silently, no button needed.
   useEffect(() => {
-    if (!data) return;
-    if (data.tasks.length > 0) return; // already have tasks
-    ensureFn().then((res) => {
-      // generated=true means tasks were just created — refresh the dashboard
-      if ((res as any)?.generated) {
-        qc.invalidateQueries({ queryKey: ["dashboard"] });
-      }
-    }).catch(() => {/* silent — user can retry manually via the button */});
-  // Re-run whenever task count goes to 0 (e.g. after a full regen that clears tasks)
+    if (!data) return;        // data not loaded yet
+    if (taskCount > 0) return; // tasks already exist
+    ensureFn()
+      .then((res) => {
+        // whether generated or not, always force a fresh fetch so the list updates
+        qc.refetchQueries({ queryKey: ["dashboard"] });
+      })
+      .catch(() => {
+        // silent — user can use the retry button
+      });
+  // Run when data first arrives (isLoading → false) and whenever taskCount hits 0
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!data, data?.tasks?.length === 0]);
+  }, [taskCount, !!data]);
 
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),
@@ -116,26 +120,26 @@ function HomePage() {
     },
   });
 
-  async function handleRegenerate() {
+  async function handleRetryGenerate() {
     setRegenerating(true);
     try {
-      await regenFn();
-      await qc.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Missão do dia atualizada.");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Erro ao atualizar tarefas.");
+      await ensureFn();
+      await qc.refetchQueries({ queryKey: ["dashboard"] });
+    } catch {
+      toast.error("Não conseguimos carregar sua missão de hoje. Tente novamente.");
     } finally {
       setRegenerating(false);
     }
   }
 
-  async function handleRetryGenerate() {
+  async function handleRegenerate() {
     setRegenerating(true);
     try {
-      await ensureFn();
-      await qc.invalidateQueries({ queryKey: ["dashboard"] });
-    } catch {
-      toast.error("Não conseguimos carregar sua missão de hoje. Tente novamente.");
+      await regenFn();
+      await qc.refetchQueries({ queryKey: ["dashboard"] });
+      toast.success("Missão do dia atualizada.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Erro ao atualizar tarefas.");
     } finally {
       setRegenerating(false);
     }
