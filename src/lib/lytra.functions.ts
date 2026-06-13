@@ -350,6 +350,42 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
   });
 
 /**
+ * Garante que existam tarefas geradas para o dia atual.
+ * Se já existirem (qualquer quantidade), retorna sem fazer nada.
+ * Se não existirem, gera automaticamente — chamado na abertura do app.
+ */
+export const ensureTodayTasks = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Check if tasks already exist for today
+    const { data: existing } = await supabase
+      .from("daily_tasks")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("task_date", today)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      return { generated: false, reason: "tasks_already_exist" };
+    }
+
+    // No tasks yet — generate them now
+    const { data: onb } = await supabase
+      .from("onboarding")
+      .select("habit, triggers")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!onb) return { generated: false, reason: "no_onboarding" };
+
+    await generateTasksFor(supabase, userId, onb.habit, onb.triggers ?? []);
+    return { generated: true };
+  });
+
+/**
  * Quando todas as tarefas do dia forem concluídas, gera 4 tarefas
  * complementares — mantendo as concluídas visíveis no histórico do dia.
  */
