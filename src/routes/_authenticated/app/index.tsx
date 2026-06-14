@@ -44,6 +44,16 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
   reflexao:  { label: "Reflexão",     color: "bg-teal-50 text-teal-600" },
 };
 
+// Frontend fallback tasks — shown immediately when the server returns no tasks.
+// These are visual only and don't have real DB IDs.
+const FALLBACK_TODAY_TASKS = [
+  { id: "fb-1", title: "Registrar como você está se sentindo agora", description: "Abra o diário e escreva 2 linhas.", category: "reflexao", completed: false, completed_at: null },
+  { id: "fb-2", title: "Deixar o celular longe por 20 minutos", description: "Coloque em outro cômodo. Respire.", category: "gatilho", completed: false, completed_at: null },
+  { id: "fb-3", title: "Iniciar uma tarefa importante por 10 minutos", description: "Sem abrir redes sociais antes.", category: "mental", completed: false, completed_at: null },
+  { id: "fb-4", title: "Fazer uma pausa consciente", description: "Levante, beba água, respire fundo.", category: "fisica", completed: false, completed_at: null },
+  { id: "fb-5", title: "Revisar seu progresso no fim do dia", description: "O que você conseguiu hoje?", category: "reflexao", completed: false, completed_at: null },
+];
+
 function HomePage() {
   const qc = useQueryClient();
   const fetchDash = useServerFn(getDashboard);
@@ -52,6 +62,8 @@ function HomePage() {
   const regenFn = useServerFn(regenerateTodayTasks);
 
   const [regenerating, setRegenerating] = useState(false);
+  // Local completed state for fallback tasks (no DB ID — optimistic UI only)
+  const [fallbackDone, setFallbackDone] = useState<Set<string>>(new Set());
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
@@ -152,14 +164,38 @@ function HomePage() {
   const name = (data.profile?.full_name ?? "").split(" ")[0] || "";
   const progress = data.progress;
   const xpPct = (progress?.xp ?? 0) % 100;
-  const tasks: any[] = data.tasks ?? [];
-  const completedToday = tasks.filter((t) => t.completed).length;
-  const totalTasks = tasks.length;
+
+  // Always show tasks — fall back to local defaults if server returned none
+  const realTasks: any[] = data.tasks ?? [];
+  const usingFallback = realTasks.length === 0;
+  const displayTasks: any[] = usingFallback
+    ? FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }))
+    : realTasks;
+
+  console.log("[today_ui] real_tasks_count=", realTasks.length, "using_frontend_fallback=", usingFallback);
+
+  const completedToday = displayTasks.filter((t) => t.completed).length;
+  const totalTasks = displayTasks.length;
   const allDone = totalTasks > 0 && completedToday === totalTasks;
   const progressPct = totalTasks > 0 ? Math.round((completedToday / totalTasks) * 100) : 0;
 
   // First task not yet completed = "missão principal"
-  const mainMission = tasks.find((t) => !t.completed) ?? tasks[0] ?? null;
+  const mainMission = displayTasks.find((t) => !t.completed) ?? displayTasks[0] ?? null;
+
+  // Toggle handler that handles both real and fallback tasks
+  function handleToggle(task: any) {
+    if (usingFallback) {
+      // Optimistic local toggle — no DB call
+      setFallbackDone((prev) => {
+        const next = new Set(prev);
+        if (next.has(task.id)) next.delete(task.id);
+        else next.add(task.id);
+        return next;
+      });
+      return;
+    }
+    toggleM.mutate({ id: task.id, completed: !task.completed });
+  }
 
   return (
     <div className="md:pt-16 space-y-6">
@@ -240,31 +276,27 @@ function HomePage() {
             <p className="mt-0.5 text-sm text-muted-foreground">
               {allDone
                 ? "Tudo concluído — ótimo trabalho."
-                : totalTasks === 0
-                ? "Preparando seu dia..."
                 : `${completedToday} de ${totalTasks} concluídas`}
             </p>
           </div>
           <button
             type="button"
             onClick={handleRegenerate}
-            disabled={regenerating}
+            disabled={regenerating || usingFallback}
             title="Reorganizar dia"
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:text-foreground disabled:opacity-30"
           >
             <RotateCcw className={`h-3.5 w-3.5 ${regenerating ? "animate-spin" : ""}`} />
           </button>
         </div>
 
         {/* Progress bar */}
-        {totalTasks > 0 && (
-          <div className="mb-4 h-2 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full bg-primary-gradient transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-        )}
+        <div className="mb-4 h-2 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full bg-primary-gradient transition-all duration-500"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
 
         {/* ── All done state ─────────────────────────────────── */}
         {allDone && (
@@ -288,35 +320,6 @@ function HomePage() {
           </div>
         )}
 
-        {/* ── Empty state ────────────────────────────────────── */}
-        {!allDone && totalTasks === 0 && !regenerating && (
-          <div className="rounded-3xl border border-dashed border-border bg-card p-8 text-center shadow-soft">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-3">
-              <Target className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Não conseguimos carregar sua missão de hoje.
-            </p>
-            <button
-              type="button"
-              onClick={handleRetryGenerate}
-              className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-background px-4 text-sm text-muted-foreground transition hover:text-foreground"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Tentar novamente
-            </button>
-          </div>
-        )}
-
-        {/* ── Generating skeleton ────────────────────────────── */}
-        {!allDone && totalTasks === 0 && regenerating && (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[72px] rounded-2xl bg-muted/50 animate-pulse" />
-            ))}
-          </div>
-        )}
-
         {/* ── Mission highlight (first pending task) ─────────── */}
         {!allDone && mainMission && (
           <div className="mb-3 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary-soft/80 to-primary-soft/30 p-5 shadow-soft">
@@ -336,7 +339,7 @@ function HomePage() {
             )}
             <button
               type="button"
-              onClick={() => toggleM.mutate({ id: mainMission.id, completed: true })}
+              onClick={() => handleToggle({ ...mainMission, completed: false })}
               className="mt-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-primary-gradient px-4 text-xs font-semibold text-primary-foreground shadow-glow transition hover:opacity-95"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -346,9 +349,9 @@ function HomePage() {
         )}
 
         {/* ── Full task list ─────────────────────────────────── */}
-        {totalTasks > 0 && (
+        {!allDone && (
           <ul className="space-y-2">
-            {tasks.map((t: any) => {
+            {displayTasks.map((t: any) => {
               const cat = CATEGORY_LABELS[t.category] ?? null;
               return (
                 <li
@@ -361,7 +364,7 @@ function HomePage() {
                 >
                   <button
                     type="button"
-                    onClick={() => toggleM.mutate({ id: t.id, completed: !t.completed })}
+                    onClick={() => handleToggle(t)}
                     className={`mt-0.5 shrink-0 transition ${
                       t.completed ? "text-primary" : "text-muted-foreground hover:text-primary"
                     }`}
@@ -394,6 +397,22 @@ function HomePage() {
               );
             })}
           </ul>
+        )}
+
+        {/* Subtle notice when using frontend fallback */}
+        {usingFallback && !allDone && (
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Missão padrão — personalizando seu dia...</p>
+            <button
+              type="button"
+              onClick={handleRetryGenerate}
+              disabled={regenerating}
+              className="inline-flex h-7 items-center gap-1 rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+            >
+              <RotateCcw className={`h-3 w-3 ${regenerating ? "animate-spin" : ""}`} />
+              Atualizar
+            </button>
+          </div>
         )}
       </section>
 
