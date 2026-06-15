@@ -496,6 +496,184 @@ export const toggleTask = createServerFn({ method: "POST" })
   });
 
 /* ============================================================
+   GAMIFICAÇÃO — completeDailyMission
+   Chamado quando o usuário conclui TODAS as tarefas do dia.
+   - Concede +50 XP bônus (uma vez por dia, idempotente)
+   - Atualiza streak / best_streak
+   - Recalcula nível com thresholds progressivos
+   - Verifica conquistas desbloqueadas
+   - Retorna dados frescos para o frontend atualizar imediatamente
+   ============================================================ */
+
+// Thresholds de XP por nível (índice = nível - 1)
+export const LEVEL_THRESHOLDS = [0, 100, 250, 500, 900, 1400, 2000, 2800, 3700, 4700];
+
+export function calcLevel(xp: number): number {
+  let lvl = 1;
+  for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
+    if (xp >= LEVEL_THRESHOLDS[i]) lvl = i + 1;
+    else break;
+  }
+  return Math.min(lvl, LEVEL_THRESHOLDS.length);
+}
+
+export function xpForNextLevel(currentXp: number): { current: number; next: number; needed: number; pct: number } {
+  const lvl = calcLevel(currentXp);
+  const currentThreshold = LEVEL_THRESHOLDS[lvl - 1] ?? 0;
+  const nextThreshold = LEVEL_THRESHOLDS[lvl] ?? LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
+  const range = nextThreshold - currentThreshold;
+  const earned = currentXp - currentThreshold;
+  return {
+    current: currentXp,
+    next: nextThreshold,
+    needed: Math.max(0, nextThreshold - currentXp),
+    pct: range > 0 ? Math.min(100, Math.round((earned / range) * 100)) : 100,
+  };
+}
+
+// Achievement definitions — key must match user_achievements.achievement_key
+const ACHIEVEMENT_DEFS = [
+  { key: "first_mission",    label: "Primeiro passo",       check: (p: any) => p.total_days_completed >= 1 },
+  { key: "streak_3",         label: "Constância inicial",   check: (p: any) => p.current_streak >= 3 },
+  { key: "streak_7",         label: "Semana completa",      check: (p: any) => p.current_streak >= 7 },
+  { key: "tasks_10",         label: "Foco em construção",   check: (p: any) => p.total_tasks_completed >= 10 },
+  { key: "tasks_25",         label: "Controle crescente",   check: (p: any) => p.total_tasks_completed >= 25 },
+  { key: "level_2",          label: "Nível 2 alcançado",    check: (p: any) => p.level >= 2 },
+  { key: "level_5",          label: "Nível 5 alcançado",    check: (p: any) => p.level >= 5 },
+];
+
+export const completeDailyMission = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Check idempotency — already completed today?
+    const { data: existing } = await supabaseAdmin
+      .from("daily_completions")
+      .select("id, xp_awarded")
+      .eq("user_id", userId)
+      .eq("completed_date", today)
+      .maybeSingle();
+
+    const alreadyCompleted = !!existing;
+
+    // Fetch current progress
+    const { data: p } = await supabaseAdmin
+      .from("progress")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const currentXp = p?.xp ?? 0;
+    const currentStreak = p?.current_streak ?? 0;
+    const bestStreak = p?.best_streak ?? 0;
+    const totalDays = (p?.total_days_completed as number) ?? 0;
+    const totalTasks = (p?.total_tasks_completed as number) ?? 0;
+
+    // Count today's completed tasks for total_tasks update
+    const { data: todayTasks } = await supabaseAdmin
+      .from("daily_tasks")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("task_date", today)
+      .eq("completed", true);
+    const todayTaskCount = todayTasks?.length ?? 0;
+
+    let xpGained = 0;
+    let newXp = currentXp;
+    let newStreak = currentStreak;
+    let newTotalDays = totalDays;
+    let newTotalTasks = totalTasks;
+
+    if (!alreadyCompleted) {
+      // Award +50 XP bonus
+      xpGained = 50;
+      newXp = currentXp + 50;
+
+      // Update streak
+      const last = p?.last_active_date as string | null;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      if (last === yesterday) newStreak = currentStreak + 1;
+      else if (last === today) newStreak = currentStreak; // already updated today
+      else newStreak = 1; // gap — reset
+
+      newTotalDays = totalDays + 1;
+      newTotalTasks = totalTasks + todayTaskCount;
+
+      // Insert daily completion record
+      await supabaseAdmin
+        .from("daily_completions")
+        .insert({ user_id: userId, completed_date: today, xp_awarded: 50 })
+        .onConflict?.("user_id, completed_date"); // ignore if somehow already exists
+    } else {
+      // Already completed — still return fresh data, just no new XP
+      const last = p?.last_active_date as string | null;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      if (last === yesterday) newStreak = currentStreak + 1;
+      else newStreak = last === today ? currentStreak : 1;
+    }
+
+    const newLevel = calcLevel(newXp);
+    const newBestStreak = Math.max(bestStreak, newStreak);
+
+    if (!alreadyCompleted) {
+      await supabaseAdmin
+        .from("progress")
+        .update({
+          xp: newXp,
+          level: newLevel,
+          current_streak: newStreak,
+          best_streak: newBestStreak,
+          last_active_date: today,
+          total_days_completed: newTotalDays,
+          total_tasks_completed: newTotalTasks,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+    }
+
+    // Check for newly unlocked achievements
+    const updatedProgress = {
+      xp: newXp, level: newLevel,
+      current_streak: newStreak, best_streak: newBestStreak,
+      total_days_completed: newTotalDays, total_tasks_completed: newTotalTasks,
+    };
+
+    const { data: existingAchievements } = await supabaseAdmin
+      .from("user_achievements")
+      .select("achievement_key")
+      .eq("user_id", userId);
+    const earned = new Set((existingAchievements ?? []).map((a: any) => a.achievement_key));
+
+    const newlyUnlocked: string[] = [];
+    for (const def of ACHIEVEMENT_DEFS) {
+      if (!earned.has(def.key) && def.check(updatedProgress)) {
+        newlyUnlocked.push(def.key);
+        await supabaseAdmin
+          .from("user_achievements")
+          .insert({ user_id: userId, achievement_key: def.key })
+          .onConflict?.("user_id, achievement_key");
+      }
+    }
+
+    const unlockedLabels = newlyUnlocked.map(
+      (k) => ACHIEVEMENT_DEFS.find((d) => d.key === k)?.label ?? k,
+    );
+
+    return {
+      alreadyCompleted,
+      xpGained,
+      totalXp: newXp,
+      level: newLevel,
+      currentStreak: newStreak,
+      bestStreak: newBestStreak,
+      xpProgress: xpForNextLevel(newXp),
+      unlockedAchievements: unlockedLabels,
+    };
+  });
+
+/* ============================================================
    DIÁRIO EMOCIONAL
    ============================================================ */
 export const submitJournalEntry = createServerFn({ method: "POST" })
@@ -599,7 +777,7 @@ export const getDashboard = createServerFn({ method: "GET" })
     console.log("[daily_mission] dashboard_load_start", { userId, today });
 
     // Fetch everything in parallel first
-    const [profile, onb, tasksRes, progress, todayMood, journal, relapses, subscription, roleRes] = await Promise.all([
+    const [profile, onb, tasksRes, progress, todayMood, journal, relapses, subscription, roleRes, achievements] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("onboarding").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at"),
@@ -609,6 +787,7 @@ export const getDashboard = createServerFn({ method: "GET" })
       supabase.from("relapses").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
       supabase.from("subscriptions").select("*").eq("user_id", userId).maybeSingle(),
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+      supabase.from("user_achievements").select("achievement_key, unlocked_at").eq("user_id", userId).order("unlocked_at"),
     ]);
 
     let tasks = tasksRes.data ?? [];
@@ -669,6 +848,7 @@ export const getDashboard = createServerFn({ method: "GET" })
       relapses: relapses.data ?? [],
       subscription: subscription.data,
       isAdmin: !!roleRes.data,
+      achievements: achievements.data ?? [],
     };
   });
 

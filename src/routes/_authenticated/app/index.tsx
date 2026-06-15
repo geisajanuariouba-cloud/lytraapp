@@ -6,6 +6,9 @@ import {
   toggleTask,
   submitMood,
   regenerateTodayTasks,
+  completeDailyMission,
+  xpForNextLevel,
+  LEVEL_THRESHOLDS,
 } from "@/lib/lytra.functions";
 import {
   CheckCircle2,
@@ -20,10 +23,11 @@ import {
   Trophy,
   Volume2,
   Square,
+  X,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: HomePage,
@@ -60,17 +64,26 @@ function HomePage() {
   const toggleFn = useServerFn(toggleTask);
   const moodFn = useServerFn(submitMood);
   const regenFn = useServerFn(regenerateTodayTasks);
+  const completeFn = useServerFn(completeDailyMission);
 
   const [regenerating, setRegenerating] = useState(false);
   // Local completed state for fallback tasks (no DB ID — optimistic UI only)
   const [fallbackDone, setFallbackDone] = useState<Set<string>>(new Set());
+  // Celebration modal
+  const [celebration, setCelebration] = useState<{
+    xpGained: number;
+    totalXp: number;
+    level: number;
+    streak: number;
+    achievements: string[];
+  } | null>(null);
+  // Prevent calling completeDailyMission twice in the same session
+  const completedRef = useRef(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: () => fetchDash(),
   });
-
-  // No useEffect needed — getDashboard generates tasks server-side before returning.
 
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),
@@ -117,7 +130,6 @@ function HomePage() {
   async function handleRetryGenerate() {
     setRegenerating(true);
     try {
-      // getDashboard itself will auto-generate tasks if none exist
       await qc.refetchQueries({ queryKey: ["dashboard"] });
     } catch {
       toast.error("Não conseguimos carregar sua missão de hoje. Tente novamente.");
@@ -163,7 +175,11 @@ function HomePage() {
 
   const name = (data.profile?.full_name ?? "").split(" ")[0] || "";
   const progress = data.progress;
-  const xpPct = (progress?.xp ?? 0) % 100;
+  const totalXp = progress?.xp ?? 0;
+  const level = progress?.level ?? 1;
+  const streak = progress?.current_streak ?? 0;
+  const xpInfo = xpForNextLevel(totalXp);
+  const xpPct = xpInfo.pct;
 
   // Always show tasks — fall back to local defaults if server returned none
   const realTasks: any[] = data.tasks ?? [];
@@ -178,14 +194,45 @@ function HomePage() {
   const totalTasks = displayTasks.length;
   const allDone = totalTasks > 0 && completedToday === totalTasks;
   const progressPct = totalTasks > 0 ? Math.round((completedToday / totalTasks) * 100) : 0;
-
-  // First task not yet completed = "missão principal"
   const mainMission = displayTasks.find((t) => !t.completed) ?? displayTasks[0] ?? null;
+
+  // Fire completeDailyMission when all real tasks are done (once per session)
+  if (allDone && !usingFallback && !completedRef.current) {
+    completedRef.current = true;
+    completeFn().then((res: any) => {
+      // Update dashboard cache with fresh XP/level/streak
+      qc.setQueryData(["dashboard"], (prev: any) =>
+        prev ? {
+          ...prev,
+          progress: {
+            ...(prev.progress ?? {}),
+            xp: res.totalXp,
+            level: res.level,
+            current_streak: res.currentStreak,
+            best_streak: res.bestStreak,
+          },
+        } : prev,
+      );
+      // Show celebration only if XP was actually gained
+      if (res.xpGained > 0) {
+        setCelebration({
+          xpGained: res.xpGained,
+          totalXp: res.totalXp,
+          level: res.level,
+          streak: res.currentStreak,
+          achievements: res.unlockedAchievements ?? [],
+        });
+        // Toast for each unlocked achievement
+        (res.unlockedAchievements ?? []).forEach((label: string) => {
+          toast.success(`🏆 Conquista desbloqueada: ${label}`);
+        });
+      }
+    }).catch(() => {/* silent */});
+  }
 
   // Toggle handler that handles both real and fallback tasks
   function handleToggle(task: any) {
     if (usingFallback) {
-      // Optimistic local toggle — no DB call
       setFallbackDone((prev) => {
         const next = new Set(prev);
         if (next.has(task.id)) next.delete(task.id);
@@ -200,6 +247,66 @@ function HomePage() {
   return (
     <div className="md:pt-16 space-y-6">
 
+      {/* ── Celebration modal ─────────────────────────────────── */}
+      {celebration && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm rounded-3xl border border-primary/20 bg-card p-8 shadow-2xl text-center animate-fade-up">
+            <button
+              type="button"
+              onClick={() => setCelebration(null)}
+              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground transition"
+              aria-label="Fechar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft mb-4">
+              <Star className="h-8 w-8 text-primary fill-primary/20" />
+            </div>
+
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">
+              Missão concluída
+            </p>
+            <h2 className="text-2xl font-semibold text-foreground leading-tight">
+              Você completou sua<br />jornada de hoje.
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Cada dia é uma vitória construída em cima da anterior.
+            </p>
+
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-4 py-2 text-sm font-semibold text-primary">
+                <Zap className="h-4 w-4" />
+                +{celebration.xpGained} XP
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground">
+                <Flame className="h-4 w-4 text-orange-500" />
+                {celebration.streak} {celebration.streak === 1 ? "dia" : "dias"} seguidos
+              </span>
+            </div>
+
+            {celebration.achievements.length > 0 && (
+              <div className="mt-4 space-y-1.5">
+                {celebration.achievements.map((a) => (
+                  <div key={a} className="flex items-center justify-center gap-2 text-sm text-foreground">
+                    <Trophy className="h-4 w-4 text-primary shrink-0" />
+                    <span>{a}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setCelebration(null)}
+              className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-primary-gradient text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-95"
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Greeting ──────────────────────────────────────────── */}
       <section className="animate-fade-up">
         <p className="text-sm text-muted-foreground">{greeting}{name ? "," : ""}</p>
@@ -211,18 +318,41 @@ function HomePage() {
 
       {/* ── Stats row ─────────────────────────────────────────── */}
       <section className="grid gap-3 sm:grid-cols-3">
-        <Stat icon={Flame}    label="Sequência" value={`${progress?.current_streak ?? 0} dias`} />
-        <Stat icon={Trophy}   label="Nível"     value={`${progress?.level ?? 1}`} />
-        <Stat icon={Sparkles} label="XP"        value={`${progress?.xp ?? 0}`} />
-      </section>
+        {/* Streak */}
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Flame className="h-3.5 w-3.5 text-orange-500" />
+            <span className="text-xs">Sequência</span>
+          </div>
+          <p className="mt-1 text-2xl font-semibold tracking-tight">{streak}</p>
+          <p className="text-[11px] text-muted-foreground">{streak === 1 ? "dia seguido" : "dias seguidos"}</p>
+        </div>
 
-      {/* XP progress bar */}
-      <div className="-mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full bg-primary-gradient transition-all duration-700"
-          style={{ width: `${xpPct}%` }}
-        />
-      </div>
+        {/* Level with mini progress */}
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Trophy className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs">Nível</span>
+          </div>
+          <p className="mt-1 text-2xl font-semibold tracking-tight">{level}</p>
+          <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full bg-primary-gradient transition-all duration-700" style={{ width: `${xpPct}%` }} />
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {xpInfo.needed > 0 ? `${xpInfo.needed} XP para nível ${level + 1}` : "Nível máximo"}
+          </p>
+        </div>
+
+        {/* XP */}
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs">XP total</span>
+          </div>
+          <p className="mt-1 text-2xl font-semibold tracking-tight">{totalXp}</p>
+          <p className="text-[11px] text-muted-foreground">pontos de experiência</p>
+        </div>
+      </section>
 
       {/* ── Mood ──────────────────────────────────────────────── */}
       <section className="rounded-3xl border border-border bg-card p-6 shadow-soft">
@@ -503,18 +633,6 @@ function PlanAudioButton({ text }: { text: string }) {
         {playing ? <Square className="h-3 w-3 fill-current" /> : <Volume2 className="h-3.5 w-3.5" />}
         {playing ? "Parar" : "Ouvir plano"}
       </button>
-    </div>
-  );
-}
-
-function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon className="h-3.5 w-3.5 text-primary" />
-        <span className="text-xs">{label}</span>
-      </div>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
     </div>
   );
 }
