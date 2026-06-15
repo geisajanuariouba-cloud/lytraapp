@@ -448,6 +448,36 @@ export const getTaskHistory = createServerFn({ method: "GET" })
     return { tasks: data ?? [] };
   });
 
+/* ============================================================
+   LEVEL / XP HELPERS — defined here so toggleTask can use them
+   ============================================================ */
+
+// Thresholds de XP por nível (índice = nível - 1)
+export const LEVEL_THRESHOLDS = [0, 100, 250, 500, 900, 1400, 2000, 2800, 3700, 4700];
+
+export function calcLevel(xp: number): number {
+  let lvl = 1;
+  for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
+    if (xp >= LEVEL_THRESHOLDS[i]) lvl = i + 1;
+    else break;
+  }
+  return Math.min(lvl, LEVEL_THRESHOLDS.length);
+}
+
+export function xpForNextLevel(currentXp: number): { current: number; next: number; needed: number; pct: number } {
+  const lvl = calcLevel(currentXp);
+  const currentThreshold = LEVEL_THRESHOLDS[lvl - 1] ?? 0;
+  const nextThreshold = LEVEL_THRESHOLDS[lvl] ?? LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
+  const range = nextThreshold - currentThreshold;
+  const earned = currentXp - currentThreshold;
+  return {
+    current: currentXp,
+    next: nextThreshold,
+    needed: Math.max(0, nextThreshold - currentXp),
+    pct: range > 0 ? Math.min(100, Math.round((earned / range) * 100)) : 100,
+  };
+}
+
 export const toggleTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) =>
@@ -479,7 +509,7 @@ export const toggleTask = createServerFn({ method: "POST" })
         streak = last === yesterday ? streak + 1 : 1;
       }
       const xp = (p?.xp ?? 0) + 10;
-      const level = Math.max(1, Math.floor(xp / 100) + 1);
+      const level = calcLevel(xp);
       await supabase
         .from("progress")
         .update({
@@ -505,32 +535,6 @@ export const toggleTask = createServerFn({ method: "POST" })
    - Retorna dados frescos para o frontend atualizar imediatamente
    ============================================================ */
 
-// Thresholds de XP por nível (índice = nível - 1)
-export const LEVEL_THRESHOLDS = [0, 100, 250, 500, 900, 1400, 2000, 2800, 3700, 4700];
-
-export function calcLevel(xp: number): number {
-  let lvl = 1;
-  for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
-    if (xp >= LEVEL_THRESHOLDS[i]) lvl = i + 1;
-    else break;
-  }
-  return Math.min(lvl, LEVEL_THRESHOLDS.length);
-}
-
-export function xpForNextLevel(currentXp: number): { current: number; next: number; needed: number; pct: number } {
-  const lvl = calcLevel(currentXp);
-  const currentThreshold = LEVEL_THRESHOLDS[lvl - 1] ?? 0;
-  const nextThreshold = LEVEL_THRESHOLDS[lvl] ?? LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
-  const range = nextThreshold - currentThreshold;
-  const earned = currentXp - currentThreshold;
-  return {
-    current: currentXp,
-    next: nextThreshold,
-    needed: Math.max(0, nextThreshold - currentXp),
-    pct: range > 0 ? Math.min(100, Math.round((earned / range) * 100)) : 100,
-  };
-}
-
 // Achievement definitions — key must match user_achievements.achievement_key
 const ACHIEVEMENT_DEFS = [
   { key: "first_mission",    label: "Primeiro passo",       check: (p: any) => p.total_days_completed >= 1 },
@@ -548,15 +552,23 @@ export const completeDailyMission = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const today = new Date().toISOString().slice(0, 10);
 
+    console.log("[gamification] complete_start", { userId, today });
+
     // Check idempotency — already completed today?
-    const { data: existing } = await supabaseAdmin
+    const { data: existing, error: existErr } = await supabaseAdmin
       .from("daily_completions")
       .select("id, xp_awarded")
       .eq("user_id", userId)
       .eq("completed_date", today)
       .maybeSingle();
 
+    if (existErr) {
+      // Table may not exist yet (migration not applied) — log but don't crash
+      console.error("[gamification] complete_error checking daily_completions:", existErr.message, existErr.code);
+    }
+
     const alreadyCompleted = !!existing;
+    console.log("[gamification] already_completed=", alreadyCompleted);
 
     // Fetch current progress
     const { data: p } = await supabaseAdmin
@@ -566,12 +578,15 @@ export const completeDailyMission = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const currentXp = p?.xp ?? 0;
+    const currentLevel = p?.level ?? 1;
     const currentStreak = p?.current_streak ?? 0;
     const bestStreak = p?.best_streak ?? 0;
     const totalDays = (p?.total_days_completed as number) ?? 0;
     const totalTasks = (p?.total_tasks_completed as number) ?? 0;
 
-    // Count today's completed tasks for total_tasks update
+    console.log("[gamification] xp_before=", currentXp, "level_before=", currentLevel, "streak_before=", currentStreak);
+
+    // Count today's completed tasks
     const { data: todayTasks } = await supabaseAdmin
       .from("daily_tasks")
       .select("id")
@@ -587,38 +602,42 @@ export const completeDailyMission = createServerFn({ method: "POST" })
     let newTotalTasks = totalTasks;
 
     if (!alreadyCompleted) {
-      // Award +50 XP bonus
       xpGained = 50;
       newXp = currentXp + 50;
 
-      // Update streak
       const last = p?.last_active_date as string | null;
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       if (last === yesterday) newStreak = currentStreak + 1;
-      else if (last === today) newStreak = currentStreak; // already updated today
-      else newStreak = 1; // gap — reset
+      else if (last === today) newStreak = currentStreak;
+      else newStreak = 1;
 
       newTotalDays = totalDays + 1;
       newTotalTasks = totalTasks + todayTaskCount;
 
-      // Insert daily completion record
-      await supabaseAdmin
+      // Insert completion record — use upsert to handle race conditions safely
+      const { error: insertErr } = await supabaseAdmin
         .from("daily_completions")
-        .insert({ user_id: userId, completed_date: today, xp_awarded: 50 })
-        .onConflict?.("user_id, completed_date"); // ignore if somehow already exists
+        .upsert(
+          { user_id: userId, completed_date: today, xp_awarded: 50 },
+          { onConflict: "user_id,completed_date", ignoreDuplicates: true },
+        );
+      if (insertErr) {
+        console.error("[gamification] daily_completions insert error:", insertErr.message, insertErr.code);
+        // If table doesn't exist, still continue — XP will be updated below
+      }
     } else {
-      // Already completed — still return fresh data, just no new XP
       const last = p?.last_active_date as string | null;
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-      if (last === yesterday) newStreak = currentStreak + 1;
-      else newStreak = last === today ? currentStreak : 1;
+      newStreak = last === yesterday ? currentStreak + 1 : last === today ? currentStreak : 1;
     }
 
     const newLevel = calcLevel(newXp);
     const newBestStreak = Math.max(bestStreak, newStreak);
 
+    console.log("[gamification] xp_after=", newXp, "level_after=", newLevel, "streak_after=", newStreak);
+
     if (!alreadyCompleted) {
-      await supabaseAdmin
+      const { error: progressErr } = await supabaseAdmin
         .from("progress")
         .update({
           xp: newXp,
@@ -631,20 +650,23 @@ export const completeDailyMission = createServerFn({ method: "POST" })
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", userId);
+      if (progressErr) {
+        console.error("[gamification] progress update error:", progressErr.message);
+      }
     }
 
-    // Check for newly unlocked achievements
-    const updatedProgress = {
-      xp: newXp, level: newLevel,
-      current_streak: newStreak, best_streak: newBestStreak,
-      total_days_completed: newTotalDays, total_tasks_completed: newTotalTasks,
-    };
-
+    // Check achievements
     const { data: existingAchievements } = await supabaseAdmin
       .from("user_achievements")
       .select("achievement_key")
       .eq("user_id", userId);
     const earned = new Set((existingAchievements ?? []).map((a: any) => a.achievement_key));
+
+    const updatedProgress = {
+      xp: newXp, level: newLevel,
+      current_streak: newStreak, best_streak: newBestStreak,
+      total_days_completed: newTotalDays, total_tasks_completed: newTotalTasks,
+    };
 
     const newlyUnlocked: string[] = [];
     for (const def of ACHIEVEMENT_DEFS) {
@@ -652,14 +674,18 @@ export const completeDailyMission = createServerFn({ method: "POST" })
         newlyUnlocked.push(def.key);
         await supabaseAdmin
           .from("user_achievements")
-          .insert({ user_id: userId, achievement_key: def.key })
-          .onConflict?.("user_id, achievement_key");
+          .upsert(
+            { user_id: userId, achievement_key: def.key },
+            { onConflict: "user_id,achievement_key", ignoreDuplicates: true },
+          );
       }
     }
 
     const unlockedLabels = newlyUnlocked.map(
       (k) => ACHIEVEMENT_DEFS.find((d) => d.key === k)?.label ?? k,
     );
+
+    console.log("[gamification] achievements_unlocked=", unlockedLabels);
 
     return {
       alreadyCompleted,
@@ -793,47 +819,35 @@ export const getDashboard = createServerFn({ method: "GET" })
     let tasks = tasksRes.data ?? [];
     console.log("[daily_mission] existing_tasks_count", tasks.length, "onboarding_found", Boolean(onb.data));
 
-    // If no tasks exist for today, generate them NOW on the server — before returning.
-    // This guarantees the frontend always receives a populated list.
+    // If no tasks exist for today, generate them asynchronously — don't block the response.
+    // The client will get an empty list and show fallback tasks immediately,
+    // then the next getDashboard call (triggered by the "Atualizar" button or page refresh)
+    // will pick up the newly generated tasks.
+    // This prevents the AI call (which can take 2-5s) from blocking the initial page load.
     if (tasks.length === 0) {
-      try {
-        const habit = onb.data?.habit ?? "foco e disciplina";
-        const triggers: string[] = onb.data?.triggers ?? [];
-        console.log("[daily_mission] no tasks today — generating now, habit=", habit, "using_fallback=", !onb.data);
+      const habit = onb.data?.habit ?? "foco e disciplina";
+      const triggers: string[] = onb.data?.triggers ?? [];
+      console.log("[daily_mission] no tasks — triggering async generation habit=", habit, "using_fallback=", !onb.data);
 
-        await generateTasksFor(supabase, userId, habit, triggers);
+      // Fire-and-forget: don't await, return immediately with empty tasks
+      // The client shows frontend fallback while this runs in the background
+      generateTasksFor(supabase, userId, habit, triggers).catch((e: any) => {
+        console.error("[daily_mission] async_generation_error", e?.message);
+      });
 
-        // Fetch the freshly created tasks
-        const { data: freshTasks, error: freshErr } = await supabase
-          .from("daily_tasks")
-          .select("*")
-          .eq("user_id", userId)
-          .eq("task_date", today)
-          .order("created_at");
-
-        if (freshErr) {
-          console.error("[daily_mission] fresh_tasks_fetch_error", freshErr.message);
-        } else {
-          tasks = freshTasks ?? [];
-          console.log("[daily_mission] tasks_after_generate_count", tasks.length);
-        }
-      } catch (genErr: any) {
-        // Generation failed — log but don't crash; frontend will show retry button
-        console.error("[daily_mission] generation_error", genErr?.message);
-        // Last resort: return inline fallback tasks so the UI never shows empty
-        tasks = FALLBACK_TASKS.map((t, i) => ({
-          id: `fallback-${i}`,
-          user_id: userId,
-          task_date: today,
-          title: t.title,
-          description: t.description,
-          category: t.category,
-          completed: false,
-          completed_at: null,
-          created_at: new Date().toISOString(),
-        }));
-        console.log("[daily_mission] using_inline_fallback tasks_count=", tasks.length);
-      }
+      // Return inline fallback tasks so the UI never shows empty on first load
+      tasks = FALLBACK_TASKS.map((t, i) => ({
+        id: `fallback-${i}`,
+        user_id: userId,
+        task_date: today,
+        title: t.title,
+        description: t.description,
+        category: t.category,
+        completed: false,
+        completed_at: null,
+        created_at: new Date().toISOString(),
+      }));
+      console.log("[daily_mission] returning inline fallback tasks count=", tasks.length);
     }
 
     console.log("[daily_mission] returning_tasks_count", tasks.length);

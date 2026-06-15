@@ -79,11 +79,69 @@ function HomePage() {
   } | null>(null);
   // Prevent calling completeDailyMission twice in the same session
   const completedRef = useRef(false);
+  // Track whether completeDailyMission has fired this session (for useEffect dep)
+  const [missionCompleted, setMissionCompleted] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: () => fetchDash(),
   });
+
+  // Compute allDone here so the effect can use it
+  const realTasksForEffect: any[] = data?.tasks ?? [];
+  const usingFallbackForEffect = realTasksForEffect.length === 0;
+  const fallbackTasksWithDone = FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }));
+  const displayTasksForEffect = usingFallbackForEffect ? fallbackTasksWithDone : realTasksForEffect;
+  const allDoneForEffect = displayTasksForEffect.length > 0 &&
+    displayTasksForEffect.filter((t: any) => t.completed).length === displayTasksForEffect.length;
+
+  // Fire completeDailyMission in a useEffect — never during render
+  useEffect(() => {
+    if (!allDoneForEffect) return;
+    if (completedRef.current) return;
+    completedRef.current = true;
+
+    console.log("[today_ui] all_done=true calling_completeDailyMission using_fallback=", usingFallbackForEffect);
+
+    completeFn()
+      .then((res: any) => {
+        console.log("[today_ui] completeDailyMission_result=", JSON.stringify(res));
+        // Update dashboard cache immediately — no refetch needed
+        qc.setQueryData(["dashboard"], (prev: any) =>
+          prev ? {
+            ...prev,
+            progress: {
+              ...(prev.progress ?? {}),
+              xp: res.totalXp,
+              level: res.level,
+              current_streak: res.currentStreak,
+              best_streak: res.bestStreak,
+            },
+          } : prev,
+        );
+        if (res.xpGained > 0) {
+          setCelebration({
+            xpGained: res.xpGained,
+            totalXp: res.totalXp,
+            level: res.level,
+            streak: res.currentStreak,
+            achievements: res.unlockedAchievements ?? [],
+          });
+          (res.unlockedAchievements ?? []).forEach((label: string) => {
+            toast.success(`🏆 Conquista desbloqueada: ${label}`);
+          });
+        } else {
+          // Already completed today — still show completion state, no modal
+          setMissionCompleted(true);
+        }
+      })
+      .catch((err: any) => {
+        console.error("[today_ui] completeDailyMission_error=", err?.message);
+        // Don't block UX on error — just log
+      });
+  // Only re-fire if allDone transitions from false→true
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDoneForEffect]);
 
   const toggleM = useMutation({
     mutationFn: (vars: { id: string; completed: boolean }) => toggleFn({ data: vars }),
@@ -195,40 +253,6 @@ function HomePage() {
   const allDone = totalTasks > 0 && completedToday === totalTasks;
   const progressPct = totalTasks > 0 ? Math.round((completedToday / totalTasks) * 100) : 0;
   const mainMission = displayTasks.find((t) => !t.completed) ?? displayTasks[0] ?? null;
-
-  // Fire completeDailyMission when all real tasks are done (once per session)
-  if (allDone && !usingFallback && !completedRef.current) {
-    completedRef.current = true;
-    completeFn().then((res: any) => {
-      // Update dashboard cache with fresh XP/level/streak
-      qc.setQueryData(["dashboard"], (prev: any) =>
-        prev ? {
-          ...prev,
-          progress: {
-            ...(prev.progress ?? {}),
-            xp: res.totalXp,
-            level: res.level,
-            current_streak: res.currentStreak,
-            best_streak: res.bestStreak,
-          },
-        } : prev,
-      );
-      // Show celebration only if XP was actually gained
-      if (res.xpGained > 0) {
-        setCelebration({
-          xpGained: res.xpGained,
-          totalXp: res.totalXp,
-          level: res.level,
-          streak: res.currentStreak,
-          achievements: res.unlockedAchievements ?? [],
-        });
-        // Toast for each unlocked achievement
-        (res.unlockedAchievements ?? []).forEach((label: string) => {
-          toast.success(`🏆 Conquista desbloqueada: ${label}`);
-        });
-      }
-    }).catch(() => {/* silent */});
-  }
 
   // Toggle handler that handles both real and fallback tasks
   function handleToggle(task: any) {
@@ -441,12 +465,14 @@ function HomePage() {
               Você completou sua missão de hoje.
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Cada pequena vitória constrói o próximo passo.
+              Continue construindo sua sequência.
             </p>
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
-              <Zap className="h-3.5 w-3.5" />
-              +{totalTasks * 10} XP ganhos
-            </div>
+            {celebration && (
+              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
+                <Zap className="h-3.5 w-3.5" />
+                +{celebration.xpGained} XP ganhos
+              </div>
+            )}
           </div>
         )}
 
