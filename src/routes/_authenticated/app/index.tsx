@@ -33,6 +33,11 @@ export const Route = createFileRoute("/_authenticated/app/")({
   component: HomePage,
 });
 
+// UUID v1-v5 regex — used to distinguish real DB IDs from local fallback IDs
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 const MOODS = [
   { v: 1, label: "Péssimo", emoji: "😞" },
   { v: 2, label: "Ruim", emoji: "😕" },
@@ -89,7 +94,7 @@ function HomePage() {
 
   // Compute allDone here so the effect can use it
   const realTasksForEffect: any[] = data?.tasks ?? [];
-  const usingFallbackForEffect = realTasksForEffect.length === 0;
+  const usingFallbackForEffect = realTasksForEffect.length === 0 || (realTasksForEffect.length > 0 && !isUuid(realTasksForEffect[0]?.id));
   const fallbackTasksWithDone = FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }));
   const displayTasksForEffect = usingFallbackForEffect ? fallbackTasksWithDone : realTasksForEffect;
   const allDoneForEffect = displayTasksForEffect.length > 0 &&
@@ -157,7 +162,7 @@ function HomePage() {
         let progress = prev.progress;
         if (vars.completed && progress) {
           const xp = (progress.xp ?? 0) + 10;
-          progress = { ...progress, xp, level: Math.max(1, Math.floor(xp / 100) + 1) };
+          progress = { ...progress, xp, level: calcLevel(xp) };
         }
         qc.setQueryData(["dashboard"], { ...prev, tasks, progress });
       }
@@ -239,9 +244,11 @@ function HomePage() {
   const xpInfo = xpForNextLevel(totalXp);
   const xpPct = xpInfo.pct;
 
-  // Always show tasks — fall back to local defaults if server returned none
+  // Always show tasks — fall back to local defaults if server returned none or returned inline fallbacks
   const realTasks: any[] = data.tasks ?? [];
-  const usingFallback = realTasks.length === 0;
+  // "usingFallback" is true when server returned no tasks, OR when it returned inline
+  // fallback tasks (IDs like "fallback-0") that can't be persisted to the DB.
+  const usingFallback = realTasks.length === 0 || (realTasks.length > 0 && !isUuid(realTasks[0]?.id));
   const displayTasks: any[] = usingFallback
     ? FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }))
     : realTasks;
@@ -256,7 +263,8 @@ function HomePage() {
 
   // Toggle handler that handles both real and fallback tasks
   function handleToggle(task: any) {
-    if (usingFallback) {
+    if (usingFallback || !isUuid(task.id)) {
+      // Local-only task (fallback IDs like "fb-1" or "fallback-0") — no DB call
       setFallbackDone((prev) => {
         const next = new Set(prev);
         if (next.has(task.id)) next.delete(task.id);
