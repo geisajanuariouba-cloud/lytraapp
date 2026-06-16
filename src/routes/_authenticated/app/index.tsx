@@ -204,9 +204,13 @@ function HomePage() {
   async function handleRegenerate() {
     setRegenerating(true);
     try {
-      await regenFn();
-      await qc.refetchQueries({ queryKey: ["dashboard"] });
-      toast.success("Missão do dia atualizada.");
+      const result: any = await regenFn();
+      if (result?.skipped) {
+        toast("Missão já concluída hoje. Nova missão amanhã.");
+      } else {
+        await qc.refetchQueries({ queryKey: ["dashboard"] });
+        toast.success("Missão do dia atualizada.");
+      }
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao atualizar tarefas.");
     } finally {
