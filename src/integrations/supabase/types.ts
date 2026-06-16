@@ -50,6 +50,30 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_completions: {
+        Row: {
+          id: string
+          user_id: string
+          completed_date: string
+          xp_awarded: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          completed_date?: string
+          xp_awarded?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          completed_date?: string
+          xp_awarded?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       journal_entries: {
         Row: {
           ai_response: string | null
@@ -222,6 +246,8 @@ export type Database = {
           last_active_date: string | null
           level: number | null
           total_clean_days: number | null
+          total_tasks_completed: number | null
+          total_days_completed: number | null
           updated_at: string
           user_id: string
           xp: number | null
@@ -232,6 +258,8 @@ export type Database = {
           last_active_date?: string | null
           level?: number | null
           total_clean_days?: number | null
+          total_tasks_completed?: number | null
+          total_days_completed?: number | null
           updated_at?: string
           user_id: string
           xp?: number | null
@@ -242,6 +270,8 @@ export type Database = {
           last_active_date?: string | null
           level?: number | null
           total_clean_days?: number | null
+          total_tasks_completed?: number | null
+          total_days_completed?: number | null
           updated_at?: string
           user_id?: string
           xp?: number | null
@@ -370,6 +400,27 @@ export type Database = {
           subject?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          id: string
+          user_id: string
+          achievement_key: string
+          unlocked_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          achievement_key: string
+          unlocked_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          achievement_key?: string
+          unlocked_at?: string
         }
         Relationships: []
       }

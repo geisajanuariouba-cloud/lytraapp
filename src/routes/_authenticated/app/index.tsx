@@ -93,10 +93,8 @@ function HomePage() {
   });
 
   // Compute allDone here so the effect can use it
-  const realTasksForEffect: any[] = data?.tasks ?? [];
-  const usingFallbackForEffect = realTasksForEffect.length === 0 || (realTasksForEffect.length > 0 && !isUuid(realTasksForEffect[0]?.id));
-  const fallbackTasksWithDone = FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }));
-  const displayTasksForEffect = usingFallbackForEffect ? fallbackTasksWithDone : realTasksForEffect;
+  // Server now guarantees real tasks. If none returned, it's a critical DB failure.
+  const displayTasksForEffect = data?.tasks ?? [];
   const serverDayDoneForEffect = !!(data as any)?.todayCompleted;
   const allDoneForEffect = serverDayDoneForEffect || (
     displayTasksForEffect.length > 0 &&
@@ -109,7 +107,7 @@ function HomePage() {
     if (completedRef.current) return;
     completedRef.current = true;
 
-    console.log("[today_ui] all_done=true calling_completeDailyMission using_fallback=", usingFallbackForEffect);
+    console.log("[today_ui] all_done=true calling_completeDailyMission");
 
     completeFn()
       .then((res: any) => {
@@ -162,12 +160,7 @@ function HomePage() {
             ? { ...t, completed: vars.completed, completed_at: vars.completed ? new Date().toISOString() : null }
             : t,
         );
-        let progress = prev.progress;
-        if (vars.completed && progress) {
-          const xp = (progress.xp ?? 0) + 10;
-          progress = { ...progress, xp, level: calcLevel(xp) };
-        }
-        qc.setQueryData(["dashboard"], { ...prev, tasks, progress });
+        qc.setQueryData(["dashboard"], { ...prev, tasks });
       }
       return { prev };
     },
@@ -207,12 +200,19 @@ function HomePage() {
   async function handleRegenerate() {
     setRegenerating(true);
     try {
-      const result: any = await regenFn();
-      if (result?.skipped) {
-        toast("Missão já concluída hoje. Nova missão amanhã.");
-      } else {
+      if (data?.tasks && data.tasks.length > 0) {
+        // Se já existem tarefas (e não está tudo concluído), apenas recarrega os dados
         await qc.refetchQueries({ queryKey: ["dashboard"] });
-        toast.success("Missão do dia atualizada.");
+        toast.success("Tarefas atualizadas.");
+      } else {
+        // Se por algum motivo as tarefas não carregaram, tenta forçar
+        const result: any = await regenFn();
+        if (result?.skipped) {
+          toast("Missão já concluída hoje. Nova missão amanhã.");
+        } else {
+          await qc.refetchQueries({ queryKey: ["dashboard"] });
+          toast.success("Missão do dia criada.");
+        }
       }
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao atualizar tarefas.");
@@ -255,16 +255,11 @@ function HomePage() {
   const serverSaysDayDone = !!(data as any).todayCompleted;
   const serverXpAwarded = (data as any).todayXpAwarded ?? 0;
 
-  // Always show tasks — fall back to local defaults if server returned none or returned inline fallbacks
-  const realTasks: any[] = data.tasks ?? [];
-  // "usingFallback" is true when server returned no tasks, OR when it returned inline
-  // fallback tasks (IDs like "fallback-0") that can't be persisted to the DB.
-  const usingFallback = realTasks.length === 0 || (realTasks.length > 0 && !isUuid(realTasks[0]?.id));
-  const displayTasks: any[] = usingFallback
-    ? FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }))
-    : realTasks;
+  // Server handles ensuring DB tasks. If empty, it's a DB issue.
+  const displayTasks: any[] = data.tasks ?? [];
+  const usingFallback = displayTasks.length === 0;
 
-  console.log("[today_ui] real_tasks_count=", realTasks.length, "using_frontend_fallback=", usingFallback, "server_day_done=", serverSaysDayDone);
+  console.log("[today_ui] real_tasks_count=", displayTasks.length, "server_day_done=", serverSaysDayDone);
 
   const completedToday = displayTasks.filter((t) => t.completed).length;
   const totalTasks = displayTasks.length;
@@ -275,18 +270,9 @@ function HomePage() {
     : 0;
   const mainMission = displayTasks.find((t) => !t.completed) ?? displayTasks[0] ?? null;
 
-  // Toggle handler that handles both real and fallback tasks
+  // Toggle handler
   function handleToggle(task: any) {
-    if (usingFallback || !isUuid(task.id)) {
-      // Local-only task (fallback IDs like "fb-1" or "fallback-0") — no DB call
-      setFallbackDone((prev) => {
-        const next = new Set(prev);
-        if (next.has(task.id)) next.delete(task.id);
-        else next.add(task.id);
-        return next;
-      });
-      return;
-    }
+    if (usingFallback) return; // Emergency state: cannot interact
     toggleM.mutate({ id: task.id, completed: !task.completed });
   }
 
@@ -458,7 +444,7 @@ function HomePage() {
           <button
             type="button"
             onClick={handleRegenerate}
-            disabled={regenerating || usingFallback}
+            disabled={regenerating || allDone}
             title="Reorganizar dia"
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:text-foreground disabled:opacity-30"
           >
@@ -577,16 +563,17 @@ function HomePage() {
 
         {/* Subtle notice when using frontend fallback */}
         {usingFallback && !allDone && (
-          <div className="mt-3 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">Missão padrão — personalizando seu dia...</p>
+          <div className="mt-3 rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-center">
+            <p className="text-sm font-medium text-destructive">Não conseguimos carregar suas tarefas.</p>
+            <p className="mt-1 text-xs text-muted-foreground">O banco de dados pode estar indisponível. Tente recarregar a página.</p>
             <button
               type="button"
               onClick={handleRetryGenerate}
               disabled={regenerating}
-              className="inline-flex h-7 items-center gap-1 rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+              className="mt-3 inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background px-4 text-xs font-medium text-foreground transition hover:bg-muted disabled:opacity-40"
             >
               <RotateCcw className={`h-3 w-3 ${regenerating ? "animate-spin" : ""}`} />
-              Atualizar
+              Recarregar
             </button>
           </div>
         )}

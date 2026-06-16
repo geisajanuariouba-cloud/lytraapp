@@ -340,9 +340,25 @@ export const regenerateTodayTasks = createServerFn({ method: "POST" })
       .eq("user_id", userId)
       .eq("task_date", today);
 
-    if (current && current.length > 0 && current.every((t: any) => t.completed)) {
-      console.log("[daily_mission] regenerate skipped — all tasks already completed for today");
-      return { ok: true, skipped: true, reason: "all_done" };
+    if (current && current.length > 0) {
+      const allDone = current.every((t: any) => t.completed);
+      if (allDone) {
+        console.log("[daily_mission] regenerate skipped — all tasks already completed for today");
+        return { ok: true, skipped: true, reason: "all_done" };
+      }
+      
+      // Also prevent regenerate if daily_completion exists (extra safety)
+      const { data: completion } = await supabaseAdmin
+        .from("daily_completions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("completed_date", today)
+        .maybeSingle();
+      
+      if (completion) {
+        console.log("[daily_mission] regenerate skipped — day already completed in DB");
+        return { ok: true, skipped: true, reason: "day_already_completed" };
+      }
     }
 
     // Remove only uncompleted tasks — preserve completed ones
@@ -497,6 +513,22 @@ export const toggleTask = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    const today = new Date().toISOString().slice(0, 10);
+
+    // If trying to uncheck, verify if the day is already completed
+    if (!data.completed) {
+      const { data: completion } = await supabaseAdmin
+        .from("daily_completions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("completed_date", today)
+        .maybeSingle();
+        
+      if (completion) {
+        throw new Error("Não é possível desmarcar a tarefa pois a missão do dia já foi concluída.");
+      }
+    }
+
     await supabase
       .from("daily_tasks")
       .update({
@@ -506,34 +538,6 @@ export const toggleTask = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .eq("user_id", userId);
 
-    // Atualiza XP e streak quando completa
-    if (data.completed) {
-      const { data: p } = await supabase
-        .from("progress")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-      const today = new Date().toISOString().slice(0, 10);
-      const last = p?.last_active_date as string | null;
-      let streak = p?.current_streak ?? 0;
-      if (last !== today) {
-        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-        streak = last === yesterday ? streak + 1 : 1;
-      }
-      const xp = (p?.xp ?? 0) + 10;
-      const level = calcLevel(xp);
-      await supabase
-        .from("progress")
-        .update({
-          xp,
-          level,
-          current_streak: streak,
-          best_streak: Math.max(p?.best_streak ?? 0, streak),
-          last_active_date: today,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", userId);
-    }
     return { ok: true };
   });
 
@@ -638,6 +642,8 @@ export const completeDailyMission = createServerFn({ method: "POST" })
         // If table doesn't exist, still continue — XP will be updated below
       }
     } else {
+      // Já existia daily_completion. Retorna os dados atuais (xpGained = 0)
+      xpGained = 0;
       const last = p?.last_active_date as string | null;
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       newStreak = last === yesterday ? currentStreak + 1 : last === today ? currentStreak : 1;
@@ -827,7 +833,7 @@ export const getDashboard = createServerFn({ method: "GET" })
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
       supabase.from("user_achievements").select("achievement_key, unlocked_at").eq("user_id", userId).order("unlocked_at"),
       // daily_completions may not exist if migration wasn't applied — treat error as null
-      supabase.from("daily_completions").select("id, xp_awarded, created_at").eq("user_id", userId).eq("completed_date", today).maybeSingle().then(r => r).catch(() => ({ data: null })),
+      supabase.from("daily_completions").select("id, xp_awarded, created_at").eq("user_id", userId).eq("completed_date", today).maybeSingle().then(r => r, () => ({ data: null })),
     ]);
 
     const dayAlreadyCompleted = !!(todayCompletion as any)?.data;
@@ -838,15 +844,66 @@ export const getDashboard = createServerFn({ method: "GET" })
     // ── Case 1: Day is already marked complete in daily_completions ──────────
     // Use this as the source of truth. Reconcile tasks to all show completed.
     if (dayAlreadyCompleted) {
+      const completedAt = (todayCompletion as any).data?.created_at ?? new Date().toISOString();
+      const completionXp = (todayCompletion as any).data?.xp_awarded ?? 0;
+      
+      // RECONCILIAÇÃO: Se xp_awarded for 0/null por bug, mas já está marcado como concluído, vamos corrigir.
+      // E precisamos garantir que progress.xp reflita corretamente sem duplicar.
+      if (completionXp === 0 || completionXp === null) {
+        console.log("[daily_mission] reconciling completion without XP");
+        
+        // 1. Corrige o registro de hoje
+        await supabaseAdmin
+          .from("daily_completions")
+          .update({ xp_awarded: 50 })
+          .eq("id", (todayCompletion as any).data.id);
+          
+        // 2. Busca todas as conclusões para calcular o esperado
+        const { data: allCompletions } = await supabaseAdmin
+          .from("daily_completions")
+          .select("id, xp_awarded")
+          .eq("user_id", userId);
+          
+        let expectedDailyXp = 0;
+        if (allCompletions) {
+          expectedDailyXp = allCompletions.reduce((acc: number, c: any) => acc + (c.xp_awarded ?? 0), 0);
+          // Adiciona os 50 de hoje se não tiver vindo atualizado da query acima por cache/delay
+          const todayInList = allCompletions.find(c => c.id === (todayCompletion as any).data.id);
+          if (todayInList && (todayInList.xp_awarded === 0 || todayInList.xp_awarded === null)) {
+             expectedDailyXp += 50;
+          }
+        } else {
+          expectedDailyXp = 50;
+        }
+
+        const currentXp = progress.data?.xp ?? 0;
+        
+        // 3. Atualiza progress apenas se o XP real for menor que o esperado por missões
+        if (currentXp < expectedDailyXp) {
+          console.log(`[daily_mission] adjusting XP from ${currentXp} to expected ${expectedDailyXp}`);
+          await supabaseAdmin
+            .from("progress")
+            .update({ xp: expectedDailyXp, level: calcLevel(expectedDailyXp) })
+            .eq("user_id", userId);
+            
+          if (progress.data) {
+            progress.data.xp = expectedDailyXp;
+            progress.data.level = calcLevel(expectedDailyXp);
+          }
+        } else {
+          console.log(`[daily_mission] XP already >= expected (${currentXp} >= ${expectedDailyXp}). No changes to progress.`);
+        }
+      }
+
       if (tasks.length === 0) {
         // No tasks in DB (user completed via local fallback) — create fallback rows
         // already marked as complete so history shows something meaningful.
-        const completedAt = (todayCompletion as any).data?.created_at ?? new Date().toISOString();
         const fallbackRows = FALLBACK_TASKS.map((t) => ({
           user_id: userId,
           title: t.title,
           description: t.description,
           category: t.category,
+          task_date: today,
           completed: true,
           completed_at: completedAt,
         }));
@@ -860,7 +917,6 @@ export const getDashboard = createServerFn({ method: "GET" })
         // Tasks exist but some may be uncompleted — mark them all done
         const incomplete = tasks.filter((t: any) => !t.completed);
         if (incomplete.length > 0) {
-          const completedAt = (todayCompletion as any).data?.created_at ?? new Date().toISOString();
           await supabase
             .from("daily_tasks")
             .update({ completed: true, completed_at: completedAt })
@@ -885,6 +941,7 @@ export const getDashboard = createServerFn({ method: "GET" })
       console.log("[daily_mission] no tasks — inserting fallback tasks");
       const fallbackRows = FALLBACK_TASKS.map((t) => ({
         user_id: userId,
+        task_date: today,
         title: t.title,
         description: t.description,
         category: t.category,
