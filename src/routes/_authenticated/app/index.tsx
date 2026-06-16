@@ -97,8 +97,11 @@ function HomePage() {
   const usingFallbackForEffect = realTasksForEffect.length === 0 || (realTasksForEffect.length > 0 && !isUuid(realTasksForEffect[0]?.id));
   const fallbackTasksWithDone = FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }));
   const displayTasksForEffect = usingFallbackForEffect ? fallbackTasksWithDone : realTasksForEffect;
-  const allDoneForEffect = displayTasksForEffect.length > 0 &&
-    displayTasksForEffect.filter((t: any) => t.completed).length === displayTasksForEffect.length;
+  const serverDayDoneForEffect = !!(data as any)?.todayCompleted;
+  const allDoneForEffect = serverDayDoneForEffect || (
+    displayTasksForEffect.length > 0 &&
+    displayTasksForEffect.filter((t: any) => t.completed).length === displayTasksForEffect.length
+  );
 
   // Fire completeDailyMission in a useEffect — never during render
   useEffect(() => {
@@ -248,6 +251,10 @@ function HomePage() {
   const xpInfo = xpForNextLevel(totalXp);
   const xpPct = xpInfo.pct;
 
+  // daily_completions is the source of truth for "day already done"
+  const serverSaysDayDone = !!(data as any).todayCompleted;
+  const serverXpAwarded = (data as any).todayXpAwarded ?? 0;
+
   // Always show tasks — fall back to local defaults if server returned none or returned inline fallbacks
   const realTasks: any[] = data.tasks ?? [];
   // "usingFallback" is true when server returned no tasks, OR when it returned inline
@@ -257,12 +264,15 @@ function HomePage() {
     ? FALLBACK_TODAY_TASKS.map((t) => ({ ...t, completed: fallbackDone.has(t.id) }))
     : realTasks;
 
-  console.log("[today_ui] real_tasks_count=", realTasks.length, "using_frontend_fallback=", usingFallback);
+  console.log("[today_ui] real_tasks_count=", realTasks.length, "using_frontend_fallback=", usingFallback, "server_day_done=", serverSaysDayDone);
 
   const completedToday = displayTasks.filter((t) => t.completed).length;
   const totalTasks = displayTasks.length;
-  const allDone = totalTasks > 0 && completedToday === totalTasks;
-  const progressPct = totalTasks > 0 ? Math.round((completedToday / totalTasks) * 100) : 0;
+  // Day is done if server says so OR all visible tasks are checked
+  const allDone = serverSaysDayDone || (totalTasks > 0 && completedToday === totalTasks);
+  const progressPct = totalTasks > 0
+    ? (serverSaysDayDone ? 100 : Math.round((completedToday / totalTasks) * 100))
+    : 0;
   const mainMission = displayTasks.find((t) => !t.completed) ?? displayTasks[0] ?? null;
 
   // Toggle handler that handles both real and fallback tasks
@@ -479,12 +489,10 @@ function HomePage() {
             <p className="mt-2 text-sm text-muted-foreground">
               Continue construindo sua sequência.
             </p>
-            {celebration && (
-              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
-                <Zap className="h-3.5 w-3.5" />
-                +{celebration.xpGained} XP ganhos
-              </div>
-            )}
+            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
+              <Zap className="h-3.5 w-3.5" />
+              +{celebration?.xpGained ?? serverXpAwarded} XP ganhos
+            </div>
           </div>
         )}
 
