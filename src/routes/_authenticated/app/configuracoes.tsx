@@ -229,7 +229,7 @@ function ConfigPage() {
             href="https://wa.me/553298425801"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-[#25D366] px-6 text-sm font-medium text-white shadow-sm transition hover:opacity-90 active:scale-95"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-primary-gradient px-6 text-sm font-medium text-primary-foreground shadow-glow transition hover:opacity-90 active:scale-95"
           >
             <MessageCircle className="h-4 w-4" />
             Falar no WhatsApp
