@@ -341,6 +341,18 @@ Sem markdown, sem texto fora do JSON.`;
   }
 }
 
+export const checkEmailExistsInAuth = createServerFn({ method: "POST" })
+  .validator((data: unknown) => {
+    const { email } = z.object({ email: z.string().email() }).parse(data);
+    return { email };
+  })
+  .handler(async ({ data }) => {
+    const { data: exists, error } = await supabaseAdmin
+      .rpc("check_auth_email_exists", { p_email: data.email });
+    if (error) return { exists: false };
+    return { exists: exists === true };
+  });
+
 export const regenerateTodayTasks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

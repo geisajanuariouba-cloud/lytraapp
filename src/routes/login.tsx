@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { isSubscriptionActive } from "@/lib/plans";
+import { checkEmailExistsInAuth } from "@/lib/lytra.functions";
 import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
@@ -77,6 +78,14 @@ function LoginPage() {
         return;
       } else {
         const normalizedEmail = email.toLowerCase().trim();
+
+        const { exists } = await checkEmailExistsInAuth({ data: { email: normalizedEmail } });
+        if (!exists) {
+          toast.error("Não encontramos uma conta cadastrada com este e-mail.");
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
           redirectTo: `${window.location.origin}/redefinir-senha`,
         });
