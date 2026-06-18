@@ -12,6 +12,7 @@ import {
   Sparkles,
   ShieldCheck,
   ArrowUpRight,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS, planLabel } from "@/lib/plans";
@@ -212,6 +213,28 @@ function ConfigPage() {
             </div>
           </div>
         )}
+      </section>
+
+      {/* Reembolso */}
+      <section className="mt-6 rounded-3xl border border-border bg-card p-6 shadow-soft">
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary">
+          <MessageCircle className="h-4 w-4" /> Reembolso
+        </h2>
+        <div className="mt-5">
+          <p className="text-base font-semibold">Solicitar reembolso</p>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            Se você deseja solicitar um reembolso dentro do prazo permitido, entre em contato pelo WhatsApp abaixo.
+          </p>
+          <a
+            href="https://wa.me/553298425801"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-[#25D366] px-6 text-sm font-medium text-white shadow-sm transition hover:opacity-90 active:scale-95"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar no WhatsApp
+          </a>
+        </div>
       </section>
 
       {/* Sessão */}

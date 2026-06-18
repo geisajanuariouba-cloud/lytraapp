@@ -24,26 +24,15 @@ export const Route = createFileRoute("/_authenticated")({
 
     const onboarded = profile?.onboarded === true;
 
-    console.log("[_authenticated] userId=", userId, "path=", path, "onboarded=", onboarded, "profile_raw=", JSON.stringify(profile), "err=", profileErr?.message ?? null);
-
-    // Expose to browser DevTools: window.__lytra_debug
-    if (typeof window !== "undefined") {
-      (window as any).__lytra_debug = { userId, path, profile, profileErr: profileErr?.message, onboarded };
-    }
-
     // /app and sub-paths require onboarded=true
     if (!onboarded && path.startsWith("/app")) {
-      console.log("[_authenticated] → redirect /onboarding");
       throw redirect({ to: "/onboarding" });
     }
 
     // /onboarding redirects to /app when already onboarded
     if (onboarded && path.startsWith("/onboarding")) {
-      console.log("[_authenticated] → redirect /app");
       throw redirect({ to: "/app" });
     }
-
-    console.log("[_authenticated] → allow", path);
     return { userId, onboarded };
   },
   component: () => <Outlet />,

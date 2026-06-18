@@ -107,11 +107,8 @@ function HomePage() {
     if (completedRef.current) return;
     completedRef.current = true;
 
-    console.log("[today_ui] all_done=true calling_completeDailyMission");
-
     completeFn()
       .then((res: any) => {
-        console.log("[today_ui] completeDailyMission_result=", JSON.stringify(res));
         // Update dashboard cache immediately — no refetch needed
         qc.setQueryData(["dashboard"], (prev: any) =>
           prev ? {
@@ -141,9 +138,8 @@ function HomePage() {
           setMissionCompleted(true);
         }
       })
-      .catch((err: any) => {
-        console.error("[today_ui] completeDailyMission_error=", err?.message);
-        // Don't block UX on error — just log
+      .catch(() => {
+        // Don't block UX on error
       });
   // Only re-fire if allDone transitions from false→true
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -259,7 +255,6 @@ function HomePage() {
   const displayTasks: any[] = data.tasks ?? [];
   const usingFallback = displayTasks.length === 0;
 
-  console.log("[today_ui] real_tasks_count=", displayTasks.length, "server_day_done=", serverSaysDayDone);
 
   const completedToday = displayTasks.filter((t) => t.completed).length;
   const totalTasks = displayTasks.length;

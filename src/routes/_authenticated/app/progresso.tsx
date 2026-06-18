@@ -71,8 +71,8 @@ function ProgressoPage() {
 
       {/* Stats */}
       <section className="grid gap-3 sm:grid-cols-2">
-        <BigStat icon={Flame}    label="Sequência atual"  value={`${streak} dias`} accent />
-        <BigStat icon={Trophy}   label="Melhor sequência" value={`${best} dias`} accent />
+        <BigStat icon={Flame}    label="Sequência atual"  value={`${streak} ${streak === 1 ? "dia" : "dias"}`} accent />
+        <BigStat icon={Trophy}   label="Melhor sequência" value={`${best} ${best === 1 ? "dia" : "dias"}`} accent />
         <BigStat icon={Zap}      label="Tarefas concluídas" value={`${totalTasks}`} accent />
         <BigStat icon={Heart}    label="Recaídas"          value={`${relapses}`} />
       </section>
