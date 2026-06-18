@@ -307,24 +307,38 @@ Sem markdown, sem texto fora do JSON.`;
 
   // Geração resiliente: getModel() can throw if GEMINI_API_KEY absent; catch all.
   let tasks: { title: string; description: string; category: string }[] = [];
+  let geminiUsed = false;
   try {
     const model = getModel(); // can throw if key absent — caught below
     const { text } = await generateText({ model, system: SYSTEM_VOICE, prompt });
     const cleaned = (text ?? "").replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
-    if (Array.isArray(parsed) && parsed.length > 0) tasks = parsed;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      tasks = parsed;
+      geminiUsed = true;
+    }
   } catch (e: any) {
-    console.error("[generateTasksFor] falhou; usando fallback:", e?.message);
+    console.error("[daily_mission] gemini_error=", e?.message);
   }
-  if (!Array.isArray(tasks) || tasks.length === 0) tasks = [...FALLBACK_TASKS];
 
+  if (!Array.isArray(tasks) || tasks.length === 0) {
+    tasks = [...FALLBACK_TASKS];
+    console.log("[daily_mission] using_fallback_tasks gemini_used=", geminiUsed);
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
   const rows = tasks.slice(0, 5).map((t) => ({
     user_id: userId,
+    task_date: today,
     title: String(t.title).slice(0, 200),
     description: String(t.description ?? "").slice(0, 500),
     category: String(t.category ?? "mental").slice(0, 40),
   }));
-  await supabase.from("daily_tasks").insert(rows);
+
+  const { error: insertErr } = await supabase.from("daily_tasks").insert(rows);
+  if (insertErr) {
+    console.error("[daily_mission] insert_error code=", insertErr.code, "message=", insertErr.message);
+  }
 }
 
 export const regenerateTodayTasks = createServerFn({ method: "POST" })
@@ -396,7 +410,7 @@ export const ensureTodayTasks = createServerFn({ method: "POST" })
     const today = new Date().toISOString().slice(0, 10);
 
     // Check if tasks already exist for today
-    const { data: existing } = await supabase
+    const { data: existing, error: existErr } = await supabase
       .from("daily_tasks")
       .select("id")
       .eq("user_id", userId)
@@ -824,7 +838,7 @@ export const getDashboard = createServerFn({ method: "GET" })
     const [profile, onb, tasksRes, progress, todayMood, journal, relapses, subscription, roleRes, achievements, todayCompletion] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("onboarding").select("*").eq("user_id", userId).maybeSingle(),
-      supabase.from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at"),
+      supabaseAdmin.from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at"),
       supabase.from("progress").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("mood_checkins").select("*").eq("user_id", userId).eq("checkin_date", today).maybeSingle(),
       supabase.from("journal_entries").select("id, content, ai_response, created_at, mood").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
@@ -837,6 +851,9 @@ export const getDashboard = createServerFn({ method: "GET" })
     ]);
 
     const dayAlreadyCompleted = !!(todayCompletion as any)?.data;
+    if ((tasksRes as any).error) {
+      console.error("[daily_mission] tasks select error:", (tasksRes as any).error?.message, (tasksRes as any).error?.code);
+    }
     let tasks = tasksRes.data ?? [];
 
     console.log("[daily_mission] existing_tasks_count=", tasks.length, "day_already_completed=", dayAlreadyCompleted);
@@ -907,24 +924,25 @@ export const getDashboard = createServerFn({ method: "GET" })
           completed: true,
           completed_at: completedAt,
         }));
-        const { data: inserted } = await supabase
+        const { data: inserted, error: backfillErr } = await supabaseAdmin
           .from("daily_tasks")
           .insert(fallbackRows)
           .select("*");
+        if (backfillErr) console.error("[daily_mission] backfill insert error:", backfillErr.message);
         tasks = inserted ?? [];
         console.log("[daily_mission] backfilled completed fallback tasks count=", tasks.length);
       } else {
         // Tasks exist but some may be uncompleted — mark them all done
         const incomplete = tasks.filter((t: any) => !t.completed);
         if (incomplete.length > 0) {
-          await supabase
+          await supabaseAdmin
             .from("daily_tasks")
             .update({ completed: true, completed_at: completedAt })
             .eq("user_id", userId)
             .eq("task_date", today)
             .eq("completed", false);
           // Re-fetch after update
-          const { data: refreshed } = await supabase
+          const { data: refreshed } = await supabaseAdmin
             .from("daily_tasks")
             .select("*")
             .eq("user_id", userId)
@@ -946,14 +964,15 @@ export const getDashboard = createServerFn({ method: "GET" })
         description: t.description,
         category: t.category,
       }));
-      const { data: inserted, error: insertErr } = await supabase
+      const { data: inserted, error: insertErr } = await supabaseAdmin
         .from("daily_tasks")
         .insert(fallbackRows)
         .select("*");
 
       if (insertErr) {
-        console.error("[daily_mission] fallback insert error:", insertErr.message);
-        const { data: retry } = await supabase
+        console.error("[daily_mission] fallback insert error:", insertErr.message, insertErr.code);
+        // Retry read in case a concurrent request already inserted tasks
+        const { data: retry } = await supabaseAdmin
           .from("daily_tasks").select("*").eq("user_id", userId).eq("task_date", today).order("created_at");
         tasks = retry ?? [];
       } else {
