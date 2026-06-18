@@ -76,22 +76,7 @@ function LoginPage() {
         }
         return;
       } else {
-        // Pre-check: verify the email exists via subscriptions table (indexed by email).
-        // Supabase's resetPasswordForEmail silently succeeds for unknown emails
-        // (prevents enumeration on their side), so we guard it ourselves.
         const normalizedEmail = email.toLowerCase().trim();
-        const { data: subCheck } = await supabase
-          .from("subscriptions")
-          .select("user_id")
-          .eq("email", normalizedEmail)
-          .maybeSingle();
-
-        if (!subCheck?.user_id) {
-          toast.error("Não encontramos uma conta cadastrada com este e-mail.");
-          setLoading(false);
-          return;
-        }
-
         const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
           redirectTo: `${window.location.origin}/redefinir-senha`,
         });
