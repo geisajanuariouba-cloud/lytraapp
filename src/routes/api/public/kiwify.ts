@@ -1,7 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { detectPlanKey } from "@/lib/plans";
+import { detectPlanKey, PLANS } from "@/lib/plans";
 import { sendAccessEmail } from "@/lib/email.server";
+import { createHash } from "crypto";
+
+async function sendMetaPurchaseEvent(params: {
+  email: string;
+  planKey: string;
+  orderId: string;
+  eventSourceUrl?: string;
+}) {
+  const token = process.env.META_PIXEL_ACCESS_TOKEN;
+  const pixelId = "1541953380890856";
+  if (!token) return;
+
+  const plan = PLANS[params.planKey as keyof typeof PLANS];
+  const value = plan?.price ?? 19.9;
+  const hashedEmail = createHash("sha256").update(params.email.toLowerCase().trim()).digest("hex");
+
+  try {
+    const res = await fetch(`https://graph.facebook.com/v21.0/${pixelId}/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: [{
+          event_name: "Purchase",
+          event_time: Math.floor(Date.now() / 1000),
+          action_source: "website",
+          event_source_url: params.eventSourceUrl || "https://lytra.shop",
+          user_data: { em: [hashedEmail] },
+          custom_data: { currency: "BRL", value, order_id: params.orderId },
+        }],
+        access_token: token,
+      }),
+    });
+    const data = await res.json();
+    console.log("[meta-capi] Purchase event sent:", data);
+  } catch (e) {
+    console.error("[meta-capi] Failed to send Purchase event:", e);
+  }
+}
 
 /**
  * Resolve o user_id de um e-mail usando SOMENTE tabelas da aplicação.
@@ -274,6 +312,14 @@ export const Route = createFileRoute("/api/public/kiwify")({
             console.error("[kiwify] no accessLink generated — email NOT sent for userId=", userId);
             emailError = "no_access_link_generated";
           }
+
+          // ── Meta Conversions API — Purchase event ─────────────────────
+          await sendMetaPurchaseEvent({
+            email,
+            planKey,
+            orderId: String(orderId),
+            eventSourceUrl: `https://${url.host}`,
+          });
 
           return Response.json({
             ok: true,
