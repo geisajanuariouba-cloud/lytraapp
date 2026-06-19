@@ -11,7 +11,7 @@ async function sendMetaPurchaseEvent(params: {
   eventSourceUrl?: string;
 }) {
   const token = process.env.META_PIXEL_ACCESS_TOKEN;
-  const pixelId = "1541953380890856";
+  const pixelId = "995199796558041";
   if (!token) return;
 
   const plan = PLANS[params.planKey as keyof typeof PLANS];
