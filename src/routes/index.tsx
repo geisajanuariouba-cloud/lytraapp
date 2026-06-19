@@ -379,12 +379,14 @@ function Landing() {
                   <div className="h-3 w-14 rounded-full bg-black" />
                 </div>
                 {/* screenshot real */}
-                <img
-                  src="/progress-mobile.png.png"
-                  alt="Lytra — tela de Progresso no celular"
-                  className="w-full object-cover object-top"
-                  style={{ height: "calc(100% - 2.75rem)" }}
-                />
+                <div className="overflow-y-hidden" style={{ height: "calc(100% - 2.75rem)" }}>
+                  <img
+                    src="/progress-mobile.png.png"
+                    alt="Lytra — tela de Progresso no celular"
+                    className="w-full"
+                    style={{ display: "block" }}
+                  />
+                </div>
                 {/* home indicator */}
                 <div className="flex h-4 items-center justify-center bg-white">
                   <div className="h-1 w-10 rounded-full bg-black/15" />
