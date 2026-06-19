@@ -23,7 +23,7 @@ export const PLANS: Record<
     price: 19.9,
     oldPrice: 39.9,
     period: "/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/5iXm09X",
+    checkoutUrl: "https://pay.kiwify.com.br/dyG3zSK",
     highlights: [
       "Diário emocional",
       "Missões personalizadas",
