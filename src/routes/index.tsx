@@ -209,6 +209,159 @@ const faqs = [
   },
 ];
 
+// ── Hero device mockup (laptop + phone) ──────────────────────────────
+function HeroMockup() {
+  return (
+    <div className="relative mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+      {/* container com perspectiva suave */}
+      <div
+        className="relative flex items-end justify-center gap-0"
+        style={{ perspective: "1200px" }}
+      >
+        {/* ── Laptop ── */}
+        <div
+          className="relative shrink-0"
+          style={{
+            width: "min(72vw, 720px)",
+            transform: "translateZ(0)",
+          }}
+        >
+          {/* tela */}
+          <div
+            className="overflow-hidden rounded-t-xl border border-border bg-white shadow-[0_24px_80px_-12px_oklch(0.52_0.13_158/0.18),0_4px_24px_rgba(0,0,0,0.1)]"
+            style={{ aspectRatio: "16/10" }}
+          >
+            {/* barra do browser */}
+            <div className="flex items-center gap-2 border-b border-border bg-[#f5f5f5] px-4 py-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+              <div className="mx-auto flex h-6 w-56 items-center justify-center rounded-md bg-white/80 border border-border/60 px-3">
+                <span className="text-[10px] text-muted-foreground tracking-wide">lytra.shop</span>
+              </div>
+            </div>
+            {/* conteúdo — tela de Progresso da Lytra */}
+            <div className="flex h-full bg-white">
+              {/* sidebar */}
+              <div className="hidden w-[180px] shrink-0 border-r border-border bg-white px-3 py-4 md:flex md:flex-col md:gap-1">
+                <p className="mb-3 px-2 text-[11px] font-bold tracking-widest text-[oklch(0.52_0.13_158)]">lytra</p>
+                {["Hoje","Diário","Histórico","Emergência","Progresso","Suporte","Conta"].map((item, i) => (
+                  <div
+                    key={item}
+                    className={`rounded-lg px-3 py-1.5 text-[11px] font-medium ${
+                      i === 4
+                        ? "bg-[oklch(0.52_0.13_158)] text-white"
+                        : "text-muted-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+              {/* main */}
+              <div className="flex-1 overflow-hidden px-6 py-4">
+                <p className="text-lg font-bold text-foreground">Progresso</p>
+                <p className="text-[11px] text-muted-foreground">Dia após dia, você está reconstruindo.</p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Sequência atual", val: "7 dias", icon: "🔥" },
+                    { label: "Melhor sequência", val: "7 dias", icon: "🏆" },
+                    { label: "Tarefas concluídas", val: "131",  icon: "⚡" },
+                    { label: "Recaídas",           val: "0",    icon: "❤️" },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-xl border border-border bg-white p-3 shadow-soft">
+                      <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <span>{s.icon}</span>{s.label}
+                      </p>
+                      <p className="mt-1 text-base font-bold text-foreground">{s.val}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* XP */}
+                <div className="mt-3 rounded-xl border border-border bg-white p-3 shadow-soft">
+                  <p className="text-[10px] font-semibold text-[oklch(0.52_0.13_158)] uppercase tracking-widest">Nível 1</p>
+                  <p className="mt-0.5 text-lg font-bold text-foreground">50 XP</p>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div className="h-full w-1/2 rounded-full bg-[oklch(0.52_0.13_158)]" />
+                  </div>
+                  <div className="mt-1 flex justify-between text-[9px] text-muted-foreground">
+                    <span>Nível 1</span><span>50/100 XP</span><span>Nível 2</span>
+                  </div>
+                </div>
+                {/* últimos 35 dias mini */}
+                <div className="mt-3">
+                  <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-[oklch(0.52_0.13_158)]">Últimos 35 dias</p>
+                  <div className="flex flex-wrap gap-1">
+                    {Array.from({length: 35}).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-4 w-4 rounded-md"
+                        style={{
+                          backgroundColor: i < 7
+                            ? `oklch(${0.75 - i * 0.03} 0.13 158)`
+                            : "oklch(0.93 0.04 158 / 0.5)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* base do laptop */}
+          <div className="h-3 rounded-b-sm bg-gradient-to-b from-[#d0d0d0] to-[#b8b8b8] shadow-[0_2px_8px_rgba(0,0,0,0.15)]" />
+          <div className="h-1.5 rounded-b-xl bg-[#a8a8a8] shadow-[0_4px_12px_rgba(0,0,0,0.2)]" />
+          {/* mesa abaixo */}
+          <div className="h-px w-full bg-border/40" />
+        </div>
+
+        {/* ── Phone ── */}
+        <div
+          className="absolute bottom-0 right-[5%] z-10 shrink-0 md:relative md:bottom-auto md:right-auto md:-mb-4 md:ml-[-80px]"
+          style={{ width: "min(22vw, 200px)" }}
+        >
+          <div
+            className="overflow-hidden rounded-[28px] border-[7px] border-[#1C1C1E] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08),-8px_0_40px_oklch(0.52_0.13_158/0.15)]"
+            style={{ aspectRatio: "9/19.5" }}
+          >
+            {/* dynamic island */}
+            <div className="flex h-6 items-center justify-center bg-white">
+              <div className="h-3 w-16 rounded-full bg-[#1C1C1E]" />
+            </div>
+            {/* content */}
+            <div className="flex-1 bg-white px-3 pb-3">
+              <p className="mb-1 text-[9px] font-bold text-foreground">Progresso</p>
+              <p className="mb-2 text-[7px] text-muted-foreground">Dia após dia, você está reconstruindo.</p>
+              {[
+                { label: "Sequência atual", val: "7 dias", icon: "🔥" },
+                { label: "Melhor sequência", val: "7 dias", icon: "🏆" },
+                { label: "Tarefas concluídas", val: "131",  icon: "⚡" },
+                { label: "Recaídas",           val: "0",    icon: "❤️" },
+              ].map((s) => (
+                <div key={s.label} className="mb-1.5 rounded-xl border border-border p-2 shadow-soft">
+                  <p className="text-[7px] text-muted-foreground">{s.icon} {s.label}</p>
+                  <p className="mt-0.5 text-[11px] font-bold text-foreground">{s.val}</p>
+                </div>
+              ))}
+              <div className="mt-1 rounded-xl border border-border p-2">
+                <p className="text-[7px] font-semibold text-[oklch(0.52_0.13_158)] uppercase tracking-widest">Nível 1</p>
+                <p className="text-[11px] font-bold">50 XP</p>
+                <div className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full w-1/2 rounded-full bg-[oklch(0.52_0.13_158)]" />
+                </div>
+              </div>
+            </div>
+            {/* home indicator */}
+            <div className="flex h-4 items-center justify-center bg-white">
+              <div className="h-1 w-10 rounded-full bg-[#1C1C1E]/20" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── componente do carrossel WhatsApp ─────────────────────────────────
 function WhatsappCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -296,7 +449,7 @@ function Landing() {
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-20 text-center md:pt-36 md:pb-28">
+        <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-10 text-center md:pt-36 md:pb-12">
           <h1 className="font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
             Você merece uma mente{" "}
             <span style={{ color: "var(--primary)" }}>em paz.</span>
@@ -324,6 +477,9 @@ function Landing() {
             </a>
           </div>
         </div>
+
+        {/* ── Device mockup hero ── */}
+        <HeroMockup />
       </section>
 
       {/* ── Problema ── */}
@@ -511,42 +667,62 @@ function Landing() {
 
         {/* cards */}
         <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <figure
-              key={i}
-              className="flex flex-col rounded-3xl border border-primary/10 bg-white p-7 shadow-soft"
-            >
-              {/* estrelas */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm text-yellow-400">{"★".repeat(Math.floor(t.rating))}</span>
-                <span className="text-xs font-semibold text-muted-foreground">{t.rating.toFixed(1)}</span>
-              </div>
-              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground">
-                "{t.text}"
-              </blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-                <img
-                  src={t.photo}
-                  alt={t.name}
-                  loading="lazy"
-                  className="h-10 w-10 shrink-0 rounded-full object-cover"
-                  onError={(e) => {
-                    const el = e.currentTarget;
-                    el.style.display = "none";
-                    const sibling = el.nextElementSibling as HTMLElement | null;
-                    if (sibling) sibling.style.display = "flex";
-                  }}
-                />
-                {/* fallback invisível até onError */}
-                <span
-                  className="h-10 w-10 shrink-0 rounded-full bg-primary/10"
-                  style={{ display: "none" }}
-                  aria-hidden
-                />
-                <span className="text-sm font-semibold text-foreground">{t.name}</span>
-              </figcaption>
-            </figure>
-          ))}
+          {testimonials.map((t, i) => {
+            // Depoimento 2 (índice 1) — exibe screenshot de WhatsApp real
+            if (i === 1) {
+              return (
+                <figure
+                  key={i}
+                  className="overflow-hidden rounded-3xl border border-primary/10 shadow-soft"
+                  style={{ gridRow: "span 1" }}
+                >
+                  <img
+                    src="/wp-7.jpg"
+                    alt="Conversa real de usuária da Lytra no WhatsApp"
+                    loading="lazy"
+                    className="w-full object-cover object-top"
+                    style={{ aspectRatio: "9/16", maxHeight: "520px" }}
+                  />
+                </figure>
+              );
+            }
+            return (
+              <figure
+                key={i}
+                className="flex flex-col rounded-3xl border border-primary/10 bg-white p-7 shadow-soft"
+              >
+                {/* estrelas */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm text-yellow-400">{"★".repeat(Math.floor(t.rating))}</span>
+                  <span className="text-xs font-semibold text-muted-foreground">{t.rating.toFixed(1)}</span>
+                </div>
+                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground">
+                  "{t.text}"
+                </blockquote>
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
+                  <img
+                    src={t.photo}
+                    alt={t.name}
+                    loading="lazy"
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      el.style.display = "none";
+                      const sibling = el.nextElementSibling as HTMLElement | null;
+                      if (sibling) sibling.style.display = "flex";
+                    }}
+                  />
+                  {/* fallback invisível até onError */}
+                  <span
+                    className="h-10 w-10 shrink-0 rounded-full bg-primary/10"
+                    style={{ display: "none" }}
+                    aria-hidden
+                  />
+                  <span className="text-sm font-semibold text-foreground">{t.name}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </section>
 
