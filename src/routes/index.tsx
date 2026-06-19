@@ -747,6 +747,15 @@ function Landing() {
                   href={plan.checkoutUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    if (typeof window !== "undefined" && (window as any).fbq) {
+                      (window as any).fbq("track", "InitiateCheckout", {
+                        value: plan.price,
+                        currency: "BRL",
+                        content_name: plan.label,
+                      });
+                    }
+                  }}
                   className={`mt-8 inline-flex h-11 w-full items-center justify-center rounded-full text-sm font-semibold transition-all ${
                     featured
                       ? "bg-primary text-primary-foreground shadow-glow hover:opacity-90"
