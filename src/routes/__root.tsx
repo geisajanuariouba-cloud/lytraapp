@@ -120,6 +120,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A7A4D'/%3E%3Ctext x='32' y='34' text-anchor='middle' dominant-baseline='central' font-family='Georgia,serif' font-style='italic' font-size='40' fill='white'%3Ey%3C/text%3E%3C/svg%3E",
       },
     ],
+    scripts: [
+      {
+        children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1541953380890856');fbq('track','PageView');`,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
