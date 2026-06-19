@@ -179,7 +179,7 @@ const testimonials: { name: string; rating: number; text: string; photo: string 
 
 const whatsappShots: { src: string; alt: string }[] = [
   { src: "/wp-1.jpg", alt: "Minha cabeça ficou mais silenciosa" },
-  { src: "/wp-7.jpg", alt: "é normal eu estar perdendo a vontade de abrir instagram?" },
+  { src: "/wp-8.jpg", alt: "é normal eu estar perdendo a vontade de abrir instagram?" },
   { src: "/wp-3.jpg", alt: "Eu jurava que meu problema era falta de disciplina" },
   { src: "/wp-4.jpg", alt: "Já faz uma semana, tô começando a acreditar que consigo" },
   { src: "/wp-5.jpg", alt: "Minha ansiedade diminuiu muito" },
@@ -296,7 +296,7 @@ function Landing() {
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-20 text-center md:pt-36 md:pb-28">
+        <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-10 text-center md:pt-36 md:pb-10">
           <h1 className="font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
             Você merece uma mente{" "}
             <span style={{ color: "var(--primary)" }}>em paz.</span>
@@ -322,6 +322,76 @@ function Landing() {
             >
               Como funciona
             </a>
+          </div>
+        </div>
+
+        {/* ── Device mockup ── */}
+        <div className="relative mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+          <div className="relative flex items-end justify-center">
+
+            {/* Laptop */}
+            <div className="relative shrink-0" style={{ width: "min(74vw, 780px)" }}>
+              {/* tela */}
+              <div
+                className="overflow-hidden rounded-t-2xl border border-border bg-white"
+                style={{
+                  aspectRatio: "16/10",
+                  boxShadow: "0 32px 80px -12px oklch(0.52 0.13 158 / 0.15), 0 8px 32px rgba(0,0,0,0.12)",
+                }}
+              >
+                {/* barra de endereço */}
+                <div className="flex h-8 items-center gap-2 border-b border-border bg-[#f0f0f0] px-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
+                  <div className="mx-auto flex h-5 w-48 items-center justify-center rounded bg-white/90 border border-border/50">
+                    <span className="text-[10px] text-muted-foreground">lytra.shop</span>
+                  </div>
+                </div>
+                {/* screenshot real */}
+                <img
+                  src="/progress-desktop.png.png"
+                  alt="Lytra — tela de Progresso no computador"
+                  className="w-full h-full object-cover object-top"
+                  style={{ height: "calc(100% - 2rem)" }}
+                />
+              </div>
+              {/* base */}
+              <div className="h-3 bg-gradient-to-b from-[#cecece] to-[#b0b0b0]" />
+              <div className="h-1.5 rounded-b-xl bg-[#a0a0a0] shadow-[0_4px_16px_rgba(0,0,0,0.18)]" />
+            </div>
+
+            {/* Phone — sobreposto à direita */}
+            <div
+              className="absolute bottom-6 right-[3%] shrink-0 md:right-[6%]"
+              style={{ width: "min(19vw, 195px)" }}
+            >
+              <div
+                className="overflow-hidden rounded-[32px] border-[8px] border-[#1C1C1E]"
+                style={{
+                  boxShadow:
+                    "0 32px 64px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06), -10px 0 40px oklch(0.52 0.13 158 / 0.12)",
+                  aspectRatio: "9/19.5",
+                }}
+              >
+                {/* dynamic island */}
+                <div className="flex h-5 items-center justify-center bg-[#1C1C1E]">
+                  <div className="h-3 w-14 rounded-full bg-black" />
+                </div>
+                {/* screenshot real */}
+                <img
+                  src="/progress-mobile.png.png"
+                  alt="Lytra — tela de Progresso no celular"
+                  className="w-full object-cover object-top"
+                  style={{ height: "calc(100% - 2.75rem)" }}
+                />
+                {/* home indicator */}
+                <div className="flex h-4 items-center justify-center bg-white">
+                  <div className="h-1 w-10 rounded-full bg-black/15" />
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
