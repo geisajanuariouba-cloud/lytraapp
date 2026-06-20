@@ -5,7 +5,7 @@ import {
   createRootRouteWithContext,
   useRouter,
   HeadContent,
-  Scripts,
+  Scripts,h
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,7 +131,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <HeadContent />
+        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" />
         {/* Meta Pixel */}
         <script
           dangerouslySetInnerHTML={{
