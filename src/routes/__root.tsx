@@ -6,7 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,h
-} from "@tanstack/react-router";
+} from "@tanstack/react-router";h
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
@@ -131,7 +131,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" />
+        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" /><script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck data-utmify-prevent-subids async defer />
         {/* Meta Pixel */}
         <script
           dangerouslySetInnerHTML={{
