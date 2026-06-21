@@ -120,6 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A7A4D'/%3E%3Ctext x='32' y='34' text-anchor='middle' dominant-baseline='central' font-family='Georgia,serif' font-style='italic' font-size='40' fill='white'%3Ey%3C/text%3E%3C/svg%3E",
       },
     ],
+    scripts: [{ src: "https://cdn.utmify.com.br/scripts/utms/latest.js", "data-utmify-prevent-xcod-sck": "", "data-utmify-prevent-subids": "", async: true, defer: true }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -131,7 +132,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" /><script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck data-utmify-prevent-subids async defer />
+        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" />
         {/* Meta Pixel */}
         <script
           dangerouslySetInnerHTML={{
