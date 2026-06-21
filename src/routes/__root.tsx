@@ -6,7 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,h
-} from "@tanstack/react-router";h
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
