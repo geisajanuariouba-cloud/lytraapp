@@ -20,8 +20,8 @@ export const PLANS: Record<
   monthly: {
     key: "monthly",
     label: "Mensal",
-    price: 19.9,
-    oldPrice: 39.9,
+    price: 9.9,
+    oldPrice: 19.9,
     period: "/mês",
     checkoutUrl: "https://pay.kiwify.com.br/dyG3zSK",
     highlights: [
@@ -37,10 +37,10 @@ export const PLANS: Record<
     key: "quarterly",
     label: "Trimestral",
     badge: "Mais popular",
-    price: 39.9,
-    oldPrice: 79.9,
+    price: 24.9,
+    oldPrice: 39.9,
     period: "/trimestre",
-    perMonthHint: "≈ R$ 13,30/mês",
+    perMonthHint: "≈ R$ 8,30/mês",
     checkoutUrl: "https://pay.kiwify.com.br/I4aeKFt",
     highlights: [
       "Diário emocional",
@@ -54,8 +54,8 @@ export const PLANS: Record<
   lifetime: {
     key: "lifetime",
     label: "Vitalício",
-    price: 79.9,
-    oldPrice: 159.9,
+    price: 49.9,
+    oldPrice: 79.9,
     period: "único",
     checkoutUrl: "https://pay.kiwify.com.br/PhPf42z",
     highlights: [

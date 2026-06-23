@@ -109,7 +109,7 @@ const oQueVoceRecebe = [
 // Planos: apresentação visual separada do preço (que vem de plans.ts)
 const planDisplay = {
   monthly: {
-    destaque: "Custo mais alto por mês",
+    destaque: "Preço de lançamento — 50% off",
     features: [
       "Acesso completo",
       "Diário emocional",
@@ -119,7 +119,7 @@ const planDisplay = {
     ],
   },
   quarterly: {
-    destaque: "Equivale a R$ 13,30/mês · 33% de economia",
+    destaque: "Equivale a R$ 8,30/mês · 37% de economia",
     features: [
       "Tudo do mensal",
       "Mesmo acesso completo",
@@ -313,7 +313,7 @@ function Landing() {
           {/* banner de lançamento */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            Oferta de lançamento — 50% off no plano mensal
+            Preço de lançamento — por tempo limitado
           </div>
 
           <h1 className="font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
@@ -347,7 +347,7 @@ function Landing() {
               className="group inline-flex h-13 items-center gap-2 rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 hover:shadow-[0_0_40px_-8px_oklch(0.52_0.13_158/0.5)]"
               style={{ height: "3.25rem" }}
             >
-              Quero recuperar meu foco — R$13,30/mês
+              Quero recuperar meu foco — R$8,30/mês
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
@@ -358,7 +358,7 @@ function Landing() {
               Como funciona
             </a>
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · Cancele quando quiser</p>
+          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · Cancele quando quiser · Preço de lançamento</p>
         </div>
 
         {/* ── Device mockup ── */}
@@ -679,7 +679,7 @@ function Landing() {
             Quero esse resultado também — começar agora
             <ArrowRight className="h-4 w-4" />
           </a>
-          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · R$13,30/mês no trimestral</p>
+          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · R$8,30/mês no trimestral</p>
         </div>
       </section>
 
@@ -734,7 +734,7 @@ function Landing() {
             Acesso completo em todos os planos. O que muda é o custo por período.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Uma sessão de terapia custa em média R$200. O plano vitalício da Lytra custa R$79,90 — pagamento único, para sempre.
+            Uma sessão de terapia custa em média R$200. O plano vitalício da Lytra custa R$49,90 — pagamento único, para sempre.
           </p>
         </div>
 
@@ -767,6 +767,9 @@ function Landing() {
                   </span>
                   <span className="text-sm text-muted-foreground">
                     {plan.period === "único" ? "pagamento único" : plan.period}
+                  </span>
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatBRL(plan.oldPrice)}
                   </span>
                 </div>
 
