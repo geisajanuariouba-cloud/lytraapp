@@ -111,16 +111,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      // preconnect to Google Fonts — establishes TCP early, non-blocking
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // font stylesheet loaded with media trick → non-blocking
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap",
+        media: "print",
+        // @ts-expect-error onload not in LinkDescriptor but valid HTML
+        onload: "this.media='all'",
       },
+      { rel: "stylesheet", href: appCss },
       {
         rel: "icon",
         href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A7A4D'/%3E%3Ctext x='32' y='34' text-anchor='middle' dominant-baseline='central' font-family='Georgia,serif' font-style='italic' font-size='40' fill='white'%3Ey%3C/text%3E%3C/svg%3E",
       },
+      // preload hero images (LCP candidates)
+      { rel: "preload", href: "/progress-mobile.png.png", as: "image", media: "(max-width: 767px)" },
+      { rel: "preload", href: "/progress-desktop.png.png", as: "image", media: "(min-width: 768px)" },
     ],
-    scripts: [{ src: "https://cdn.utmify.com.br/scripts/utms/latest.js", "data-utmify-prevent-xcod-sck": "", "data-utmify-prevent-subids": "", async: true, defer: true }],
+    scripts: [
+      // Meta Pixel — async, non-blocking
+      {
+        children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','995199796558041');fbq('track','PageView');`,
+      },
+      // UTMify — async + defer, non-blocking
+      { src: "https://cdn.utmify.com.br/scripts/utms/latest.js", "data-utmify-prevent-xcod-sck": "", "data-utmify-prevent-subids": "", async: true, defer: true },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -132,22 +150,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <HeadContent /><meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" />
-        {/* Meta Pixel */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','995199796558041');fbq('track','PageView');`,
-          }}
-        />
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src="https://www.facebook.com/tr?id=995199796558041&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
+        <HeadContent />
+        <meta name="facebook-domain-verification" content="4tmm0bo28ttprwl3lvqdo1eigg8895" />
       </head>
       <body>
         {children}

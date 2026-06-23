@@ -390,6 +390,7 @@ function Landing() {
                   alt="Lytra — tela de Progresso no computador"
                   className="w-full h-full object-cover object-top"
                   style={{ height: "calc(100% - 2rem)" }}
+                  fetchPriority="high"
                 />
               </div>
               {/* base */}
@@ -421,6 +422,7 @@ function Landing() {
                     alt="Lytra — tela de Progresso no celular"
                     className="w-full"
                     style={{ display: "block" }}
+                    fetchPriority="high"
                   />
                 </div>
                 {/* home indicator */}
