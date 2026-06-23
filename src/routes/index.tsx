@@ -146,7 +146,7 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 5.0,
     text: "Eu achava que meu problema era falta de disciplina, mas na verdade eu vivia distraída o tempo todo. Em 3 semanas cortei o Instagram de 4h para menos de 1h por dia.",
     result: "De 4h → menos de 1h no Instagram em 3 semanas",
-    photo: "/avatar-1.jpg",
+    photo: "/avatar-1.webp",
   },
   {
     name: "Fernanda S.",
@@ -154,7 +154,7 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 5.0,
     text: "Em poucos dias eu já percebi diferença. Passei a gastar menos tempo no celular e consegui organizar melhor minha rotina sem me sentir pressionada.",
     result: "Rotina organizada em menos de 1 semana",
-    photo: "/avatar-2.jpg",
+    photo: "/avatar-2.webp",
   },
   {
     name: "Lucas R.",
@@ -162,7 +162,7 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 5.0,
     text: "O que mais gostei foi a simplicidade. Não parece mais um app cheio de funções inúteis. É direto ao ponto e realmente ajuda a manter o foco quando mais preciso.",
     result: "Produtividade dobrou no trabalho remoto",
-    photo: "/avatar-3.jpg",
+    photo: "/avatar-3.webp",
   },
   {
     name: "Marcelo P.",
@@ -170,7 +170,7 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 4.9,
     text: "Eu vivia começando projetos e abandonando no meio. Depois que comecei a usar a Lytra, consegui criar uma consistência que não tinha há anos.",
     result: "Primeiro projeto finalizado em 21 dias",
-    photo: "/avatar-4.jpg",
+    photo: "/avatar-4.webp",
   },
   {
     name: "Juliana A.",
@@ -178,7 +178,7 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 5.0,
     text: "Antes eu pegava o celular automaticamente toda hora. Hoje consigo controlar muito melhor meus impulsos. Minha nota na faculdade subiu no semestre seguinte.",
     result: "Nota na faculdade melhorou no semestre seguinte",
-    photo: "/avatar-5.jpg",
+    photo: "/avatar-5.webp",
   },
   {
     name: "Sônia C.",
@@ -186,17 +186,17 @@ const testimonials: { name: string; detail: string; rating: number; text: string
     rating: 4.8,
     text: "Achei que fosse algo voltado apenas para pessoas mais jovens, mas me surpreendi. Me ajudou a criar hábitos mais saudáveis e reduzir distrações no trabalho.",
     result: "2h extras de foco por dia recuperadas",
-    photo: "/avatar-6.jpg",
+    photo: "/avatar-6.webp",
   },
 ];
 
 const whatsappShots: { src: string; alt: string }[] = [
-  { src: "/wp-1.jpg", alt: "Minha cabeça ficou mais silenciosa" },
-  { src: "/wp-8.jpg", alt: "é normal eu estar perdendo a vontade de abrir instagram?" },
-  { src: "/wp-3.jpg", alt: "Eu jurava que meu problema era falta de disciplina" },
-  { src: "/wp-4.jpg", alt: "Já faz uma semana, tô começando a acreditar que consigo" },
-  { src: "/wp-5.jpg", alt: "Minha ansiedade diminuiu muito" },
-  { src: "/wp-6.jpg", alt: "Pela primeira vez em meses minha lista de tarefas acabou" },
+  { src: "/wp-1.webp", alt: "Minha cabeça ficou mais silenciosa" },
+  { src: "/wp-8.webp", alt: "é normal eu estar perdendo a vontade de abrir instagram?" },
+  { src: "/wp-3.webp", alt: "Eu jurava que meu problema era falta de disciplina" },
+  { src: "/wp-4.webp", alt: "Já faz uma semana, tô começando a acreditar que consigo" },
+  { src: "/wp-5.webp", alt: "Minha ansiedade diminuiu muito" },
+  { src: "/wp-6.webp", alt: "Pela primeira vez em meses minha lista de tarefas acabou" },
 ];
 
 const faqs = [
@@ -386,7 +386,7 @@ function Landing() {
                 </div>
                 {/* screenshot real */}
                 <img
-                  src="/progress-desktop.png.png"
+                  src="/progress-desktop.png.webp"
                   alt="Lytra — tela de Progresso no computador"
                   className="w-full h-full object-cover object-top"
                   style={{ height: "calc(100% - 2rem)" }}
@@ -418,7 +418,7 @@ function Landing() {
                 {/* screenshot real */}
                 <div className="overflow-y-hidden" style={{ height: "calc(100% - 2.75rem)" }}>
                   <img
-                    src="/progress-mobile.png.png"
+                    src="/progress-mobile.png.webp"
                     alt="Lytra — tela de Progresso no celular"
                     className="w-full"
                     style={{ display: "block" }}

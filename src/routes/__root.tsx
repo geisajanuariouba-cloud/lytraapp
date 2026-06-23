@@ -128,8 +128,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A7A4D'/%3E%3Ctext x='32' y='34' text-anchor='middle' dominant-baseline='central' font-family='Georgia,serif' font-style='italic' font-size='40' fill='white'%3Ey%3C/text%3E%3C/svg%3E",
       },
       // preload hero images (LCP candidates)
-      { rel: "preload", href: "/progress-mobile.png.png", as: "image", media: "(max-width: 767px)" },
-      { rel: "preload", href: "/progress-desktop.png.png", as: "image", media: "(min-width: 768px)" },
+      { rel: "preload", href: "/progress-mobile.png.webp", as: "image", media: "(max-width: 767px)" },
+      { rel: "preload", href: "/progress-desktop.png.webp", as: "image", media: "(min-width: 768px)" },
     ],
     scripts: [
       // Meta Pixel — async, non-blocking
