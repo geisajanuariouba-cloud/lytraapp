@@ -23,7 +23,7 @@ export const PLANS: Record<
     price: 9.9,
     oldPrice: 19.9,
     period: "/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/dyG3zSK",
+    checkoutUrl: "https://pay.kiwify.com.br/1Tn6VZu",
     highlights: [
       "Diário emocional",
       "Missões personalizadas",
@@ -41,7 +41,7 @@ export const PLANS: Record<
     oldPrice: 39.9,
     period: "/trimestre",
     perMonthHint: "≈ R$ 8,30/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/I4aeKFt",
+    checkoutUrl: "https://pay.kiwify.com.br/670v2Xz",
     highlights: [
       "Diário emocional",
       "Missões personalizadas",
@@ -112,7 +112,7 @@ export function detectPlanKey(payload: any): PlanKey | null {
     .toLowerCase();
 
   if (/vital[ií]ci|lifetime|phpf42z/.test(haystack)) return "lifetime";
-  if (/trimestr|quarter|i4aekft/.test(haystack)) return "quarterly";
-  if (/mensal|month|dyg3zsk|5ixm09x/.test(haystack)) return "monthly";
+  if (/trimestr|quarter|670v2xz/.test(haystack)) return "quarterly";
+  if (/mensal|month|1tn6vzu/.test(haystack)) return "monthly";
   return null;
 }
