@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   ArrowRight,
   ChevronLeft,
@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   X,
   Zap,
+  Timer,
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
@@ -138,41 +139,53 @@ const planDisplay = {
   },
 } as const;
 
-const testimonials: { name: string; rating: number; text: string; photo: string }[] = [
+const testimonials: { name: string; detail: string; rating: number; text: string; photo: string; result: string }[] = [
   {
     name: "Ana Clara M.",
+    detail: "Estudante, 22 anos · São Paulo",
     rating: 5.0,
-    text: "Eu achava que meu problema era falta de disciplina, mas na verdade eu vivia distraída o tempo todo. A Lytra me ajudou a voltar a terminar o que começo.",
+    text: "Eu achava que meu problema era falta de disciplina, mas na verdade eu vivia distraída o tempo todo. Em 3 semanas cortei o Instagram de 4h para menos de 1h por dia.",
+    result: "De 4h → menos de 1h no Instagram em 3 semanas",
     photo: "/avatar-1.jpg",
   },
   {
     name: "Fernanda S.",
+    detail: "Professora, 29 anos · Belo Horizonte",
     rating: 5.0,
-    text: "Em poucos dias eu já percebi diferença. Passei a gastar menos tempo no Instagram e consegui organizar melhor minha rotina sem me sentir pressionada.",
+    text: "Em poucos dias eu já percebi diferença. Passei a gastar menos tempo no celular e consegui organizar melhor minha rotina sem me sentir pressionada.",
+    result: "Rotina organizada em menos de 1 semana",
     photo: "/avatar-2.jpg",
   },
   {
     name: "Lucas R.",
+    detail: "Designer freelancer, 26 anos · Curitiba",
     rating: 5.0,
-    text: "O que mais gostei foi a simplicidade. Não parece mais um aplicativo cheio de funções inúteis. É direto ao ponto e realmente ajuda a manter o foco.",
+    text: "O que mais gostei foi a simplicidade. Não parece mais um app cheio de funções inúteis. É direto ao ponto e realmente ajuda a manter o foco quando mais preciso.",
+    result: "Produtividade dobrou no trabalho remoto",
     photo: "/avatar-3.jpg",
   },
   {
     name: "Marcelo P.",
+    detail: "Analista de TI, 31 anos · Recife",
     rating: 4.9,
     text: "Eu vivia começando projetos e abandonando no meio. Depois que comecei a usar a Lytra, consegui criar uma consistência que não tinha há anos.",
+    result: "Primeiro projeto finalizado em 21 dias",
     photo: "/avatar-4.jpg",
   },
   {
     name: "Juliana A.",
+    detail: "Universitária, 20 anos · Rio de Janeiro",
     rating: 5.0,
-    text: "A sensação é de ter mais clareza mental. Antes eu pegava o celular automaticamente toda hora. Hoje consigo controlar muito melhor meus impulsos.",
+    text: "Antes eu pegava o celular automaticamente toda hora. Hoje consigo controlar muito melhor meus impulsos. Minha nota na faculdade subiu no semestre seguinte.",
+    result: "Nota na faculdade melhorou no semestre seguinte",
     photo: "/avatar-5.jpg",
   },
   {
     name: "Sônia C.",
+    detail: "Empreendedora, 38 anos · Florianópolis",
     rating: 4.8,
-    text: "Achei que fosse algo voltado apenas para pessoas mais jovens, mas me surpreendi. Me ajudou a criar hábitos mais saudáveis e reduzir distrações no dia a dia.",
+    text: "Achei que fosse algo voltado apenas para pessoas mais jovens, mas me surpreendi. Me ajudou a criar hábitos mais saudáveis e reduzir distrações no trabalho.",
+    result: "2h extras de foco por dia recuperadas",
     photo: "/avatar-6.jpg",
   },
 ];
@@ -297,22 +310,44 @@ function Landing() {
         />
 
         <div className="relative mx-auto max-w-4xl px-6 pt-24 pb-10 text-center md:pt-36 md:pb-10">
+          {/* banner de lançamento */}
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+            Oferta de lançamento — 50% off no plano mensal
+          </div>
+
           <h1 className="font-display text-5xl leading-[1.08] text-balance text-foreground md:text-6xl lg:text-[4.5rem]">
-            Você merece uma mente{" "}
-            <span style={{ color: "var(--primary)" }}>em paz.</span>
+            A plataforma que reconstrói{" "}
+            <span style={{ color: "var(--primary)" }}>seu foco e sua rotina.</span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground text-balance">
-            Acompanhamento diário e pessoal para retomar foco, reduzir distrações e reconstruir
-            sua rotina. No seu ritmo, um passo de cada vez.
+            Para quem vive distraído, adia o que importa e não consegue mudar sozinho. Missões diárias personalizadas, diário emocional e acompanhamento real — sem app para baixar.
           </p>
+
+          {/* pills de definição do produto */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+            {["✓ Diagnóstico personalizado", "✓ Missões diárias", "✓ Sem app para baixar", "✓ Acesso imediato"].map((pill) => (
+              <span key={pill} className="rounded-full border border-primary/15 bg-white/70 px-3 py-1">
+                {pill}
+              </span>
+            ))}
+          </div>
+
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
-              href="#precos"
+              href={PLANS.quarterly.checkoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (typeof window !== "undefined" && (window as any).fbq) {
+                  (window as any).fbq("track", "InitiateCheckout", { value: PLANS.quarterly.price, currency: "BRL", content_name: "Trimestral" });
+                }
+              }}
               className="group inline-flex h-13 items-center gap-2 rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 hover:shadow-[0_0_40px_-8px_oklch(0.52_0.13_158/0.5)]"
               style={{ height: "3.25rem" }}
             >
-              Começar a jornada
+              Quero recuperar meu foco — R$13,30/mês
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
@@ -323,6 +358,7 @@ function Landing() {
               Como funciona
             </a>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · Cancele quando quiser</p>
         </div>
 
         {/* ── Device mockup ── */}
@@ -593,6 +629,10 @@ function Landing() {
                 <span className="text-sm text-yellow-400">{"★".repeat(Math.floor(t.rating))}</span>
                 <span className="text-xs font-semibold text-muted-foreground">{t.rating.toFixed(1)}</span>
               </div>
+              {/* resultado em destaque */}
+              <div className="mt-3 rounded-lg bg-primary/6 px-3 py-1.5 text-xs font-semibold text-primary">
+                {t.result}
+              </div>
               <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground">
                 "{t.text}"
               </blockquote>
@@ -609,16 +649,37 @@ function Landing() {
                     if (sibling) sibling.style.display = "flex";
                   }}
                 />
-                {/* fallback invisível até onError */}
                 <span
                   className="h-10 w-10 shrink-0 rounded-full bg-primary/10"
                   style={{ display: "none" }}
                   aria-hidden
                 />
-                <span className="text-sm font-semibold text-foreground">{t.name}</span>
+                <div>
+                  <span className="block text-sm font-semibold text-foreground">{t.name}</span>
+                  <span className="block text-xs text-muted-foreground">{t.detail}</span>
+                </div>
               </figcaption>
             </figure>
           ))}
+        </div>
+
+        {/* CTA mid-page após depoimentos */}
+        <div className="mt-14 text-center">
+          <a
+            href={PLANS.quarterly.checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              if (typeof window !== "undefined" && (window as any).fbq) {
+                (window as any).fbq("track", "InitiateCheckout", { value: PLANS.quarterly.price, currency: "BRL", content_name: "Trimestral" });
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-90"
+          >
+            Quero esse resultado também — começar agora
+            <ArrowRight className="h-4 w-4" />
+          </a>
+          <p className="mt-3 text-xs text-muted-foreground">7 dias de garantia · R$13,30/mês no trimestral</p>
         </div>
       </section>
 
@@ -671,6 +732,9 @@ function Landing() {
           </h2>
           <p className="mt-4 text-base text-muted-foreground">
             Acesso completo em todos os planos. O que muda é o custo por período.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Uma sessão de terapia custa em média R$200. O plano vitalício da Lytra custa R$79,90 — pagamento único, para sempre.
           </p>
         </div>
 
@@ -762,11 +826,27 @@ function Landing() {
                       : "border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                   }`}
                 >
-                  Adquirir agora
+                  Começar com 7 dias de garantia
                 </a>
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ── Quem está por trás ── */}
+      <section className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+        <div className="flex flex-col items-center gap-8 rounded-3xl border border-primary/10 bg-white p-10 shadow-soft text-center sm:flex-row sm:text-left">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-3xl font-bold text-primary">
+            L
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">Quem criou a Lytra</p>
+            <h3 className="mt-2 text-lg font-semibold text-foreground">Lívia Januário</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              "Criei a Lytra depois de perceber que passava horas no celular todo dia e nenhum app de hábitos ou produtividade funcionava para mim. O problema nunca era a ferramenta — era que nenhuma delas levava em conta o lado emocional. Então construí uma que leva."
+            </p>
+          </div>
         </div>
       </section>
 
