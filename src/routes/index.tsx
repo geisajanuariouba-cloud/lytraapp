@@ -834,22 +834,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* ── Quem está por trás ── */}
-      <section className="mx-auto max-w-3xl px-6 py-16 md:py-24">
-        <div className="flex flex-col items-center gap-8 rounded-3xl border border-primary/10 bg-white p-10 shadow-soft text-center sm:flex-row sm:text-left">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-3xl font-bold text-primary">
-            L
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary">Quem criou a Lytra</p>
-            <h3 className="mt-2 text-lg font-semibold text-foreground">Lívia Januário</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              "Criei a Lytra depois de perceber que passava horas no celular todo dia e nenhum app de hábitos ou produtividade funcionava para mim. O problema nunca era a ferramenta — era que nenhuma delas levava em conta o lado emocional. Então construí uma que leva."
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* ── FAQ ── */}
       <section
         id="faq"
