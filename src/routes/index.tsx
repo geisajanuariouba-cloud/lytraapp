@@ -87,15 +87,6 @@ const planDisplay = {
     ],
     recommended: true,
   },
-  lifetime: {
-    destaque: "Você paga uma vez. Para sempre.",
-    features: [
-      "Tudo do trimestral",
-      "Sem mensalidades",
-      "Sem renovações",
-      "Acesso permanente",
-    ],
-  },
 } as const;
 
 const testimonials: { name: string; detail: string; rating: number; text: string; photo: string; result: string }[] = [
@@ -480,15 +471,12 @@ function Landing() {
             Comece hoje.
           </h2>
           <p className="mt-4 text-base text-muted-foreground">
-            Acesso completo em todos os planos. O que muda é o custo por período.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Uma sessão de terapia custa em média R$200. O plano vitalício da Lytra custa R$49,90 — pagamento único, para sempre.
+            Acesso completo em ambos os planos. O que muda é o custo por período.
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-5xl items-start gap-6 md:grid-cols-3">
-          {(["monthly", "quarterly", "lifetime"] as const).map((key) => {
+        <div className="mx-auto mt-12 grid max-w-5xl items-start gap-6 md:grid-cols-2 max-w-3xl">
+          {(["monthly", "quarterly"] as const).map((key) => {
             const plan = PLANS[key];
             const display = planDisplay[key];
             const featured = "recommended" in display && display.recommended;
